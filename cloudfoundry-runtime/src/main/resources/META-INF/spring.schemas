@@ -1,0 +1,2 @@
+http\://schema.cloudfoundry.org/spring/cloudfoundry-spring-0.6.xsd=org/cloudfoundry/runtime/service/config/xml/cloudfoundry-spring.xsd
+http\://schema.cloudfoundry.org/spring/cloudfoundry-spring.xsd=org/cloudfoundry/runtime/service/config/xml/cloudfoundry-spring.xsd

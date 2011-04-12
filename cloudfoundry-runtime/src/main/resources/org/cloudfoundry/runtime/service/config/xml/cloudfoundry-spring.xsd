@@ -1,0 +1,149 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xsd:schema xmlns="http://schema.cloudfoundry.org/spring"
+		xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+		xmlns:beans="http://www.springframework.org/schema/beans"
+		xmlns:tool="http://www.springframework.org/schema/tool"
+		targetNamespace="http://schema.cloudfoundry.org/spring"
+		elementFormDefault="qualified"
+		attributeFormDefault="unqualified">
+
+	<xsd:import namespace="http://www.springframework.org/schema/beans" />
+	<xsd:import namespace="http://www.springframework.org/schema/tool" />
+
+	<xsd:annotation>
+		<xsd:documentation><![CDATA[
+	Defines the configuration elements for Cloud.
+		]]></xsd:documentation>
+	</xsd:annotation>
+
+	<xsd:element name="data-source">
+		<xsd:annotation>
+			<xsd:documentation>
+				Locates a DataSource service.
+			</xsd:documentation>
+		</xsd:annotation>
+		<xsd:complexType>
+			<xsd:attribute name="id" type="xsd:string" use="optional">
+				<xsd:annotation>
+					<xsd:documentation>
+						The id for this DataSource.
+						If not provided, the service name will be used as a fallback.
+					</xsd:documentation>
+				</xsd:annotation>
+			</xsd:attribute>
+			<xsd:attribute name="service-name" type="xsd:string" use="optional">
+				<xsd:annotation>
+					<xsd:documentation>
+						The name of the DataSource service.
+					</xsd:documentation>
+				</xsd:annotation>
+			</xsd:attribute>
+		</xsd:complexType>
+	</xsd:element>
+
+	<xsd:element name="rabbit-connection-factory">
+		<xsd:annotation>
+			<xsd:documentation>
+				Locates a RabbitMQ service and creates a ConnectionFactory for it.
+			</xsd:documentation>
+		</xsd:annotation>
+		<xsd:complexType>
+			<xsd:attribute name="id" type="xsd:string" use="optional">
+				<xsd:annotation>
+					<xsd:documentation>
+						The id for this ConnectionFactory.
+						If not provided, the service name will be used as a fallback.
+					</xsd:documentation>
+				</xsd:annotation>
+			</xsd:attribute>
+			<xsd:attribute name="service-name" type="xsd:string" use="optional">
+				<xsd:annotation>
+					<xsd:documentation>
+						The name of the RabbitMQ service.
+					</xsd:documentation>
+				</xsd:annotation>
+			</xsd:attribute>
+		</xsd:complexType>
+	</xsd:element>
+
+	<xsd:element name="redis-connection-factory">
+		<xsd:annotation>
+			<xsd:documentation>
+				Locates a Redis service and creates a ConnectionFactory for it.
+			</xsd:documentation>
+		</xsd:annotation>
+		<xsd:complexType>
+			<xsd:attribute name="id" type="xsd:string" use="optional">
+				<xsd:annotation>
+					<xsd:documentation>
+						The id for this ConnectionFactory.
+						If not provided, the service name will be used as a fallback.
+					</xsd:documentation>
+				</xsd:annotation>
+			</xsd:attribute>
+			<xsd:attribute name="service-name" type="xsd:string" use="optional">
+				<xsd:annotation>
+					<xsd:documentation>
+						The name of the Redis service.
+					</xsd:documentation>
+				</xsd:annotation>
+			</xsd:attribute>
+		</xsd:complexType>
+	</xsd:element>
+
+	<xsd:element name="mongo">
+		<xsd:annotation>
+			<xsd:documentation>
+				Locates a Mongo service.
+			</xsd:documentation>
+		</xsd:annotation>
+		<xsd:complexType>
+			<xsd:attribute name="id" type="xsd:string" use="optional">
+				<xsd:annotation>
+					<xsd:documentation>
+						The id for this Mongo instance.
+						If not provided, the service name will be used as a fallback.
+					</xsd:documentation>
+				</xsd:annotation>
+			</xsd:attribute>
+			<xsd:attribute name="service-name" type="xsd:string" use="optional">
+				<xsd:annotation>
+					<xsd:documentation>
+						The name of the Mongo service.
+					</xsd:documentation>
+				</xsd:annotation>
+			</xsd:attribute>
+		</xsd:complexType>
+	</xsd:element>
+
+	<xsd:element name="service-properties">
+		<xsd:annotation>
+			<xsd:documentation source="org.cloudfoundry.runtime.env.CloudEnvironmentPropertiesFactoryBean"><![CDATA[
+				Exposes the available cloud services options as a Properties object (suitable for Spring Property Placeholder Configurer).
+			]]></xsd:documentation>
+			<xsd:appinfo>
+				<tool:annotation>
+					<tool:exports type="java.util.Properties" />
+				</tool:annotation>
+			</xsd:appinfo>
+		</xsd:annotation>
+		<xsd:complexType>
+			<xsd:attribute name="id" type="xsd:string" use="optional">
+				<xsd:annotation>
+					<xsd:documentation>
+						The id for the properties object.
+					</xsd:documentation>
+				</xsd:annotation>
+			</xsd:attribute>
+		</xsd:complexType>
+	</xsd:element>
+
+	<xsd:element name="auto-populate">
+		<xsd:annotation>
+			<xsd:documentation source="org.cloudfoundry.runtime.service.CloudServicesAutoPopulator"><![CDATA[
+				Exposes the available cloud services as beans, which then may be injected into other beans.
+			]]></xsd:documentation>
+		</xsd:annotation>
+	</xsd:element>
+
+</xsd:schema>

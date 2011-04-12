@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<persistence xmlns="http://java.sun.com/xml/ns/persistence" 
+		xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+		version="1.0" 
+		xsi:schemaLocation="http://java.sun.com/xml/ns/persistence http://java.sun.com/xml/ns/persistence/persistence_1_0.xsd">
+<persistence-unit name="persistenceUnit" transaction-type="RESOURCE_LOCAL">
+   <provider>org.hibernate.ejb.HibernatePersistence</provider>
+   <properties>
+       <property name="hibernate.dialect" value="dialect.that.doesnt.exist.and.should.be.auto_replaced"/>
+       <property name="hibernate.hbm2ddl.auto" value="none"/>
+       <property name="hibernate.ejb.naming_strategy" value="org.hibernate.cfg.ImprovedNamingStrategy"/>
+       <property name="hibernate.connection.charSet" value="UTF-8"/>
+       <!--  To avoid connecting to database during testing -->
+       <property name="hibernate.temp.use_jdbc_metadata_defaults" value="false"/>
+   </properties>
+</persistence-unit>
+</persistence>

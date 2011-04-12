@@ -1,0 +1,13 @@
+{
+        "name": "$serviceName",
+        "label": "mysql-5.1",
+        "plan": "free",
+        "credentials": {
+            "node_id": "mysql_node_4",
+            "hostname": "$hostname",
+            "port": $port,
+            "password": "$password",
+            "name": "$name",
+            "user": "$user"
+        }
+}

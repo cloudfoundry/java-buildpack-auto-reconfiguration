@@ -1,0 +1,12 @@
+{
+        "name": "$serviceName",
+        "label": "mongodb-1.8",
+        "plan": "free",
+        "credentials": {
+            "node_id": "mongodb_node_5",
+            "hostname": "$hostname",
+            "port": $port,
+            "password": "$password",
+            "name": "$name"
+        }
+}
