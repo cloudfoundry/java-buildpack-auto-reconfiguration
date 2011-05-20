@@ -2,6 +2,7 @@ package org.cloudfoundry.runtime.service.relational;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.when;
 
 import javax.sql.DataSource;
@@ -12,7 +13,6 @@ import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
-import org.springframework.jdbc.datasource.SimpleDriverDataSource;
 import org.springframework.test.util.ReflectionTestUtils;
 
 public class CloudDataSourceFactoryTest {
@@ -41,7 +41,9 @@ public class CloudDataSourceFactoryTest {
 		assertNotNull(dataSource);
 		
 		assertEquals("jdbc:mysql://10.20.30.40:3306/database-123", ReflectionTestUtils.getField(dataSource, "url"));
-		assertEquals("myuser", ReflectionTestUtils.getField(dataSource, "username"));
-		assertEquals("mypass", ReflectionTestUtils.getField(dataSource, "password"));
+		assertEquals("myuser", ReflectionTestUtils.invokeGetterMethod(dataSource, "username"));
+		assertEquals("mypass", ReflectionTestUtils.invokeGetterMethod(dataSource, "password"));
+		assertTrue((Boolean) ReflectionTestUtils.invokeGetterMethod(dataSource, "testOnBorrow"));
+		assertTrue(((String) ReflectionTestUtils.invokeGetterMethod(dataSource, "validationQuery")).startsWith("/* ping */"));
 	}
 }

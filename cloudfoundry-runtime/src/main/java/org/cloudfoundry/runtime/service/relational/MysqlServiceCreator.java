@@ -19,7 +19,9 @@ import org.springframework.jdbc.datasource.SimpleDriverDataSource;
 public class MysqlServiceCreator 
     extends AbstractServiceCreator<DataSource, MysqlServiceInfo> {
 	
-	private static String DRIVER_CLASS_NAME = "com.mysql.jdbc.Driver";
+	private static final String DRIVER_CLASS_NAME = "com.mysql.jdbc.Driver";
+	
+	private static final String VALIDATION_QUERY = "/* ping */ SELECT 1"; // from the MySQL manual
 	
 	public MysqlServiceCreator(CloudEnvironment cloudEnvironment) {
 		super(cloudEnvironment, MysqlServiceInfo.class);
@@ -41,6 +43,8 @@ public class MysqlServiceCreator
 				ds.setUrl(serviceInfo.getUrl());
 				ds.setUsername(serviceInfo.getUserName());
 				ds.setPassword(serviceInfo.getPassword());
+				ds.setTestOnBorrow(true);
+				ds.setValidationQuery(VALIDATION_QUERY);
 				return ds;
 				// else, we have one from Tomcat
 			} else if (hasClass("org.apache.tomcat.dbcp.dbcp.BasicDataSource")) {
@@ -49,6 +53,8 @@ public class MysqlServiceCreator
 				ds.setUrl(serviceInfo.getUrl());
 				ds.setUsername(serviceInfo.getUserName());
 				ds.setPassword(serviceInfo.getPassword());
+				ds.setTestOnBorrow(true);
+				ds.setValidationQuery(VALIDATION_QUERY);
 				return ds;
 			} else {
 				// Only for testing outside Tomcat/CloudFoundry
