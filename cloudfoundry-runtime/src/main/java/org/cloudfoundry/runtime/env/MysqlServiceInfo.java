@@ -33,4 +33,8 @@ public class MysqlServiceInfo extends AbstractServiceInfo {
 	public String getUserName() {
 		return userName;
 	}
+
+	public String getDatabase() {
+		return database;
+	}
 }
