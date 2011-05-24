@@ -128,6 +128,16 @@ public class CloudFactoryAutoStagingBeanFactoryPostProcessorTest {
 	}
 
 	@Test
+	public void referencedNestedPropertyFactorySingleLocationApplicationContextProcessed() {
+		assertApplicationContextProcessing("test-propertyFactory-nested-reference-single-location-good-context.xml");
+	}
+
+	@Test
+	public void referencedNestedPropertyFactoryListLocationApplicationContextProcessed() {
+		assertApplicationContextProcessing("test-propertyFactory-nested-reference-list-location-good-context.xml");
+	}
+
+	@Test
 	public void autostagingOffWhenPropertyFileSpecifiedOff() {
 		Assert.assertTrue(testBFPP.autoStagingOff("org/cloudfoundry/reconfiguration/test-autostaging-off.properties"));
 	}

@@ -28,6 +28,7 @@ import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
 import org.springframework.beans.factory.config.PropertiesFactoryBean;
 import org.springframework.beans.factory.config.TypedStringValue;
 import org.springframework.beans.factory.support.DefaultListableBeanFactory;
+import org.springframework.beans.factory.support.ManagedList;
 import org.springframework.beans.factory.support.ManagedProperties;
 import org.springframework.core.Ordered;
 import org.springframework.core.io.DefaultResourceLoader;
@@ -244,7 +245,7 @@ public class CloudAutoStagingBeanFactoryPostProcessor implements BeanFactoryPost
 		return (ManagedProperties) replacementPropertiesBeanDef.getPropertyValues().getPropertyValue("properties").getValue();
 	}
 
-	private String[] getRealDataSources(	DefaultListableBeanFactory beanFactory) {
+	private String[] getRealDataSources(DefaultListableBeanFactory beanFactory) {
 		String[] dataSourceBeanNames = beanFactory.getBeanNamesForType(DataSource.class);
 		Class<?> txAwareDSClass = loadClass("org.springframework.jdbc.datasource.TransactionAwareDataSourceProxy");
 		if (txAwareDSClass == null) {
@@ -268,15 +269,6 @@ public class CloudAutoStagingBeanFactoryPostProcessor implements BeanFactoryPost
 		return realDSBeanNames.toArray(new String[0]);
 	}
 	
-	private <T> boolean contains(T[] array, T searchElement) {
-		for (T element : array) {
-			if (element.equals(searchElement)) {
-				return true;
-			}
-		}
-		return false;
-	}
-	
 	private BeanDefinition getBeanDefinition(DefaultListableBeanFactory beanFactory, String beanName) {
 		if (beanName.startsWith(BeanFactory.FACTORY_BEAN_PREFIX)) {
 			beanName = beanName.substring(BeanFactory.FACTORY_BEAN_PREFIX.length());
@@ -290,10 +282,16 @@ public class CloudAutoStagingBeanFactoryPostProcessor implements BeanFactoryPost
 			try {
 				PropertyValues propertyValues = beanDefinition.getPropertyValues();
 				if (propertyValues.contains("location")) {
-					String propertyLocation = (String) propertyValues.getPropertyValue("location").getValue();
-					return PropertiesLoaderUtils.loadAllProperties(propertyLocation);
+					return loadPropertiesForLocation(propertyValues.getPropertyValue("location"));
+				} else if (propertyValues.contains("locations")) {
+					return loadPropertiesForLocations(propertyValues.getPropertyValue("locations"));
 				} else if (propertyValues.contains("properties")) {
-					return mapToProperties((Map<String,String>)propertyValues.getPropertyValue("properties").getValue());
+					Object value = propertyValues.getPropertyValue("properties").getValue();
+					if (value instanceof BeanDefinitionHolder) {
+						return extractProperties((BeanDefinitionHolder) value);
+					} else {
+						return mapToProperties((Map<String,String>)value);
+					}
 				} else {
 					throw new IllegalArgumentException("Unable to process PropertiesFactoryBean; doesn't contain either 'locations' or 'properties' property");
 				}
@@ -306,6 +304,35 @@ public class CloudAutoStagingBeanFactoryPostProcessor implements BeanFactoryPost
 			return mapToProperties(sourceMap);
 		}
 	}
+	
+	private Properties loadPropertiesForLocation(PropertyValue locationPV) throws IOException {
+		Object locationValue = locationPV.getValue();
+		return loadPropertiesForLocation(locationValue);
+	}
+	
+	private Properties loadPropertiesForLocation(Object location) throws IOException {
+		if (location instanceof String) {
+			return PropertiesLoaderUtils.loadAllProperties((String) location);
+		} else if (location instanceof TypedStringValue) {
+			return PropertiesLoaderUtils.loadAllProperties(((TypedStringValue) location).getValue());
+		} else {
+			throw new IllegalArgumentException("Unable to process 'location' value of type " + location.getClass());
+		}
+	}
+
+	private Properties loadPropertiesForLocations(PropertyValue locationPV) throws IOException {
+		Object locationsValue = locationPV.getValue();
+		if (locationsValue instanceof ManagedList) {
+			Properties props = new Properties();
+			for (Object location : (ManagedList)locationsValue) {
+				props.putAll(loadPropertiesForLocation(location));
+			}
+			return props;
+		} else {
+			throw new IllegalArgumentException("Unable to process 'locations' value of PropertyValue " + locationsValue.getClass());
+		}
+	}
+
 	
 	private Properties mapToProperties(Map<String, String> map) {
 		Properties properties = new Properties();
@@ -322,4 +349,14 @@ public class CloudAutoStagingBeanFactoryPostProcessor implements BeanFactoryPost
 			return null;
 		}
 	}
+	
+	private <T> boolean contains(T[] array, T searchElement) {
+		for (T element : array) {
+			if (element.equals(searchElement)) {
+				return true;
+			}
+		}
+		return false;
+	}
+	
 }
