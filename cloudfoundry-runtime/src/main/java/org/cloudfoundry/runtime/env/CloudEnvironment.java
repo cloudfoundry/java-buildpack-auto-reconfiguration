@@ -30,6 +30,7 @@ public class CloudEnvironment {
 		serviceTypeToNameMap.put(RedisServiceInfo.class, "redis-2.2");
 		serviceTypeToNameMap.put(MongoServiceInfo.class, "mongodb-1.8");
 		serviceTypeToNameMap.put(RabbitServiceInfo.class, "rabbitmq-2.4");
+		serviceTypeToNameMap.put(PostgresqlServiceInfo.class, "postgresql");
 	}
 	
 	/* package for testing purpose */
@@ -114,7 +115,7 @@ public class CloudEnvironment {
 		List<Map<String, Object>> matchedServices = new ArrayList<Map<String,Object>>();
 		
 		for (Map<String, Object> service : services) {
-			if (service.get("label").equals(type)) {
+			if (service.get("label").equals(type) || ((String)service.get("label")).startsWith(type)) {
 				matchedServices.add(service);
 			}
 		}
@@ -126,7 +127,7 @@ public class CloudEnvironment {
 		Map<String,Object> serviceInfoMap = getServiceDataByName(name);
 		String typeName = serviceTypeToNameMap.get(serviceInfoType);
 		
-		if (serviceInfoMap.get("label").equals(typeName)) {
+		if (serviceInfoMap.get("label").equals(typeName) || ((String)serviceInfoMap.get("label")).startsWith(typeName)) {
 			return getServiceInfo(serviceInfoMap, serviceInfoType);
 		}
 		return null;

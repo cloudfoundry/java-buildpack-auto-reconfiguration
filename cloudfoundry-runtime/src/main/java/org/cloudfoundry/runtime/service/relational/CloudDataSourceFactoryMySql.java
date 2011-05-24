@@ -12,12 +12,12 @@ import org.cloudfoundry.runtime.service.AbstractCloudServiceFactory;
  * @author Ramnivas Laddad
  *
  */
-public class CloudDataSourceFactory extends AbstractCloudServiceFactory<DataSource, MysqlServiceInfo> {
-	public CloudDataSourceFactory(CloudEnvironment cloudEnvironment) {
+public class CloudDataSourceFactoryMySql extends AbstractCloudServiceFactory<DataSource, MysqlServiceInfo> {
+	public CloudDataSourceFactoryMySql(CloudEnvironment cloudEnvironment) {
 		super(new MysqlServiceCreator(cloudEnvironment));
 	}
 
-	public CloudDataSourceFactory() {
+	public CloudDataSourceFactoryMySql() {
 		super(new MysqlServiceCreator(new CloudEnvironment()));
 	}
 

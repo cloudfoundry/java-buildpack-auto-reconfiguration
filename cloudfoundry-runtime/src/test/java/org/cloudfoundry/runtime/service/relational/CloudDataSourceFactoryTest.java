@@ -18,12 +18,12 @@ import org.springframework.test.util.ReflectionTestUtils;
 public class CloudDataSourceFactoryTest {
 	@Mock private CloudEnvironment mockRuntime;
 	@Mock private MysqlServiceInfo mockServiceInfo;
-	private CloudDataSourceFactory factory;
+	private CloudDataSourceFactoryMySql factory;
 
 	@Before
 	public void setup() {
 		MockitoAnnotations.initMocks(this);
-		factory = new CloudDataSourceFactory(mockRuntime);
+		factory = new CloudDataSourceFactoryMySql(mockRuntime);
 	}
 	
 	@Test

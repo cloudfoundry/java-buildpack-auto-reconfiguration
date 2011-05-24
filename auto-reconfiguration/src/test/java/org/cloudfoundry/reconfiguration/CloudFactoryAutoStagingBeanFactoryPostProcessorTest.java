@@ -3,7 +3,9 @@ package org.cloudfoundry.reconfiguration;
 import static org.mockito.Mockito.when;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
@@ -52,9 +54,14 @@ public class CloudFactoryAutoStagingBeanFactoryPostProcessorTest {
 		String serviceJdbcUrl = "jdbc:mysql://10.20.20.40:1234/mysql-1";
 		List<MysqlServiceInfo> serviceInfos = new ArrayList<MysqlServiceInfo>();
 		serviceInfos.add(mockMysqlServiceInfo1);
+		Map<String, Object> service = new HashMap<String, Object>();
+		service.put("label", "mysql-5.1");
+		List<Map<String,Object>> serviceList = new ArrayList<Map<String,Object>>();
+		serviceList.add(service);
 		when(mockMysqlServiceInfo1.getUrl()).thenReturn(serviceJdbcUrl);
 		when(mockEnvironment.getServiceInfos(MysqlServiceInfo.class)).thenReturn(serviceInfos);
-		
+		when(mockEnvironment.getServices()).thenReturn(serviceList);
+
 		ApplicationContext context = getTestApplicationContext("test-jpa-good-context.xml");
 		AbstractDriverBasedDataSource replacedDataSource = (AbstractDriverBasedDataSource) context.getBean("myDs", DataSource.class);
 		Assert.assertEquals(serviceJdbcUrl, replacedDataSource.getUrl());
@@ -67,10 +74,15 @@ public class CloudFactoryAutoStagingBeanFactoryPostProcessorTest {
 		List<MysqlServiceInfo> serviceInfos = new ArrayList<MysqlServiceInfo>();
 		serviceInfos.add(mockMysqlServiceInfo1);
 		serviceInfos.add(mockMysqlServiceInfo2);
+		Map<String, Object> service = new HashMap<String, Object>();
+		service.put("label", "mysql-5.1");
+		List<Map<String,Object>> serviceList = new ArrayList<Map<String,Object>>();
+		serviceList.add(service);
 		when(mockMysqlServiceInfo1.getUrl()).thenReturn(serviceJdbcUrl1);
 		when(mockMysqlServiceInfo2.getUrl()).thenReturn(serviceJdbcUrl2);
 		when(mockEnvironment.getServiceInfos(MysqlServiceInfo.class)).thenReturn(serviceInfos);
-		
+		when(mockEnvironment.getServices()).thenReturn(serviceList);
+
 		ApplicationContext context = getTestApplicationContext("test-jpa-good-context.xml");
 		AbstractDriverBasedDataSource replacedDataSource = (AbstractDriverBasedDataSource) context.getBean("myDs", DataSource.class);
 		Assert.assertEquals("jdbc:hsql:localdb", replacedDataSource.getUrl());
@@ -79,8 +91,13 @@ public class CloudFactoryAutoStagingBeanFactoryPostProcessorTest {
 	@Test
 	public void cloudDataSourceLeavesOriginalInPlaceIfNoServicesDetected() {
 		List<MysqlServiceInfo> serviceInfos = new ArrayList<MysqlServiceInfo>();
+		Map<String, Object> service = new HashMap<String, Object>();
+		service.put("label", "mysql-5.1");
+		List<Map<String,Object>> serviceList = new ArrayList<Map<String,Object>>();
+		serviceList.add(service);
 		when(mockEnvironment.getServiceInfos(MysqlServiceInfo.class)).thenReturn(serviceInfos);
-		
+		when(mockEnvironment.getServices()).thenReturn(serviceList);
+
 		ApplicationContext context = getTestApplicationContext("test-jpa-good-context.xml");
 		AbstractDriverBasedDataSource replacedDataSource = (AbstractDriverBasedDataSource) context.getBean("myDs", DataSource.class);
 		Assert.assertEquals("jdbc:hsql:localdb", replacedDataSource.getUrl());
@@ -96,9 +113,14 @@ public class CloudFactoryAutoStagingBeanFactoryPostProcessorTest {
 		String serviceJdbcUrl = "jdbc:mysql://10.20.20.40:1234/mysql-1";
 		List<MysqlServiceInfo> serviceInfos = new ArrayList<MysqlServiceInfo>();
 		serviceInfos.add(mockMysqlServiceInfo1);
+		Map<String, Object> service = new HashMap<String, Object>();
+		service.put("label", "mysql-5.1");
+		List<Map<String,Object>> serviceList = new ArrayList<Map<String,Object>>();
+		serviceList.add(service);
 		when(mockMysqlServiceInfo1.getUrl()).thenReturn(serviceJdbcUrl);
 		when(mockEnvironment.getServiceInfos(MysqlServiceInfo.class)).thenReturn(serviceInfos);
-		
+		when(mockEnvironment.getServices()).thenReturn(serviceList);
+
 		ApplicationContext context = getTestApplicationContext("test-jpa-good-context.xml");
 		EntityManagerFactory entityManagerFactory = (EntityManagerFactory) context.getBean("entityManagerFactory", EntityManagerFactory.class);
 		EntityManager entityManager = entityManagerFactory.createEntityManager();
@@ -166,9 +188,14 @@ public class CloudFactoryAutoStagingBeanFactoryPostProcessorTest {
 		String serviceJdbcUrl = "jdbc:mysql://10.20.20.40:1234/mysql-1";
 		List<MysqlServiceInfo> serviceInfos = new ArrayList<MysqlServiceInfo>();
 		serviceInfos.add(mockMysqlServiceInfo1);
+		Map<String, Object> service = new HashMap<String, Object>();
+		service.put("label", "mysql-5.1");
+		List<Map<String,Object>> serviceList = new ArrayList<Map<String,Object>>();
+		serviceList.add(service);
 		when(mockMysqlServiceInfo1.getUrl()).thenReturn(serviceJdbcUrl);
 		when(mockEnvironment.getServiceInfos(MysqlServiceInfo.class)).thenReturn(serviceInfos);
-		
+		when(mockEnvironment.getServices()).thenReturn(serviceList);
+
 		ApplicationContext context = getTestApplicationContext(appContextFile);
 		SessionFactoryImpl sessionFactory = (SessionFactoryImpl) context.getBean("sessionFactory", SessionFactory.class);
 		

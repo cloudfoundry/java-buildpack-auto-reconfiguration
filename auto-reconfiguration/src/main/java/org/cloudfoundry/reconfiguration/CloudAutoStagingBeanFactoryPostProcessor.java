@@ -14,6 +14,7 @@ import javax.sql.DataSource;
 import org.cloudfoundry.runtime.env.CloudEnvironment;
 import org.cloudfoundry.runtime.env.CloudServiceException;
 import org.cloudfoundry.runtime.service.relational.MysqlServiceCreator;
+import org.cloudfoundry.runtime.service.relational.PostgresqlServiceCreator;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.MutablePropertyValues;
 import org.springframework.beans.PropertyValue;
@@ -51,9 +52,11 @@ public class CloudAutoStagingBeanFactoryPostProcessor implements BeanFactoryPost
 	
 	private static final String CLOUDFOUNDRY_PROPERTIES = "META-INF/cloudfoundry.properties";
 	private static final String APP_CLOUD_DATA_SOURCE_NAME = "__appCloudDataSource";
-	private static final String APP_CLOUD_JPA_REPLACEMENT_PROPERTIES = "__appCloudJpaReplacementProperties";
-	private static final String APP_CLOUD_HIBERNATE_REPLACEMENT_PROPERTIES = "__appCloudHibernateReplacementProperties";
-	
+	private static final String APP_CLOUD_JPA_MySQL_REPLACEMENT_PROPERTIES = "__appCloudJpaMySQLReplacementProperties";
+	private static final String APP_CLOUD_HIBERNATE_MySQL_REPLACEMENT_PROPERTIES = "__appCloudHibernateMySQLReplacementProperties";
+	private static final String APP_CLOUD_JPA_PostgreSQL_REPLACEMENT_PROPERTIES = "__appCloudJpaPostgreSQLReplacementProperties";
+	private static final String APP_CLOUD_HIBERNATE_PostgreSQL_REPLACEMENT_PROPERTIES = "__appCloudHibernatePostgreSQLReplacementProperties";
+
 	public void postProcessBeanFactory(ConfigurableListableBeanFactory beanFactory) throws BeansException {
 		if (autoStagingOff()) {
 			return;
@@ -129,15 +132,35 @@ public class CloudAutoStagingBeanFactoryPostProcessor implements BeanFactoryPost
 			return false;
 		}
 
-		DataSource theOnlyDataSource = null;
-		try {
-			MysqlServiceCreator mysqlCreationHelper = new MysqlServiceCreator(cloudEnvironment);
-			theOnlyDataSource = mysqlCreationHelper.createSingletonService().service;
-		} catch (CloudServiceException ex) {
-			logger.log(Level.INFO, "Multiple database services found. Skipping autostaging");
-			return false;
+		ArrayList<DataSource> DataSourceList = new ArrayList<DataSource>();
+		for(Map<String, Object> service:  cloudEnvironment.getServices()) {
+			String label = (String) service.get("label");
+			if (label == null) {
+				continue;
+			}
+			
+			if (label.startsWith("postgresql")) {
+				try {
+					PostgresqlServiceCreator postgresqlCreationHelper = new PostgresqlServiceCreator(cloudEnvironment);
+					DataSourceList.add(postgresqlCreationHelper.createSingletonService().service);
+				} catch (CloudServiceException ex) {
+					logger.log(Level.INFO, "Multiple database services found. Skipping autostaging", ex);
+					return false;
+				}
+			} else if (label.startsWith("mysql")) {
+				try {
+					MysqlServiceCreator mysqlCreationHelper = new MysqlServiceCreator(cloudEnvironment);
+					DataSourceList.add(mysqlCreationHelper.createSingletonService().service);
+				} catch (CloudServiceException ex) {
+					logger.log(Level.INFO, "Multiple database services found. Skipping autostaging");
+					return false;
+				}
+			}
 		}
-		defaultListableBeanFactory.registerSingleton(APP_CLOUD_DATA_SOURCE_NAME, theOnlyDataSource);
+		
+		for(DataSource DS: DataSourceList) {
+			defaultListableBeanFactory.registerSingleton(APP_CLOUD_DATA_SOURCE_NAME, DS);
+		}
 		
 		for (String dataSourceBeanName : dataSourceBeanNames) {
 			if (dataSourceBeanName.equals(APP_CLOUD_DATA_SOURCE_NAME)) {
@@ -150,13 +173,41 @@ public class CloudAutoStagingBeanFactoryPostProcessor implements BeanFactoryPost
 	}
 	
 	private void processJpaFactories(DefaultListableBeanFactory beanFactory) {
-		processBeanProperties(beanFactory, "org.springframework.orm.jpa.AbstractEntityManagerFactoryBean", 
-				APP_CLOUD_JPA_REPLACEMENT_PROPERTIES, "jpaProperties");
+		for(Map<String, Object> service:  cloudEnvironment.getServices()) {
+			String label = (String) service.get("label");
+			
+			if (label == null) {
+				continue;
+			}
+			
+			if (label.startsWith("postgresql"))
+			{
+				processBeanProperties(beanFactory, "org.springframework.orm.jpa.AbstractEntityManagerFactoryBean", 
+						APP_CLOUD_JPA_PostgreSQL_REPLACEMENT_PROPERTIES, "jpaProperties");
+			}
+			else if (label.startsWith("mysql"))
+			{
+				processBeanProperties(beanFactory, "org.springframework.orm.jpa.AbstractEntityManagerFactoryBean", 
+						APP_CLOUD_JPA_MySQL_REPLACEMENT_PROPERTIES, "jpaProperties");
+			}
+		}
 	}
 	
 	private void processHibernateFactories(DefaultListableBeanFactory beanFactory) {
-			processBeanProperties(beanFactory, "org.springframework.orm.hibernate3.AbstractSessionFactoryBean", 
-					APP_CLOUD_HIBERNATE_REPLACEMENT_PROPERTIES, "hibernateProperties");
+		for(Map<String, Object> service:  cloudEnvironment.getServices()) {
+			String label = (String) service.get("label");
+			if (label == null) {
+				continue;
+			}
+			if (label.startsWith("postgresql")) {
+				processBeanProperties(beanFactory, "org.springframework.orm.hibernate3.AbstractSessionFactoryBean", 
+						APP_CLOUD_HIBERNATE_PostgreSQL_REPLACEMENT_PROPERTIES, "hibernateProperties");
+			}
+			else if (label.startsWith("mysql")) {
+				processBeanProperties(beanFactory, "org.springframework.orm.hibernate3.AbstractSessionFactoryBean", 
+						APP_CLOUD_HIBERNATE_MySQL_REPLACEMENT_PROPERTIES, "hibernateProperties");
+			}
+		}	
 	}
 
 	private void processBeanProperties(DefaultListableBeanFactory beanFactory,

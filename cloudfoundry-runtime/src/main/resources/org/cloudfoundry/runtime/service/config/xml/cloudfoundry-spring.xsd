@@ -16,7 +16,7 @@
 		]]></xsd:documentation>
 	</xsd:annotation>
 
-	<xsd:element name="data-source">
+	<xsd:element name="data-source-mysql">
 		<xsd:annotation>
 			<xsd:documentation>
 				Locates a DataSource service.
@@ -40,6 +40,31 @@
 			</xsd:attribute>
 		</xsd:complexType>
 	</xsd:element>
+	
+	<xsd:element name="data-source-postgresql">
+		<xsd:annotation>
+			<xsd:documentation>
+				Locates a DataSource service.
+			</xsd:documentation>
+		</xsd:annotation>
+		<xsd:complexType>
+			<xsd:attribute name="id" type="xsd:string" use="optional">
+				<xsd:annotation>
+					<xsd:documentation>
+						The id for this DataSource.
+						If not provided, the service name will be used as a fallback.
+					</xsd:documentation>
+				</xsd:annotation>
+			</xsd:attribute>
+			<xsd:attribute name="service-name" type="xsd:string" use="optional">
+				<xsd:annotation>
+					<xsd:documentation>
+						The name of the DataSource service.
+					</xsd:documentation>
+				</xsd:annotation>
+			</xsd:attribute>
+		</xsd:complexType>
+	</xsd:element>	
 
 	<xsd:element name="rabbit-connection-factory">
 		<xsd:annotation>
