@@ -9,28 +9,13 @@ import java.util.Map;
  * @author Ramnivas Laddad
  *
  */
-public class MysqlServiceInfo extends AbstractServiceInfo {
-
-	private String database;
-
-	private String userName;
-
+public class MysqlServiceInfo extends AbstractDataSourceServiceInfo {
 	public MysqlServiceInfo(Map<String, Object> serviceInfo) {
 		super(serviceInfo);
-
-		@SuppressWarnings("unchecked")
-		Map<String, Object> credentials =
-			(Map<String, Object>) serviceInfo.get("credentials");
-		database = (String) credentials.get("name");
-
-		userName = (String) credentials.get("user");
 	}
 
+	@Override
 	public String getUrl() {
-		return "jdbc:mysql://" + getHost() + ":" + + getPort() + "/" + database;
-	}
-
-	public String getUserName() {
-		return userName;
+		return "jdbc:mysql://" + getHost() + ":" + + getPort() + "/" + getDatabase();
 	}
 }

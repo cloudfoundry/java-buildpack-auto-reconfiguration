@@ -11,6 +11,7 @@ import org.cloudfoundry.runtime.service.document.MongoServiceCreator;
 import org.cloudfoundry.runtime.service.keyvalue.RedisServiceCreator;
 import org.cloudfoundry.runtime.service.messaging.RabbitServiceCreator;
 import org.cloudfoundry.runtime.service.relational.MysqlServiceCreator;
+import org.cloudfoundry.runtime.service.relational.PostgresqlServiceCreator;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.config.BeanFactoryPostProcessor;
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
@@ -70,6 +71,7 @@ public class CloudServicesAutoPopulator implements BeanFactoryPostProcessor {
 		
 		List<AbstractServiceCreator> serviceCreators = new ArrayList<AbstractServiceCreator>();
 		serviceCreators.add(new MysqlServiceCreator(cloudEnvironment));
+		serviceCreators.add(new PostgresqlServiceCreator(cloudEnvironment));
 		serviceCreators.add(new RedisServiceCreator(cloudEnvironment));
 		serviceCreators.add(new RabbitServiceCreator(cloudEnvironment));
 		serviceCreators.add(new MongoServiceCreator(cloudEnvironment));

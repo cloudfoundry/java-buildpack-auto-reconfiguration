@@ -1,4 +1,4 @@
-package vmware.appcloud.tomcat;
+package com.vmware.appcloud.tomcat;
 
 /**
  * Created by IntelliJ IDEA.

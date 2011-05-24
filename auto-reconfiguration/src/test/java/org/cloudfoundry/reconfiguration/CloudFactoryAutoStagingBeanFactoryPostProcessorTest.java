@@ -3,14 +3,18 @@ package org.cloudfoundry.reconfiguration;
 import static org.mockito.Mockito.when;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 import javax.sql.DataSource;
 
+import org.cloudfoundry.runtime.env.AbstractDataSourceServiceInfo;
 import org.cloudfoundry.runtime.env.CloudEnvironment;
 import org.cloudfoundry.runtime.env.MysqlServiceInfo;
+import org.cloudfoundry.runtime.env.PostgresqlServiceInfo;
 import org.hibernate.SessionFactory;
 import org.hibernate.impl.SessionFactoryImpl;
 import org.hibernate.impl.SessionImpl;
@@ -35,8 +39,8 @@ import org.springframework.jdbc.datasource.AbstractDriverBasedDataSource;
  *
  */
 public class CloudFactoryAutoStagingBeanFactoryPostProcessorTest {
-	@Mock private MysqlServiceInfo mockMysqlServiceInfo1;
-	@Mock private MysqlServiceInfo mockMysqlServiceInfo2;
+	@Mock private MysqlServiceInfo mockMysqlServiceInfo;
+	@Mock private PostgresqlServiceInfo mockPostgresqlServiceInfo;
 	@Mock private CloudEnvironment mockEnvironment;
 	
 	private CloudAutoStagingBeanFactoryPostProcessor testBFPP;
@@ -48,13 +52,36 @@ public class CloudFactoryAutoStagingBeanFactoryPostProcessorTest {
 	}
 	
 	@Test
-	public void cloudDataSourceReplacesUserDataSourceIfOneServiceDetected() {
+	public void cloudDataSourceReplacesUserDataSourceIfMySqlServiceDetected() {
 		String serviceJdbcUrl = "jdbc:mysql://10.20.20.40:1234/mysql-1";
 		List<MysqlServiceInfo> serviceInfos = new ArrayList<MysqlServiceInfo>();
-		serviceInfos.add(mockMysqlServiceInfo1);
-		when(mockMysqlServiceInfo1.getUrl()).thenReturn(serviceJdbcUrl);
+		serviceInfos.add(mockMysqlServiceInfo);
+		Map<String, Object> service = new HashMap<String, Object>();
+		service.put("label", "mysql-5.1");
+		List<Map<String,Object>> serviceList = new ArrayList<Map<String,Object>>();
+		serviceList.add(service);
+		when(mockMysqlServiceInfo.getUrl()).thenReturn(serviceJdbcUrl);
 		when(mockEnvironment.getServiceInfos(MysqlServiceInfo.class)).thenReturn(serviceInfos);
-		
+		when(mockEnvironment.getServices()).thenReturn(serviceList);
+
+		ApplicationContext context = getTestApplicationContext("test-jpa-good-context.xml");
+		AbstractDriverBasedDataSource replacedDataSource = (AbstractDriverBasedDataSource) context.getBean("myDs", DataSource.class);
+		Assert.assertEquals(serviceJdbcUrl, replacedDataSource.getUrl());
+	}
+	
+	@Test
+	public void cloudDataSourceReplacesUserDataSourceIfPostgreSqlServiceDetected() {
+		String serviceJdbcUrl = "jdbc:postgresql://10.20.20.40:5432/mydb-1";
+		List<PostgresqlServiceInfo> serviceInfos = new ArrayList<PostgresqlServiceInfo>();
+		serviceInfos.add(mockPostgresqlServiceInfo);
+		Map<String, Object> service = new HashMap<String, Object>();
+		service.put("label", "postgresql-9.0");
+		List<Map<String,Object>> serviceList = new ArrayList<Map<String,Object>>();
+		serviceList.add(service);
+		when(mockPostgresqlServiceInfo.getUrl()).thenReturn(serviceJdbcUrl);
+		when(mockEnvironment.getServiceInfos(PostgresqlServiceInfo.class)).thenReturn(serviceInfos);
+		when(mockEnvironment.getServices()).thenReturn(serviceList);
+
 		ApplicationContext context = getTestApplicationContext("test-jpa-good-context.xml");
 		AbstractDriverBasedDataSource replacedDataSource = (AbstractDriverBasedDataSource) context.getBean("myDs", DataSource.class);
 		Assert.assertEquals(serviceJdbcUrl, replacedDataSource.getUrl());
@@ -63,14 +90,22 @@ public class CloudFactoryAutoStagingBeanFactoryPostProcessorTest {
 	@Test
 	public void cloudDataSourceLeavesOriginalInPlaceIfMultipleServicesDetected() {
 		String serviceJdbcUrl1 = "jdbc:mysql://10.20.20.40:1234/mysql-1";
-		String serviceJdbcUrl2 = "jdbc:mysql://10.20.20.40:1234/mysql-2";
-		List<MysqlServiceInfo> serviceInfos = new ArrayList<MysqlServiceInfo>();
-		serviceInfos.add(mockMysqlServiceInfo1);
-		serviceInfos.add(mockMysqlServiceInfo2);
-		when(mockMysqlServiceInfo1.getUrl()).thenReturn(serviceJdbcUrl1);
-		when(mockMysqlServiceInfo2.getUrl()).thenReturn(serviceJdbcUrl2);
-		when(mockEnvironment.getServiceInfos(MysqlServiceInfo.class)).thenReturn(serviceInfos);
-		
+		String serviceJdbcUrl2 = "jdbc:postgresql://10.20.20.40:5432/pg-2";
+		List<AbstractDataSourceServiceInfo> serviceInfos = new ArrayList<AbstractDataSourceServiceInfo>();
+		serviceInfos.add(mockMysqlServiceInfo);
+		serviceInfos.add(mockPostgresqlServiceInfo);
+		Map<String, Object> service1 = new HashMap<String, Object>();
+		service1.put("label", "mysql-5.1");
+		Map<String, Object> service2 = new HashMap<String, Object>();
+		service2.put("label", "postgresql-9.0");
+		List<Map<String,Object>> serviceList = new ArrayList<Map<String,Object>>();
+		serviceList.add(service1);
+		serviceList.add(service2);
+		when(mockMysqlServiceInfo.getUrl()).thenReturn(serviceJdbcUrl1);
+		when(mockPostgresqlServiceInfo.getUrl()).thenReturn(serviceJdbcUrl2);
+		when(mockEnvironment.getServiceInfos(AbstractDataSourceServiceInfo.class)).thenReturn(serviceInfos);
+		when(mockEnvironment.getServices()).thenReturn(serviceList);
+
 		ApplicationContext context = getTestApplicationContext("test-jpa-good-context.xml");
 		AbstractDriverBasedDataSource replacedDataSource = (AbstractDriverBasedDataSource) context.getBean("myDs", DataSource.class);
 		Assert.assertEquals("jdbc:hsql:localdb", replacedDataSource.getUrl());
@@ -79,8 +114,13 @@ public class CloudFactoryAutoStagingBeanFactoryPostProcessorTest {
 	@Test
 	public void cloudDataSourceLeavesOriginalInPlaceIfNoServicesDetected() {
 		List<MysqlServiceInfo> serviceInfos = new ArrayList<MysqlServiceInfo>();
+		Map<String, Object> service = new HashMap<String, Object>();
+		service.put("label", "mysql-5.1");
+		List<Map<String,Object>> serviceList = new ArrayList<Map<String,Object>>();
+		serviceList.add(service);
 		when(mockEnvironment.getServiceInfos(MysqlServiceInfo.class)).thenReturn(serviceInfos);
-		
+		when(mockEnvironment.getServices()).thenReturn(serviceList);
+
 		ApplicationContext context = getTestApplicationContext("test-jpa-good-context.xml");
 		AbstractDriverBasedDataSource replacedDataSource = (AbstractDriverBasedDataSource) context.getBean("myDs", DataSource.class);
 		Assert.assertEquals("jdbc:hsql:localdb", replacedDataSource.getUrl());
@@ -88,17 +128,22 @@ public class CloudFactoryAutoStagingBeanFactoryPostProcessorTest {
 	
 	@Test
 	public void hibernateSessionFactoryDialectUpdated() {
-		assertApplicationContextProcessing("test-hibernate-good-context.xml");
+		assertApplicationContextProcessingForMysql("test-hibernate-good-context.xml");
 	}
 	
 	@Test
-	public void entityManagerFactoryDialectUpdated() {
+	public void entityManagerFactoryMysqlDialectUpdated() {
 		String serviceJdbcUrl = "jdbc:mysql://10.20.20.40:1234/mysql-1";
 		List<MysqlServiceInfo> serviceInfos = new ArrayList<MysqlServiceInfo>();
-		serviceInfos.add(mockMysqlServiceInfo1);
-		when(mockMysqlServiceInfo1.getUrl()).thenReturn(serviceJdbcUrl);
+		serviceInfos.add(mockMysqlServiceInfo);
+		Map<String, Object> service = new HashMap<String, Object>();
+		service.put("label", "mysql-5.1");
+		List<Map<String,Object>> serviceList = new ArrayList<Map<String,Object>>();
+		serviceList.add(service);
+		when(mockMysqlServiceInfo.getUrl()).thenReturn(serviceJdbcUrl);
 		when(mockEnvironment.getServiceInfos(MysqlServiceInfo.class)).thenReturn(serviceInfos);
-		
+		when(mockEnvironment.getServices()).thenReturn(serviceList);
+
 		ApplicationContext context = getTestApplicationContext("test-jpa-good-context.xml");
 		EntityManagerFactory entityManagerFactory = (EntityManagerFactory) context.getBean("entityManagerFactory", EntityManagerFactory.class);
 		EntityManager entityManager = entityManagerFactory.createEntityManager();
@@ -106,35 +151,62 @@ public class CloudFactoryAutoStagingBeanFactoryPostProcessorTest {
 		SessionFactoryImpl underlyingSessionFactory = (SessionFactoryImpl) entityManagerDelegate.getSessionFactory();
 		Assert.assertEquals("org.hibernate.dialect.MySQLDialect", underlyingSessionFactory.getDialect().toString());
 	}
+	
+	@Test
+	public void entityManagerFactoryPostgresqlDialectUpdated() {
+		String serviceJdbcUrl = "jdbc:postgresql://10.20.20.40:5432/pg-1";
+		List<PostgresqlServiceInfo> serviceInfos = new ArrayList<PostgresqlServiceInfo>();
+		serviceInfos.add(mockPostgresqlServiceInfo);
+		Map<String, Object> service = new HashMap<String, Object>();
+		service.put("label", "postgresql-9.0");
+		List<Map<String,Object>> serviceList = new ArrayList<Map<String,Object>>();
+		serviceList.add(service);
+		when(mockPostgresqlServiceInfo.getUrl()).thenReturn(serviceJdbcUrl);
+		when(mockEnvironment.getServiceInfos(PostgresqlServiceInfo.class)).thenReturn(serviceInfos);
+		when(mockEnvironment.getServices()).thenReturn(serviceList);
+
+		ApplicationContext context = getTestApplicationContext("test-jpa-good-context.xml");
+		EntityManagerFactory entityManagerFactory = (EntityManagerFactory) context.getBean("entityManagerFactory", EntityManagerFactory.class);
+		EntityManager entityManager = entityManagerFactory.createEntityManager();
+		SessionImpl entityManagerDelegate = (SessionImpl) entityManager.getDelegate();
+		SessionFactoryImpl underlyingSessionFactory = (SessionFactoryImpl) entityManagerDelegate.getSessionFactory();
+		Assert.assertEquals("org.hibernate.dialect.PostgreSQLDialect", underlyingSessionFactory.getDialect().toString());
+	}
 
 	@Test
 	public void grailsLikeEmbeddedPropertyApplicationContextProcessed() {
-		assertApplicationContextProcessing("test-grails-embedded-props-good-context.xml");
+		assertApplicationContextProcessingForMysql("test-grails-embedded-props-good-context.xml");
+		assertApplicationContextProcessingForPostgresql("test-grails-embedded-props-good-context.xml");
 	}
 
 	@Test
 	public void grailsLikeReferencedMapApplicationContextProcessed() {
-		assertApplicationContextProcessing("test-grails-map-reference-good-context.xml");
+		assertApplicationContextProcessingForMysql("test-grails-map-reference-good-context.xml");
+		assertApplicationContextProcessingForPostgresql("test-grails-map-reference-good-context.xml");
 	}
 
 	@Test
 	public void grailsLikeReferencedPropertyFactoryApplicationContextProcessed() {
-		assertApplicationContextProcessing("test-grails-propertyFactory-reference-good-context.xml");
+		assertApplicationContextProcessingForMysql("test-grails-propertyFactory-reference-good-context.xml");
+		assertApplicationContextProcessingForPostgresql("test-grails-propertyFactory-reference-good-context.xml");
 	}
 
 	@Test
 	public void typeStringValuePropertyApplicationContextProcessed() {
-		assertApplicationContextProcessing("test-jpa-typedStringValue-good-context.xml");
+		assertApplicationContextProcessingForMysql("test-jpa-typedStringValue-good-context.xml");
+		assertApplicationContextProcessingForPostgresql("test-jpa-typedStringValue-good-context.xml");
 	}
 
 	@Test
 	public void referencedNestedPropertyFactorySingleLocationApplicationContextProcessed() {
-		assertApplicationContextProcessing("test-propertyFactory-nested-reference-single-location-good-context.xml");
+		assertApplicationContextProcessingForMysql("test-propertyFactory-nested-reference-single-location-good-context.xml");
+		assertApplicationContextProcessingForPostgresql("test-propertyFactory-nested-reference-single-location-good-context.xml");
 	}
 
 	@Test
 	public void referencedNestedPropertyFactoryListLocationApplicationContextProcessed() {
-		assertApplicationContextProcessing("test-propertyFactory-nested-reference-list-location-good-context.xml");
+		assertApplicationContextProcessingForMysql("test-propertyFactory-nested-reference-list-location-good-context.xml");
+		assertApplicationContextProcessingForPostgresql("test-propertyFactory-nested-reference-list-location-good-context.xml");
 	}
 
 	@Test
@@ -162,18 +234,41 @@ public class CloudFactoryAutoStagingBeanFactoryPostProcessorTest {
 		Assert.assertFalse(testBFPP.autoStagingOff("file-that-doesnt-exist"));
 	}
 
-	private void assertApplicationContextProcessing(String appContextFile) {
+	private void assertApplicationContextProcessingForMysql(String appContextFile) {
 		String serviceJdbcUrl = "jdbc:mysql://10.20.20.40:1234/mysql-1";
 		List<MysqlServiceInfo> serviceInfos = new ArrayList<MysqlServiceInfo>();
-		serviceInfos.add(mockMysqlServiceInfo1);
-		when(mockMysqlServiceInfo1.getUrl()).thenReturn(serviceJdbcUrl);
+		serviceInfos.add(mockMysqlServiceInfo);
+		Map<String, Object> service = new HashMap<String, Object>();
+		service.put("label", "mysql-5.1");
+		List<Map<String,Object>> serviceList = new ArrayList<Map<String,Object>>();
+		serviceList.add(service);
+		when(mockMysqlServiceInfo.getUrl()).thenReturn(serviceJdbcUrl);
 		when(mockEnvironment.getServiceInfos(MysqlServiceInfo.class)).thenReturn(serviceInfos);
-		
+		when(mockEnvironment.getServices()).thenReturn(serviceList);
+
 		ApplicationContext context = getTestApplicationContext(appContextFile);
 		SessionFactoryImpl sessionFactory = (SessionFactoryImpl) context.getBean("sessionFactory", SessionFactory.class);
 		
 		Assert.assertEquals("org.hibernate.dialect.MySQLDialect", sessionFactory.getDialect().toString());
 
+	}
+	
+	private void assertApplicationContextProcessingForPostgresql(String appContextFile) {
+		String serviceJdbcUrl = "jdbc:postgresql://10.20.20.40:5432/pg-1";
+		List<PostgresqlServiceInfo> serviceInfos = new ArrayList<PostgresqlServiceInfo>();
+		serviceInfos.add(mockPostgresqlServiceInfo);
+		Map<String, Object> service = new HashMap<String, Object>();
+		service.put("label", "postgresql-9.0");
+		List<Map<String,Object>> serviceList = new ArrayList<Map<String,Object>>();
+		serviceList.add(service);
+		when(mockPostgresqlServiceInfo.getUrl()).thenReturn(serviceJdbcUrl);
+		when(mockEnvironment.getServiceInfos(PostgresqlServiceInfo.class)).thenReturn(serviceInfos);
+		when(mockEnvironment.getServices()).thenReturn(serviceList);
+
+		ApplicationContext context = getTestApplicationContext(appContextFile);
+		SessionFactoryImpl sessionFactory = (SessionFactoryImpl) context.getBean("sessionFactory", SessionFactory.class);
+		
+		Assert.assertEquals("org.hibernate.dialect.PostgreSQLDialect", sessionFactory.getDialect().toString());
 	}
 	
 	private ApplicationContext getTestApplicationContext(String fileName) {
