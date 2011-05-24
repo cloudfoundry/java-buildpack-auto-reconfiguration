@@ -76,6 +76,20 @@ public class CloudEnvironmentTest {
 		assertEquals(username, info.getUserName());
 		assertEquals(password, info.getPassword());
 	}
+	
+	@Test
+	public void getServiceInfoPostgresql() {
+		when(mockEnvironment.getValue("VCAP_SERVICES"))
+		    .thenReturn(getServicesPayload(new String[]{getPostgreSQLServicePayload("postgresql-1", hostname, port, username, password, "db-123")},
+		    		null,
+		    		null,
+		    		null));
+		PostgresqlServiceInfo info = testRuntime.getServiceInfo("postgresql-1", PostgresqlServiceInfo.class);
+		assertEquals("postgresql-1", info.getServiceName());
+		assertEquals("jdbc:postgresql://" + hostname + ":" + port + "/db-123", info.getUrl());
+		assertEquals(username, info.getUserName());
+		assertEquals(password, info.getPassword());
+	}
 
 	@Test
 	public void getServiceInfoRabbit() {
