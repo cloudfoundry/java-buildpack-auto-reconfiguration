@@ -40,7 +40,7 @@
 			</xsd:attribute>
 		</xsd:complexType>
 	</xsd:element>
-
+	
 	<xsd:element name="rabbit-connection-factory">
 		<xsd:annotation>
 			<xsd:documentation>
