@@ -51,5 +51,4 @@ public abstract class AbstractServiceInfo {
 	public String getPassword() {
 		return password;
 	}
-	
 }
