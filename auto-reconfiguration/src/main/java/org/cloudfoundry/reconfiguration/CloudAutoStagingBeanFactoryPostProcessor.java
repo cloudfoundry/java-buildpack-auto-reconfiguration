@@ -163,6 +163,7 @@ public class CloudAutoStagingBeanFactoryPostProcessor implements BeanFactoryPost
 			return false;
 		} else if (dataSourceList.size() > 1) {
 			logger.log(Level.INFO, "More than 1 (" + dataSourceList.size() + ") database services found. Skipping autostaging");
+			return false;
 		}
 		
 		for(DataSource DS: dataSourceList) {
