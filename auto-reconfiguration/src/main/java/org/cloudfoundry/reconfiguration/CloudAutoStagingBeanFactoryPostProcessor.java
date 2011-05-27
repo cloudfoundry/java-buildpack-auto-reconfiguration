@@ -52,10 +52,10 @@ public class CloudAutoStagingBeanFactoryPostProcessor implements BeanFactoryPost
 	
 	private static final String CLOUDFOUNDRY_PROPERTIES = "META-INF/cloudfoundry.properties";
 	private static final String APP_CLOUD_DATA_SOURCE_NAME = "__appCloudDataSource";
-	private static final String APP_CLOUD_JPA_MySQL_REPLACEMENT_PROPERTIES = "__appCloudJpaMySQLReplacementProperties";
-	private static final String APP_CLOUD_HIBERNATE_MySQL_REPLACEMENT_PROPERTIES = "__appCloudHibernateMySQLReplacementProperties";
-	private static final String APP_CLOUD_JPA_PostgreSQL_REPLACEMENT_PROPERTIES = "__appCloudJpaPostgreSQLReplacementProperties";
-	private static final String APP_CLOUD_HIBERNATE_PostgreSQL_REPLACEMENT_PROPERTIES = "__appCloudHibernatePostgreSQLReplacementProperties";
+	private static final String APP_CLOUD_JPA_MYSQL_REPLACEMENT_PROPERTIES = "__appCloudJpaMySQLReplacementProperties";
+	private static final String APP_CLOUD_HIBERNATE_MYSQL_REPLACEMENT_PROPERTIES = "__appCloudHibernateMySQLReplacementProperties";
+	private static final String APP_CLOUD_JPA_POSTGRESQL_REPLACEMENT_PROPERTIES = "__appCloudJpaPostgreSQLReplacementProperties";
+	private static final String APP_CLOUD_HIBERNATE_POSTGRESQL_REPLACEMENT_PROPERTIES = "__appCloudHibernatePostgreSQLReplacementProperties";
 
 	public void postProcessBeanFactory(ConfigurableListableBeanFactory beanFactory) throws BeansException {
 		if (autoStagingOff()) {
@@ -132,7 +132,7 @@ public class CloudAutoStagingBeanFactoryPostProcessor implements BeanFactoryPost
 			return false;
 		}
 
-		ArrayList<DataSource> DataSourceList = new ArrayList<DataSource>();
+		ArrayList<DataSource> dataSourceList = new ArrayList<DataSource>();
 		for(Map<String, Object> service:  cloudEnvironment.getServices()) {
 			String label = (String) service.get("label");
 			if (label == null) {
@@ -142,7 +142,7 @@ public class CloudAutoStagingBeanFactoryPostProcessor implements BeanFactoryPost
 			if (label.startsWith("postgresql")) {
 				try {
 					PostgresqlServiceCreator postgresqlCreationHelper = new PostgresqlServiceCreator(cloudEnvironment);
-					DataSourceList.add(postgresqlCreationHelper.createSingletonService().service);
+					dataSourceList.add(postgresqlCreationHelper.createSingletonService().service);
 				} catch (CloudServiceException ex) {
 					logger.log(Level.INFO, "Multiple database services found. Skipping autostaging", ex);
 					return false;
@@ -150,7 +150,7 @@ public class CloudAutoStagingBeanFactoryPostProcessor implements BeanFactoryPost
 			} else if (label.startsWith("mysql")) {
 				try {
 					MysqlServiceCreator mysqlCreationHelper = new MysqlServiceCreator(cloudEnvironment);
-					DataSourceList.add(mysqlCreationHelper.createSingletonService().service);
+					dataSourceList.add(mysqlCreationHelper.createSingletonService().service);
 				} catch (CloudServiceException ex) {
 					logger.log(Level.INFO, "Multiple database services found. Skipping autostaging");
 					return false;
@@ -158,7 +158,14 @@ public class CloudAutoStagingBeanFactoryPostProcessor implements BeanFactoryPost
 			}
 		}
 		
-		for(DataSource DS: DataSourceList) {
+		if (dataSourceList.size() == 0) {
+			logger.log(Level.INFO, "No database service found. Skipping autostaging");
+			return false;
+		} else if (dataSourceList.size() > 1) {
+			logger.log(Level.INFO, "More than 1 (" + dataSourceList.size() + ") database services found. Skipping autostaging");
+		}
+		
+		for(DataSource DS: dataSourceList) {
 			defaultListableBeanFactory.registerSingleton(APP_CLOUD_DATA_SOURCE_NAME, DS);
 		}
 		
@@ -183,12 +190,12 @@ public class CloudAutoStagingBeanFactoryPostProcessor implements BeanFactoryPost
 			if (label.startsWith("postgresql"))
 			{
 				processBeanProperties(beanFactory, "org.springframework.orm.jpa.AbstractEntityManagerFactoryBean", 
-						APP_CLOUD_JPA_PostgreSQL_REPLACEMENT_PROPERTIES, "jpaProperties");
+						APP_CLOUD_JPA_POSTGRESQL_REPLACEMENT_PROPERTIES, "jpaProperties");
 			}
 			else if (label.startsWith("mysql"))
 			{
 				processBeanProperties(beanFactory, "org.springframework.orm.jpa.AbstractEntityManagerFactoryBean", 
-						APP_CLOUD_JPA_MySQL_REPLACEMENT_PROPERTIES, "jpaProperties");
+						APP_CLOUD_JPA_MYSQL_REPLACEMENT_PROPERTIES, "jpaProperties");
 			}
 		}
 	}
@@ -201,11 +208,11 @@ public class CloudAutoStagingBeanFactoryPostProcessor implements BeanFactoryPost
 			}
 			if (label.startsWith("postgresql")) {
 				processBeanProperties(beanFactory, "org.springframework.orm.hibernate3.AbstractSessionFactoryBean", 
-						APP_CLOUD_HIBERNATE_PostgreSQL_REPLACEMENT_PROPERTIES, "hibernateProperties");
+						APP_CLOUD_HIBERNATE_POSTGRESQL_REPLACEMENT_PROPERTIES, "hibernateProperties");
 			}
 			else if (label.startsWith("mysql")) {
 				processBeanProperties(beanFactory, "org.springframework.orm.hibernate3.AbstractSessionFactoryBean", 
-						APP_CLOUD_HIBERNATE_MySQL_REPLACEMENT_PROPERTIES, "hibernateProperties");
+						APP_CLOUD_HIBERNATE_MYSQL_REPLACEMENT_PROPERTIES, "hibernateProperties");
 			}
 		}	
 	}
@@ -328,6 +335,7 @@ public class CloudAutoStagingBeanFactoryPostProcessor implements BeanFactoryPost
 
 	}
 	
+	@SuppressWarnings("unchecked")
 	private Properties getMapWrappingBeanProperties(BeanDefinition beanDefinition) {
 		if (beanDefinition.getBeanClassName().equals(PropertiesFactoryBean.class.getName())) {
 			try {
@@ -350,7 +358,6 @@ public class CloudAutoStagingBeanFactoryPostProcessor implements BeanFactoryPost
 				throw new IllegalArgumentException("Unable to process PropertiesFactoryBean", ex);
 			}
 		} else {
-			@SuppressWarnings("unchecked")
 			Map<String,String> sourceMap = (Map<String,String>) beanDefinition.getPropertyValues().getPropertyValue("sourceMap").getValue();
 			return mapToProperties(sourceMap);
 		}
@@ -409,5 +416,4 @@ public class CloudAutoStagingBeanFactoryPostProcessor implements BeanFactoryPost
 		}
 		return false;
 	}
-	
 }

@@ -8,28 +8,13 @@ import java.util.Map;
  * 
  * @author Jiajun Wang
  */
-public class PostgresqlServiceInfo extends AbstractServiceInfo {
-
-	private String database;
-
-	private String userName;
-
+public class PostgresqlServiceInfo extends AbstractDataSourceServiceInfo {
 	public PostgresqlServiceInfo(Map<String, Object> serviceInfo) {
 		super(serviceInfo);
-
-		@SuppressWarnings("unchecked")
-		Map<String, Object> credentials = 
-			(Map<String, Object>) serviceInfo.get("credentials");
-		database = (String) credentials.get("name");
-		
-		userName = (String) credentials.get("user");
 	}
 	
+	@Override
 	public String getUrl() {
-		return "jdbc:postgresql://" + getHost() + ":" + + getPort() + "/" + database;
-	}
-	
-	public String getUserName() {
-		return userName;
+		return "jdbc:postgresql://" + getHost() + ":" + + getPort() + "/" + getDatabase();
 	}
 }

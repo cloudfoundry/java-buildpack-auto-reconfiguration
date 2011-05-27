@@ -10,8 +10,8 @@ import org.cloudfoundry.runtime.service.CloudServicesAutoPopulator;
 import org.cloudfoundry.runtime.service.document.CloudMongoFactoryBean;
 import org.cloudfoundry.runtime.service.keyvalue.CloudRedisConnectionFactoryBean;
 import org.cloudfoundry.runtime.service.messaging.CloudRabbitConnectionFactoryBean;
-import org.cloudfoundry.runtime.service.relational.CloudDataSourceFactoryMySql;
-import org.cloudfoundry.runtime.service.relational.CloudDataSourceFactoryPostgresql;
+import org.cloudfoundry.runtime.service.relational.CloudMySqlDataSourceFactory;
+import org.cloudfoundry.runtime.service.relational.CloudPostgresqlDataSourceFactory;
 import org.springframework.beans.factory.xml.AbstractSimpleBeanDefinitionParser;
 import org.springframework.beans.factory.xml.NamespaceHandlerSupport;
 import org.w3c.dom.Element;
@@ -34,9 +34,9 @@ public class CloudNamespaceHandler extends NamespaceHandlerSupport {
 		this.registerBeanDefinitionParser("mongo",
 				new CloudServiceFactoryParser(CloudMongoFactoryBean.class, MongoServiceInfo.class));
 		this.registerBeanDefinitionParser("data-source-mysql",
-				new CloudServiceFactoryParser(CloudDataSourceFactoryMySql.class, MysqlServiceInfo.class));
-                this.registerBeanDefinitionParser("data-source-postgresql",
-                                new CloudServiceFactoryParser(CloudDataSourceFactoryPostgresql.class, PostgresqlServiceInfo.class));
+				new CloudServiceFactoryParser(CloudMySqlDataSourceFactory.class, MysqlServiceInfo.class));
+        this.registerBeanDefinitionParser("data-source-postgresql",
+                new CloudServiceFactoryParser(CloudPostgresqlDataSourceFactory.class, PostgresqlServiceInfo.class));
 		
 		this.registerBeanDefinitionParser("service-properties", new AbstractSimpleBeanDefinitionParser() {
 			@Override

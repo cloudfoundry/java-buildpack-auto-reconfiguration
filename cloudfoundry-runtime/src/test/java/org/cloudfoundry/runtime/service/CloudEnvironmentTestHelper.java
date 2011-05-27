@@ -47,6 +47,23 @@ public class CloudEnvironmentTestHelper {
 		
 		return payload;
 	}
+	
+	public static String getPostgreSQLServicePayload(String serviceName,
+			String hostname,
+			int port,
+			String user,
+			String password,
+			String name) {
+		String payload = readTestDataFile("test-postgresql-info.jason");
+		payload = payload.replace("$serviceName", serviceName);
+		payload = payload.replace("$hostname", hostname);
+		payload = payload.replace("$port", Integer.toString(port));
+		payload = payload.replace("$user", user);
+		payload = payload.replace("$password", password);
+		payload = payload.replace("$name", name);
+		
+		return payload;
+	}
 
 	public static String getRabbitServicePayload(String serviceName, 
 			String hostname, int port, 

@@ -19,7 +19,7 @@
 	<xsd:element name="data-source-mysql">
 		<xsd:annotation>
 			<xsd:documentation>
-				Locates a DataSource service.
+				Locates a MySQL DataSource service.
 			</xsd:documentation>
 		</xsd:annotation>
 		<xsd:complexType>
@@ -44,7 +44,7 @@
 	<xsd:element name="data-source-postgresql">
 		<xsd:annotation>
 			<xsd:documentation>
-				Locates a DataSource service.
+				Locates a PostgreSQL DataSource service.
 			</xsd:documentation>
 		</xsd:annotation>
 		<xsd:complexType>
