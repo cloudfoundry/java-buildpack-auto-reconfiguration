@@ -54,7 +54,7 @@ public class CloudEnvironmentTestHelper {
 			String user,
 			String password,
 			String name) {
-		String payload = readTestDataFile("test-postgresql-info.jason");
+		String payload = readTestDataFile("test-postgresql-info.json");
 		payload = payload.replace("$serviceName", serviceName);
 		payload = payload.replace("$hostname", hostname);
 		payload = payload.replace("$port", Integer.toString(port));

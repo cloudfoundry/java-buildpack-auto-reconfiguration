@@ -42,6 +42,7 @@ import org.springframework.core.io.support.PropertiesLoaderUtils;
  * Currently, this bean supports auto-staging of {@link DataSource} beans.
  * 
  * @author Ramnivas Laddad
+ * @author Xin Li
  *
  */
 public class CloudAutoStagingBeanFactoryPostProcessor implements BeanFactoryPostProcessor, Ordered {
@@ -164,10 +165,8 @@ public class CloudAutoStagingBeanFactoryPostProcessor implements BeanFactoryPost
 		} else if (dataSourceList.size() > 1) {
 			logger.log(Level.INFO, "More than 1 (" + dataSourceList.size() + ") database services found. Skipping autostaging");
 			return false;
-		}
-		
-		for(DataSource DS: dataSourceList) {
-			defaultListableBeanFactory.registerSingleton(APP_CLOUD_DATA_SOURCE_NAME, DS);
+		} else {
+			defaultListableBeanFactory.registerSingleton(APP_CLOUD_DATA_SOURCE_NAME, dataSourceList.get(0));
 		}
 		
 		for (String dataSourceBeanName : dataSourceBeanNames) {

@@ -11,7 +11,7 @@ import org.springframework.jdbc.datasource.SimpleDriverDataSource;
 
 /**
  * Abstract service creator for data service.
- * @author lixin
+ * @author Ramnivas Laddad
  *
  */
 abstract public class AbstractDataSourceCreator<SI extends AbstractDataSourceServiceInfo> 

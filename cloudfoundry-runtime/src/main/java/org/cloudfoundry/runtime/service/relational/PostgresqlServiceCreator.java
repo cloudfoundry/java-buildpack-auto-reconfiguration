@@ -12,6 +12,7 @@ import org.cloudfoundry.runtime.service.AbstractDataSourceCreator;
 public class PostgresqlServiceCreator extends AbstractDataSourceCreator<PostgresqlServiceInfo> {
 	
 	private static final String POSTGRESQL_DRIVER_CLASS_NAME = "org.postgresql.Driver";
+	private static final String VALIDATION_QUERY = "SELECT 1";
 	
 	@Override
 	public String getDriverClassName() {
@@ -24,6 +25,6 @@ public class PostgresqlServiceCreator extends AbstractDataSourceCreator<Postgres
 
 	@Override
 	public String getValidationQuery() {
-		return null;
+		return VALIDATION_QUERY;
 	}
 }

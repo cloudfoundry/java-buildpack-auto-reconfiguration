@@ -2,6 +2,13 @@ package org.cloudfoundry.runtime.env;
 
 import java.util.Map;
 
+/**
+ * Base information for all database service types
+ * 
+ * @author Xin Li
+ * 
+ **/
+
 abstract public class AbstractDataSourceServiceInfo extends AbstractServiceInfo {
 	private String database;
 	private String userName;

@@ -35,9 +35,8 @@ public class CloudNamespaceHandler extends NamespaceHandlerSupport {
 				new CloudServiceFactoryParser(CloudMongoFactoryBean.class, MongoServiceInfo.class));
 		this.registerBeanDefinitionParser("data-source-mysql",
 				new CloudServiceFactoryParser(CloudMySqlDataSourceFactory.class, MysqlServiceInfo.class));
-        this.registerBeanDefinitionParser("data-source-postgresql",
-                new CloudServiceFactoryParser(CloudPostgresqlDataSourceFactory.class, PostgresqlServiceInfo.class));
-		
+		this.registerBeanDefinitionParser("data-source-postgresql",
+				new CloudServiceFactoryParser(CloudPostgresqlDataSourceFactory.class, PostgresqlServiceInfo.class));
 		this.registerBeanDefinitionParser("service-properties", new AbstractSimpleBeanDefinitionParser() {
 			@Override
 			protected Class<?> getBeanClass(Element element) {
