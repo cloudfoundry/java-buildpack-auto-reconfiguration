@@ -9,7 +9,7 @@ import java.util.Map;
  * @author Ramnivas Laddad
  * 
  */
-public class RedisServiceInfo extends AbstractServiceInfo {
+public class RedisServiceInfo extends BaseServiceInfo {
 	public RedisServiceInfo(Map<String, Object> serviceInfo) {
 		super(serviceInfo);
 	}
