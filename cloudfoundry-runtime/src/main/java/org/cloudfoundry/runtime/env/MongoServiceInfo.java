@@ -9,7 +9,7 @@ import java.util.Map;
  * @author Ramnivas Laddad
  * 
  */
-public class MongoServiceInfo extends AbstractServiceInfo {
+public class MongoServiceInfo extends BaseServiceInfo {
 	public MongoServiceInfo(Map<String, Object> serviceInfo) {
 		super(serviceInfo);
 	}

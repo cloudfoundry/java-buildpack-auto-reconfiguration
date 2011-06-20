@@ -9,7 +9,7 @@ import java.util.Map;
  * @author Ramnivas Laddad
  *
  */
-public class MysqlServiceInfo extends AbstractServiceInfo {
+public class MysqlServiceInfo extends BaseServiceInfo {
 
 	private String database;
 
