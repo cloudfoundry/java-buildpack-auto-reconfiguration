@@ -9,7 +9,9 @@ import java.util.Map;
  * @author Ramnivas Laddad
  *
  */
+
 public class MysqlServiceInfo extends AbstractDataSourceServiceInfo {
+
 	public MysqlServiceInfo(Map<String, Object> serviceInfo) {
 		super(serviceInfo);
 	}

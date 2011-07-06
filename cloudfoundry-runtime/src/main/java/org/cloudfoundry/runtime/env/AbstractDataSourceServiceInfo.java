@@ -9,7 +9,7 @@ import java.util.Map;
  * 
  **/
 
-abstract public class AbstractDataSourceServiceInfo extends AbstractServiceInfo {
+abstract public class AbstractDataSourceServiceInfo extends BaseServiceInfo {
 	private String database;
 	private String userName;
 	
@@ -31,4 +31,5 @@ abstract public class AbstractDataSourceServiceInfo extends AbstractServiceInfo 
 	public String getDatabase() {
 		return database;
 	}
+
 }
