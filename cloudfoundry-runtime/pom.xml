@@ -9,9 +9,23 @@
 	<version>0.7.1.BUILD-SNAPSHOT</version>
 	<properties>
 		<java.version>1.6</java.version>
+		
 		<spring.version>3.0.5.RELEASE</spring.version>
+		
 		<tomcat.version>6.0.29</tomcat.version>
+		
 		<spring.amqp.version>1.0.0.BUILD-SNAPSHOT</spring.amqp.version>
+		<spring-data-redis.version>1.0.0.BUILD-SNAPSHOT</spring-data-redis.version>
+		<spring-data-mongo.version>1.0.0.BUILD-SNAPSHOT</spring-data-mongo.version>
+		
+		<commons-logging.version>1.1.1</commons-logging.version>
+		<jackson.version>1.4.1</jackson.version>
+		<mysql-driver.version>5.0.5</mysql-driver.version>
+		<postgres-driver.version>9.0-801.jdbc4</postgres-driver.version>
+		<common-dbcp.version>1.3</common-dbcp.version>
+		
+		<junit.version>4.8.2</junit.version>
+		<mockito.version>1.8.5</mockito.version>
 	</properties>
 	<dependencies>
 		<!-- Spring -->
@@ -32,7 +46,7 @@
 		<dependency>
 		  <groupId>commons-logging</groupId>
 		  <artifactId>commons-logging</artifactId>
-		  <version>1.1.1</version>
+		  <version>${commons-logging.version}</version>
 		  <scope>provided</scope>
 		</dependency>
 
@@ -46,25 +60,25 @@
 		<dependency>
 			<groupId>org.codehaus.jackson</groupId>
 			<artifactId>jackson-core-asl</artifactId>
-			<version>1.4.1</version>
+			<version>${jackson.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>org.codehaus.jackson</groupId>
 			<artifactId>jackson-mapper-asl</artifactId>
-			<version>1.4.1</version>
+			<version>${jackson.version}</version>
 		</dependency>
 
 		<!-- services -->
 		<dependency>
 			<groupId>mysql</groupId>
 			<artifactId>mysql-connector-java</artifactId>
-			<version>5.0.5</version>
+			<version>${mysql-driver.version}</version>
 			<scope>provided</scope>
 		</dependency>
 		<dependency>
 			<groupId>postgresql</groupId>
 			<artifactId>postgresql</artifactId>
-			<version>9.0-801.jdbc4</version>
+			<version>${postgres-driver.version}</version>
 			<scope>provided</scope>
 		</dependency>
 		<dependency>
@@ -83,14 +97,14 @@
 		<dependency>
 			<groupId>org.springframework.data</groupId>
 			<artifactId>spring-data-redis</artifactId>
-			<version>1.0.0.BUILD-SNAPSHOT</version>
+			<version>${spring-data-redis.version}</version>
 			<scope>provided</scope>
 		</dependency>
 
 		<dependency>
 			<groupId>org.springframework.data</groupId>
 			<artifactId>spring-data-mongodb</artifactId>
-			<version>1.0.0.BUILD-SNAPSHOT</version>
+			<version>${spring-data-mongo.version}</version>
 			<scope>provided</scope>
 		</dependency>
 
@@ -104,8 +118,8 @@
     <dependency>
         <groupId>commons-dbcp</groupId>
         <artifactId>commons-dbcp</artifactId>
-        <version>1.3</version>
-				<scope>provided</scope>
+        <version>${common-dbcp.version}</version>
+        <scope>provided</scope>
         <exclusions>
             <exclusion>
                 <groupId>commons-logging</groupId>
@@ -130,25 +144,25 @@
         </exclusions>
     </dependency>
 
-		<!-- Test -->
-		<dependency>
-			<groupId>junit</groupId>
-			<artifactId>junit</artifactId>
-			<version>4.8.2</version>
-			<scope>test</scope>
-		</dependency>
-		<dependency>
-			<groupId>org.mockito</groupId>
-			<artifactId>mockito-all</artifactId>
-			<version>1.8.5</version>
-			<scope>test</scope>
-		</dependency>
-		<dependency>
-			<groupId>org.springframework</groupId>
-			<artifactId>spring-test</artifactId>
-			<version>${spring.version}</version>
-			<scope>test</scope>
-		</dependency>
+	<!-- Test -->
+	<dependency>
+		<groupId>junit</groupId>
+		<artifactId>junit</artifactId>
+		<version>${junit.version}</version>
+		<scope>test</scope>
+	</dependency>
+	<dependency>
+		<groupId>org.mockito</groupId>
+		<artifactId>mockito-all</artifactId>
+		<version>${mockito.version}</version>
+		<scope>test</scope>
+	</dependency>
+	<dependency>
+		<groupId>org.springframework</groupId>
+		<artifactId>spring-test</artifactId>
+		<version>${spring.version}</version>
+		<scope>test</scope>
+	</dependency>
 
 	</dependencies>
 	<repositories>
