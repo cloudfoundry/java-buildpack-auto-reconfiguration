@@ -55,7 +55,7 @@ public class CloudEnvironmentTest {
 		when(mockEnvironment.getValue("VCAP_SERVICES"))
 			.thenReturn(getServicesPayload(null,
 										   null,
-										   new String[]{getMongoServicePayload(serviceName, hostname, port, password, "m1")},
+										   new String[]{getMongoServicePayload(serviceName, hostname, port, username, password, "m1")},
 										   null));
 		MongoServiceInfo info = testRuntime.getServiceInfo(serviceName, MongoServiceInfo.class);
 		assertEquals(serviceName, info.getServiceName());

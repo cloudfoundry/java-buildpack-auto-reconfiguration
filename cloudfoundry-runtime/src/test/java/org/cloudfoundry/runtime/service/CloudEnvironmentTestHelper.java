@@ -23,11 +23,12 @@ public class CloudEnvironmentTestHelper {
 
 	public static String getMongoServicePayload(String serviceName, 
 			String hostname,
-			int port, String password, String name) {
+			int port, String username, String password, String name) {
 		String payload = readTestDataFile("test-mongodb-info.json");
 		payload = payload.replace("$serviceName", serviceName);
 		payload = payload.replace("$hostname", hostname);
 		payload = payload.replace("$port", Integer.toString(port));
+		payload = payload.replace("$username", username);
 		payload = payload.replace("$password", password);
 		payload = payload.replace("$name", name);
 		

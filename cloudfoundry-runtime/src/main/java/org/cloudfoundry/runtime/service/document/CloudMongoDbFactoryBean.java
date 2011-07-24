@@ -3,6 +3,7 @@ package org.cloudfoundry.runtime.service.document;
 import org.cloudfoundry.runtime.env.CloudEnvironment;
 import org.cloudfoundry.runtime.env.MongoServiceInfo;
 import org.cloudfoundry.runtime.service.AbstractCloudServiceFactory;
+import org.springframework.data.document.mongodb.MongoDbFactory;
 
 import com.mongodb.Mongo;
 
@@ -12,12 +13,12 @@ import com.mongodb.Mongo;
  * @author Ramnivas Laddad
  *
  */
-public class CloudMongoFactoryBean extends AbstractCloudServiceFactory<Mongo, MongoServiceInfo> {
-	public CloudMongoFactoryBean(CloudEnvironment cloudEnvironment) {
+public class CloudMongoDbFactoryBean extends AbstractCloudServiceFactory<MongoDbFactory, MongoServiceInfo> {
+	public CloudMongoDbFactoryBean(CloudEnvironment cloudEnvironment) {
 		super(new MongoServiceCreator(cloudEnvironment));
 	}
 
-	public CloudMongoFactoryBean() {
+	public CloudMongoDbFactoryBean() {
 		super(new MongoServiceCreator(new CloudEnvironment()));
 	}
 

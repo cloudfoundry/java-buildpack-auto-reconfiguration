@@ -1,6 +1,8 @@
 package org.cloudfoundry.runtime.service.document;
 
 import static org.mockito.Mockito.when;
+import static org.junit.Assert.*;
+import static org.springframework.test.util.ReflectionTestUtils.*;
 
 import org.cloudfoundry.runtime.env.CloudEnvironment;
 import org.cloudfoundry.runtime.env.MongoServiceInfo;
@@ -8,16 +10,17 @@ import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
+import org.springframework.data.document.mongodb.MongoDbFactory;
 
-public class CloudMongoFactoryTest {
+public class CloudMongoDbFactoryTest {
 	@Mock private CloudEnvironment mockRuntime;
 	@Mock private MongoServiceInfo mockServiceInfo;
-	private CloudMongoFactoryBean factory;
+	private CloudMongoDbFactoryBean factory;
 
 	@Before
 	public void setup() {
 		MockitoAnnotations.initMocks(this);
-		factory = new CloudMongoFactoryBean(mockRuntime);
+		factory = new CloudMongoDbFactoryBean(mockRuntime);
 	}
 	
 	@Test
@@ -26,18 +29,22 @@ public class CloudMongoFactoryTest {
 			.thenReturn(mockServiceInfo);
 		when(mockServiceInfo.getHost()).thenReturn("10.20.30.40");
 		when(mockServiceInfo.getPort()).thenReturn(10000);
+		
+		when(mockServiceInfo.getServiceName()).thenReturn("mongo-1");
+		when(mockServiceInfo.getDatabase()).thenReturn("mongo-database-1");
+		
+		when(mockServiceInfo.getUserName()).thenReturn("myuser");
 		when(mockServiceInfo.getPassword()).thenReturn("mypass");
 		
 		factory.setServiceName("mongo-1");
 		
+		factory.afterPropertiesSet();
+		MongoDbFactory cloudMongoDbFactory = factory.getObject();
+		assertNotNull(cloudMongoDbFactory);
+		assertEquals("mongo-database-1", getField(cloudMongoDbFactory, "databaseName"));
+		assertEquals("myuser", getField(cloudMongoDbFactory, "username"));
+		assertEquals("mypass", getField(cloudMongoDbFactory, "password"));
 		// TODO: Need a better way to avoid Mongo trying to connect
-		
-//		factory.afterPropertiesSet();
-//		Mongo cloudMongo = factory.getObject();
-		
-//		assertEquals("10.20.30.40", cloudMongo.getHostName());
-//		assertEquals(10000, cloudMongo.getPort());
-//		assertEquals("mypass", cloudMongo.getPassword());
 	}
 
 }
