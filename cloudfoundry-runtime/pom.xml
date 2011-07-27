@@ -14,9 +14,9 @@
 		
 		<tomcat.version>6.0.29</tomcat.version>
 		
-		<spring.amqp.version>1.0.0.BUILD-SNAPSHOT</spring.amqp.version>
-		<spring-data-redis.version>1.0.0.BUILD-SNAPSHOT</spring-data-redis.version>
-		<spring-data-mongo.version>1.0.0.BUILD-SNAPSHOT</spring-data-mongo.version>
+		<spring.amqp.version>1.0.0.RC2</spring.amqp.version>
+		<spring-data-redis.version>1.0.0.M4</spring-data-redis.version>
+		<spring-data-mongo.version>1.0.0.M3</spring-data-mongo.version>
 		
 		<commons-logging.version>1.1.1</commons-logging.version>
 		<jackson.version>1.4.1</jackson.version>
