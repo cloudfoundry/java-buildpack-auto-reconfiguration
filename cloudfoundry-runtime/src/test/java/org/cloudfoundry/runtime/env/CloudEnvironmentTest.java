@@ -109,6 +109,25 @@ public class CloudEnvironmentTest {
 	}
 
 	@Test
+	public void getServiceSRSInfoRabbit() {
+		String serviceName = "rabbit-1";
+		String url = "amqp://dcovwigr:zm74gzd07pgmcj7Z@172.30.48.108:32937/qppdyysc";
+
+		when(mockEnvironment.getValue("VCAP_SERVICES"))
+			.thenReturn(getServicesPayload(null,
+										   null,
+										   null,
+										   new String[]{getRabbitSRSServicePayload(serviceName, url)}));
+		RabbitServiceInfo info = testRuntime.getServiceInfo(serviceName, RabbitServiceInfo.class);
+		assertEquals(serviceName, info.getServiceName());
+		assertEquals("dcovwigr", info.getUserName());
+		assertEquals("zm74gzd07pgmcj7Z", info.getPassword());
+		assertEquals("172.30.48.108", info.getHost());
+		assertEquals(32937, info.getPort());
+		assertEquals("qppdyysc", info.getVirtualHost());
+	}
+
+	@Test
 	public void getCloudApiUri() {
 		String appInfo = getApplicationInstanceInfo("\"dashboard.vcloudlabs.com\",\"foo.vcloudlabs.com\"");
 		when(mockEnvironment.getValue("VCAP_APPLICATION"))
