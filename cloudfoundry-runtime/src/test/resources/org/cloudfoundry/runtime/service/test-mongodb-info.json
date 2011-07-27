@@ -6,7 +6,9 @@
             "node_id": "mongodb_node_5",
             "hostname": "$hostname",
             "port": $port,
+            "username": "$username",
             "password": "$password",
-            "name": "$name"
+            "name": "$name",
+            "db": "$db"
         }
 }

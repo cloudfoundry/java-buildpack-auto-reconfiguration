@@ -91,7 +91,7 @@
 		</xsd:complexType>
 	</xsd:element>
 
-	<xsd:element name="mongo">
+	<xsd:element name="mongo-db-factory">
 		<xsd:annotation>
 			<xsd:documentation>
 				Locates a Mongo service.
@@ -101,7 +101,7 @@
 			<xsd:attribute name="id" type="xsd:string" use="optional">
 				<xsd:annotation>
 					<xsd:documentation>
-						The id for this Mongo instance.
+						The id for this MongoDbFactory instance.
 						If not provided, the service name will be used as a fallback.
 					</xsd:documentation>
 				</xsd:annotation>

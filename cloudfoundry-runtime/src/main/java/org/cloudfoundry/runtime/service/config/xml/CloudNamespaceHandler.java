@@ -6,7 +6,7 @@ import org.cloudfoundry.runtime.env.MysqlServiceInfo;
 import org.cloudfoundry.runtime.env.RabbitServiceInfo;
 import org.cloudfoundry.runtime.env.RedisServiceInfo;
 import org.cloudfoundry.runtime.service.CloudServicesAutoPopulator;
-import org.cloudfoundry.runtime.service.document.CloudMongoFactoryBean;
+import org.cloudfoundry.runtime.service.document.CloudMongoDbFactoryBean;
 import org.cloudfoundry.runtime.service.keyvalue.CloudRedisConnectionFactoryBean;
 import org.cloudfoundry.runtime.service.messaging.CloudRabbitConnectionFactoryBean;
 import org.cloudfoundry.runtime.service.relational.CloudMySqlDataSourceFactory;
@@ -29,8 +29,8 @@ public class CloudNamespaceHandler extends NamespaceHandlerSupport {
 				new CloudServiceFactoryParser(CloudRabbitConnectionFactoryBean.class, RabbitServiceInfo.class));
 		this.registerBeanDefinitionParser("redis-connection-factory",
 				new CloudServiceFactoryParser(CloudRedisConnectionFactoryBean.class, RedisServiceInfo.class));
-		this.registerBeanDefinitionParser("mongo",
-				new CloudServiceFactoryParser(CloudMongoFactoryBean.class, MongoServiceInfo.class));
+		this.registerBeanDefinitionParser("mongo-db-factory",
+				new CloudServiceFactoryParser(CloudMongoDbFactoryBean.class, MongoServiceInfo.class));
 		this.registerBeanDefinitionParser("data-source",
 				new CloudServiceFactoryParser(CloudMySqlDataSourceFactory.class, MysqlServiceInfo.class));
 		

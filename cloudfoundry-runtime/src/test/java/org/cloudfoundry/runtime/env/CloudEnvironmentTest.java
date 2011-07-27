@@ -51,16 +51,20 @@ public class CloudEnvironmentTest {
 	@Test
 	public void getServiceInfoMongo() {
 		String serviceName = "mongo-1";
+		String database = "mongo-db";
 		
 		when(mockEnvironment.getValue("VCAP_SERVICES"))
 			.thenReturn(getServicesPayload(null,
 										   null,
-										   new String[]{getMongoServicePayload(serviceName, hostname, port, password, "m1")},
+										   new String[]{getMongoServicePayload(serviceName, hostname, port, username, password, database)},
 										   null));
 		MongoServiceInfo info = testRuntime.getServiceInfo(serviceName, MongoServiceInfo.class);
 		assertEquals(serviceName, info.getServiceName());
 		assertEquals(hostname, info.getHost());
 		assertEquals(port, info.getPort());
+		assertEquals(hostname, info.getHost());
+		assertEquals(password, info.getPassword());
+		assertEquals(database, info.getDatabase());
 	}
 
 	@Test

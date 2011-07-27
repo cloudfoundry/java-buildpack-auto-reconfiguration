@@ -12,12 +12,12 @@ import java.util.Map;
 abstract public class AbstractDataSourceServiceInfo extends BaseServiceInfo {
 	private String database;
 	private String userName;
-	
+
 	public AbstractDataSourceServiceInfo(Map<String, Object> serviceInfo) {
 		super(serviceInfo);
+		
 		@SuppressWarnings("unchecked")
-		Map<String, Object> credentials = 
-			(Map<String, Object>) serviceInfo.get("credentials");
+		Map<String, Object> credentials = (Map<String, Object>) serviceInfo.get("credentials");
 		database = (String) credentials.get("name");
 		userName = (String) credentials.get("user");
 	}
@@ -27,9 +27,8 @@ abstract public class AbstractDataSourceServiceInfo extends BaseServiceInfo {
 	public String getUserName() {
 		return userName;
 	}
-	
+
 	public String getDatabase() {
 		return database;
 	}
-
 }
