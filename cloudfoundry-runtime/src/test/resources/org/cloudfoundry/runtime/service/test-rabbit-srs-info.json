@@ -1,0 +1,9 @@
+{
+	"name":"$serviceName",
+	"label":"rabbitmq-srs-2.4.1",
+	"plan":"free",
+	"tags":["rabbitmq-srs"],
+	"credentials":{
+		"url":"$url"
+	}
+}

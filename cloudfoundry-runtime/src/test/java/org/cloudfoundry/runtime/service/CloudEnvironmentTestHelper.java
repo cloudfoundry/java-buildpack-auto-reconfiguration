@@ -82,6 +82,14 @@ public class CloudEnvironmentTestHelper {
 		return payload;
 	}
 
+	public static String getRabbitSRSServicePayload(String serviceName, String url) {
+		String payload = readTestDataFile("test-rabbit-srs-info.json");
+		payload = payload.replace("$serviceName", serviceName);
+		payload = payload.replace("$url", url);
+
+		return payload;
+	}
+
 	public static String getServicesPayload(String[] mysqlServicePayloads, 
 			String[] redisServicePayloads, 
 			String[] mongodbServicePayloads,
