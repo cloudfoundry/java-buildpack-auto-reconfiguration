@@ -22,22 +22,22 @@ public class CloudMongoDbFactoryTest {
 		MockitoAnnotations.initMocks(this);
 		factory = new CloudMongoDbFactoryBean(mockRuntime);
 	}
-	
+
 	@Test
 	public void cloudMongoCreation() throws Exception {
 		when(mockRuntime.getServiceInfo("mongo-1", MongoServiceInfo.class))
 			.thenReturn(mockServiceInfo);
 		when(mockServiceInfo.getHost()).thenReturn("10.20.30.40");
 		when(mockServiceInfo.getPort()).thenReturn(10000);
-		
+
 		when(mockServiceInfo.getServiceName()).thenReturn("mongo-1");
 		when(mockServiceInfo.getDatabase()).thenReturn("mongo-database-1");
-		
+
 		when(mockServiceInfo.getUserName()).thenReturn("myuser");
 		when(mockServiceInfo.getPassword()).thenReturn("mypass");
-		
+
 		factory.setServiceName("mongo-1");
-		
+
 		factory.afterPropertiesSet();
 		MongoDbFactory cloudMongoDbFactory = factory.getObject();
 		assertNotNull(cloudMongoDbFactory);
