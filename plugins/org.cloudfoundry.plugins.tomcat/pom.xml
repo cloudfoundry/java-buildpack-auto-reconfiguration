@@ -1,10 +1,24 @@
 <project>
     <modelVersion>4.0.0</modelVersion>
-    <groupId>com.vmware.appcloud</groupId>
-    <artifactId>TomcatStartupListener</artifactId>
+    <groupId>org.cloudfoundry.plugins</groupId>
+    <artifactId>org.cloudfoundry.plugins.tomcat</artifactId>
+    <name>Tomcat Lifecycle Listener</name>
     <version>1.0</version>
     <packaging>jar</packaging>
+
+    <parent>
+        <groupId>org.cloudfoundry.plugins</groupId>
+        <artifactId>org.cloudfoundry.plugins</artifactId>
+        <version>1.0</version>
+    </parent>
+
     <dependencies>
+        <dependency>
+            <groupId>com.vmware.appcloud</groupId>
+            <artifactId>Common</artifactId>
+            <version>1.0</version>
+            <scope>compile</scope>
+        </dependency>
         <dependency>
             <groupId>org.apache.tomcat</groupId>
             <artifactId>catalina</artifactId>
@@ -18,6 +32,7 @@
             <scope>provided</scope>
         </dependency>
     </dependencies>
+
     <build>
         <plugins>
             <plugin>
@@ -29,6 +44,40 @@
                     <target>1.5</target>
                 </configuration>
             </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-dependency-plugin</artifactId>
+                <version>2.3</version>
+                <executions>
+                    <execution>
+                        <id>unpack-common-files</id>
+                        <phase>validate</phase>
+                        <goals>
+                            <goal>unpack</goal>
+                        </goals>
+                        <configuration>
+                            <artifactItems>
+                                <artifactItem>
+                                    <groupId>org.cloudfoundry.plugins</groupId>
+                                    <artifactId>org.cloudfoundry.plugins.common</artifactId>
+                                    <version>1.0</version>
+                                    <outputDirectory>${project.build.directory}</outputDirectory>
+                                </artifactItem>
+                            </artifactItems>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
         </plugins>
+
+        <resources>
+            <resource>
+                <directory>${project.build.directory}</directory>
+                <includes>
+                    <include>org/**</include>
+                </includes>
+            </resource>
+        </resources>
+
     </build>
 </project>
