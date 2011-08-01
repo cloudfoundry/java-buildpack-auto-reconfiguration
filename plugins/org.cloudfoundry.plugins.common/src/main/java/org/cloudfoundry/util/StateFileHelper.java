@@ -43,14 +43,14 @@ public class StateFileHelper {
             return null;
 
         } catch (IOException ioe) {
-            // ignore the exception - state file will be closed in finally
+            ioe.printStackTrace();
             return null;
         } finally {
             if (reader != null) {
                 try {
                     reader.close();
                 } catch (IOException e) {
-                    // nothing we can do
+                    e.printStackTrace();
                 }
             }
         }
