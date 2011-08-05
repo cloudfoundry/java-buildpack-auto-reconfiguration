@@ -3,247 +3,25 @@
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>org.cloudfoundry</groupId>
-	<artifactId>auto-reconfiguration</artifactId>
-	<packaging>jar</packaging>
-	<name>auto-reconfiguration</name>
+	<artifactId>auto-reconfiguration-root</artifactId>
+	<packaging>pom</packaging>
+	<name>auto-reconfiguration-root</name>
 	<version>0.6.0-BUILD-SNAPSHOT</version>
-	<properties>
-		<java.version>1.6</java.version>
-		<spring.version>2.5.6</spring.version>
-	</properties>
-	<dependencies>
-		<dependency>
-			<groupId>org.cloudfoundry</groupId>
-			<artifactId>cloudfoundry-runtime</artifactId>
-			<version>0.7.0-BUILD-SNAPSHOT</version>
-		</dependency>
-		<!-- Spring -->
-		<dependency>
-			<groupId>org.springframework</groupId>
-			<artifactId>spring-context</artifactId>
-			<version>${spring.version}</version>
-			<exclusions>
-				<!-- Exclude Commons Logging in favor of SLF4j -->
-				<exclusion>
-					<groupId>commons-logging</groupId>
-					<artifactId>commons-logging</artifactId>
-				</exclusion>
-			</exclusions>
-			<scope>provided</scope>
-		</dependency>
+	
+	<modules>
+		<module>auto-reconfiguration-core</module>
+		<module>auto-reconfiguration-dist</module>
+	</modules>
 
-		<dependency>
-			<groupId>commons-logging</groupId>
-			<artifactId>commons-logging</artifactId>
-			<version>1.1.1</version>
-			<scope>provided</scope>
-		</dependency>
-
-		<dependency>
-			<groupId>org.springframework</groupId>
-			<artifactId>spring-orm</artifactId>
-			<version>${spring.version}</version>
-			<scope>provided</scope>
-		</dependency>
-
-		<!-- Test -->
-		<dependency>
-			<groupId>junit</groupId>
-			<artifactId>junit</artifactId>
-			<version>4.8.2</version>
-			<scope>test</scope>
-		</dependency>
-		<dependency>
-			<groupId>org.mockito</groupId>
-			<artifactId>mockito-all</artifactId>
-			<version>1.8.5</version>
-			<scope>test</scope>
-		</dependency>
-		<dependency>
-			<groupId>mysql</groupId>
-			<artifactId>mysql-connector-java</artifactId>
-			<version>5.0.5</version>
-			<scope>test</scope>
-		</dependency>
-		<dependency>
-			<groupId>postgresql</groupId>
-			<artifactId>postgresql</artifactId>
-			<version>9.0-801.jdbc4</version>
-			<scope>test</scope>
-		</dependency>
-		<dependency>
-			<groupId>log4j</groupId>
-			<artifactId>log4j</artifactId>
-			<version>1.2.14</version>
-			<scope>test</scope>
-		</dependency>
-		<dependency>
-			<groupId>org.slf4j</groupId>
-			<artifactId>slf4j-log4j12</artifactId>
-			<version>1.6.1</version>
-			<scope>runtime</scope>
-		</dependency>
-		<dependency>
-			<groupId>org.slf4j</groupId>
-			<artifactId>jcl-over-slf4j</artifactId>
-			<version>1.6.1</version>
-			<scope>test</scope>
-		</dependency>
-		<dependency>
-			<groupId>javax.transaction</groupId>
-			<artifactId>transaction-api</artifactId>
-			<version>1.1</version>
-			<scope>test</scope>
-		</dependency>
-
-    <dependency>
-       <groupId>javax.persistence</groupId>
-       <artifactId>persistence-api</artifactId>
-       <version>1.0</version>
-       <scope>provided</scope>
-    </dependency>
-    <dependency>
-       <groupId>org.hibernate</groupId>
-       <artifactId>hibernate-entitymanager</artifactId>
-       <version>3.4.0.GA</version>
-       <exclusions>
- 				   <exclusion>
-					    <groupId>commons-logging</groupId>
-					    <artifactId>commons-logging</artifactId>
-				   </exclusion>
-        </exclusions>
-       <scope>provided</scope>
-	  </dependency>
-    
-    <dependency>
-       <groupId>org.hibernate</groupId>
-       <artifactId>hibernate-annotations</artifactId>
-       <version>3.4.0.GA</version>
-       <exclusions>
- 				   <exclusion>
-					    <groupId>commons-logging</groupId>
-					    <artifactId>commons-logging</artifactId>
-				   </exclusion>
-       </exclusions>
-       <scope>provided</scope>
-    </dependency>                
-		<dependency>
-			<groupId>org.springframework</groupId>
-			<artifactId>spring-jdbc</artifactId>
-			<version>${spring.version}</version>
-			<scope>test</scope>
-		</dependency>
-	<dependency>
-	  <groupId>javax.servlet</groupId>
-	  <artifactId>servlet-api</artifactId>
-	  <version>2.5</version>
-	  <scope>provided</scope>
-	</dependency>
-	</dependencies>
-	<repositories>
-		<!-- For testing against latest Spring snapshots -->
-		<repository>
-			<id>org.springframework.maven.snapshot</id>
-			<name>Spring Maven Snapshot Repository</name>
-			<url>http://maven.springframework.org/snapshot</url>
-			<releases>
-				<enabled>false</enabled>
-			</releases>
-			<snapshots>
-				<enabled>true</enabled>
-			</snapshots>
-		</repository>
-		<!-- For developing against latest Spring milestones -->
-		<repository>
-			<id>org.springframework.maven.milestone</id>
-			<name>Spring Maven Milestone Repository</name>
-			<url>http://maven.springframework.org/milestone</url>
-			<snapshots>
-				<enabled>false</enabled>
-			</snapshots>
-		</repository>
-		<repository>
-			<id>spring-maven-snapshot</id>
-			<snapshots>
-				<enabled>true</enabled>
-			</snapshots>
-			<name>Springframework Maven SNAPSHOT Repository</name>
-			<url>http://maven.springframework.org/snapshot</url>
-		</repository>
-	  <repository>
-       <id>JBoss Repo</id>
-       <url>https://repository.jboss.org/nexus/content/repositories/releases</url>
-       <name>JBoss Repo</name>
-    </repository>
-	</repositories>
 	<build>
 		<plugins>
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-compiler-plugin</artifactId>
+				<artifactId>maven-deploy-plugin</artifactId>
 				<configuration>
-					<source>${java.version}</source>
-					<target>${java.version}</target>
+					<skip>true</skip>
 				</configuration>
 			</plugin>
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-dependency-plugin</artifactId>
-				<executions>
-					<execution>
-						<id>install</id>
-						<phase>install</phase>
-						<goals>
-							<goal>sources</goal>
-						</goals>
-					</execution>
-				</executions>
-			</plugin>
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-surefire-plugin</artifactId>
-				<configuration>
-					<junitArtifactName>junit:junit</junitArtifactName>
-				</configuration>
-			</plugin>
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-shade-plugin</artifactId>
-				<version>1.4</version>
-				<executions>
-					<execution>
-						<phase>package</phase>
-						<goals>
-							<goal>shade</goal>
-						</goals>
-						<configuration>
-              <artifactSet>
-                <excludes>
-                  <exclude>org.slf4j:*</exclude>
-                  <exclude>org.apache.log4j:*</exclude>
-                </excludes>
-              </artifactSet>
-							<filters>
-							  <filter>
-							    <artifact>org.cloudfoundry:cloudfoundry-runtime</artifact>
-							    <excludes>
-							      <exclude>META-INF/**</exclude>
-							      <exclude>**/*.xsd</exclude>
-							      <exclude>**/*.gif</exclude>
-							    </excludes>
-							  </filter>
-							</filters>
-							<relocations>
-								<relocation>
-									<pattern>org.cloudfoundry.runtime</pattern>
-									<shadedPattern>org.cloudfoundry.org.cloudfoundry.runtime</shadedPattern>
-								</relocation>
-							</relocations>
-						</configuration>
-					</execution>
-				</executions>
-			</plugin>
-			
 		</plugins>
 	</build>
 </project>
