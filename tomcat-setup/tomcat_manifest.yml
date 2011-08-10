@@ -1,11 +1,11 @@
 ---
-version: 6.0.26
-download_uri: http://archive.apache.org/dist/tomcat/tomcat-6/v6.0.26/bin/apache-tomcat-6.0.26.tar.gz
+version: 6.0.32
+download_uri: http://archive.apache.org/dist/tomcat/tomcat-6/v6.0.32/bin/apache-tomcat-6.0.32.tar.gz
 
 replace_files: [conf/server.xml, conf/context.xml]
 clear_dirs: [logs, temp, webapps, work]
 remove_files: [NOTICE, RELEASE-NOTES, RUNNING.txt, LICENSE]
-add_jars: [lib/mysql-connector-java-5.1.12-bin.jar, lib/TomcatStartupListener-1.0.jar]
+add_jars: [lib/mysql-connector-java-5.1.12-bin.jar, lib/postgresql-9.0-801.jdbc4.jar, lib/TomcatStartupListener-1.0.jar]
 
 # Assumes that the 'vcap-java' manifests itself as a vcap submodule at 'vcap/java'
 destination: ../../cloud_controller/staging/java_common/resources/tomcat.zip
