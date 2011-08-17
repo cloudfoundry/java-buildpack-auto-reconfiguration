@@ -4,59 +4,59 @@ require 'digest/md5'
 require 'tmpdir'
 require 'pp'
 
-update_steps = [#'tomcat:download',
-                #'tomcat:prepare',
-                'tomcat:install']
+update_steps = [#'virgo:download',
+                #'virgo:prepare',
+                'virgo:install']
 
-desc "Update Tomcat installation used by Cloud Foundry"
+desc "Update Virgo installation used by Cloud Foundry"
 task :update => update_steps
 
-namespace "tomcat" do
-  desc "Download Tomcat from an Apache mirror"
+namespace "virgo" do
+  desc "Download Virgo from an Eclipse mirror"
   task :download do
-    puts "\nStarting Tomcat download"
-    manifest_file = "tomcat_manifest.yml"
+    puts "\nStarting Virgo download"
+    manifest_file = "virgo_manifest.yml"
     @manifest = YAML.load_file(manifest_file)
-    @download_dest = File.join(Dir.tmpdir, "tomcat-v#{@manifest['version']}")
-    puts "\tDownloading Tomcat v#{@manifest['version']} from '#{@manifest['download_uri']}' to '#{@download_dest}'"
+    @download_dest = File.join(Dir.tmpdir, "virgo-tomcat-server-#{@manifest['version']}")
+    @download_file = @manifest['download_uri'].split("/").last
+    puts "\tDownloading Virgo v#{@manifest['version']} from '#{@manifest['download_uri']}' to '#{@download_dest}'"
     if File.exists?(@download_dest)
       FileUtils.remove_dir(@download_dest)
     end
     FileUtils.mkdir_p(@download_dest)
     Dir.chdir(@download_dest) do
-      system "wget -q #{@manifest['download_uri']}"
-      system "wget -q #{@manifest['download_uri']}.md5"
-      @download_file = @manifest['download_uri'].split("/").last
+      system "wget -q -O #{@download_file} #{@manifest['download_uri']}"
+      system "wget -q -O #{@download_file}.md5 #{@manifest['md5_uri']}"
       verify_download
     end
-    puts "Tomcat download completed"
+    puts "Virgo download completed"
   end
 
-  desc "Prepare Tomcat for CloudFoundry"
-  task :prepare => 'tomcat:download' do
-    puts "\nPreparing Tomcat"
+  desc "Prepare Virgo for CloudFoundry"
+  task :prepare => 'virgo:download' do
+    puts "\nPreparing Virgo"
     Dir.chdir(@download_dest) do
-      system "tar xzf #{@download_file}"
-      exp_dir = `tar ztf "#{@download_file}" | cut -f1 -d\/ | uniq`.strip
-      tomcat_dir = "tomcat"
-      FileUtils.mv exp_dir, tomcat_dir
-      @targetdir = File.join(@download_dest, tomcat_dir)
+      system "unzip -qq #{@download_file}"
+      exp_dir = `find . -type d ! -name . | cut -f2 -d\/ | uniq`.split("\n").first
+      virgo_dir = "virgo"
+      FileUtils.mv exp_dir, virgo_dir
+      @targetdir = File.join(@download_dest, virgo_dir)
     end
     handle_replace_files
     handle_clear_dirs
-    handle_remove_files
+    handle_remove_files_and_dirs
     handle_add_jars
     Dir.chdir(@download_dest) do
-      system "zip -q -r tomcat.zip tomcat"
+      system "zip -q -r virgo.zip virgo"
     end
-    puts "Tomcat prepare completed"
+    puts "Virgo prepare completed"
   end
 
-  desc "Copying Tomcat into CloudFoundry"
-  task :install => 'tomcat:prepare' do
-    puts "\nCopying Tomcat"
-      FileUtils.copy(File.join(@download_dest, "tomcat.zip"), @manifest['destination'])
-    puts "Tomcat copy completed\n"
+  desc "Copying Virgo into CloudFoundry"
+  task :install => 'virgo:prepare' do
+    puts "\nCopying Virgo"
+      FileUtils.copy(File.join(@download_dest, "virgo.zip"), @manifest['destination'])
+    puts "Virgo copy completed\n"
   end
 
   def verify_download
@@ -86,11 +86,11 @@ namespace "tomcat" do
     end
   end
 
-  def handle_remove_files
+  def handle_remove_files_and_dirs
     @manifest['remove_files'].each do |file|
       target_file = File.join(@targetdir, file)
       puts "\tRemoving '#{target_file}'"
-      FileUtils.rm target_file
+      FileUtils.rm_r target_file
     end
   end
 
