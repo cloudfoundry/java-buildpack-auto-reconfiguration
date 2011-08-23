@@ -1,11 +1,15 @@
 package org.cloudfoundry.util;
 
 import java.io.*;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 public class StateFileHelper {
 
     public static final String APPCLOUD_STATE_FILE_CONFIGURATION = "droplet.yaml";
     public static final String STATE_FILE_KEY = "state_file";
+
+    private static final Logger LOGGER = Logger.getLogger(StateFileHelper.class.getName());
 
     /**
      * Returns the state file location
@@ -20,7 +24,7 @@ public class StateFileHelper {
             StringBuilder relativePath = new StringBuilder().
                     append(engineBaseDir).
                     append(File.separatorChar).
-                    append("auto-reconfiguration/src/main").
+                    append("..").
                     append(File.separatorChar);
             String stateFileConfiguration = new StringBuffer(relativePath).
                     append(APPCLOUD_STATE_FILE_CONFIGURATION).
@@ -35,22 +39,24 @@ public class StateFileHelper {
                         String stateFileString = new StringBuffer(relativePath).
                                 append(line.substring(index + 1).trim()).
                                 toString();
-                        return new File(stateFileString).getAbsoluteFile();
+                        File result = new File(stateFileString).getCanonicalFile();
+                        LOGGER.info("Using state file '" + result + "'");
+                        return result;
                     }
                 }
             }
 
+            LOGGER.warning("Unable to determine state file location");
             return null;
-
         } catch (IOException ioe) {
-            ioe.printStackTrace();
+            LOGGER.log(Level.SEVERE, "Error reading state file location", ioe);
             return null;
         } finally {
             if (reader != null) {
                 try {
                     reader.close();
                 } catch (IOException e) {
-                    e.printStackTrace();
+                    LOGGER.log(Level.WARNING, "Cannot close state file reader", e);
                 }
             }
         }
@@ -69,7 +75,7 @@ public class StateFileHelper {
                 writer.println("{\"state\": \"RUNNING\"}");
                 writer.close();
             } catch (FileNotFoundException e) {
-                e.printStackTrace();
+                LOGGER.log(Level.WARNING, "State file not found", e);
             } finally {
                 if (writer != null) {
                     writer.close();

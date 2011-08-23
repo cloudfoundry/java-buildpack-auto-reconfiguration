@@ -12,12 +12,14 @@ import org.cloudfoundry.util.StateFileHelper;
 import javax.management.Notification;
 import javax.management.NotificationListener;
 import java.io.File;
+import java.util.logging.Logger;
 
 public class AppCloudLifecycleListener implements LifecycleListener, NotificationListener {
 
     private static final String J2EE_RUNNING_STATE = "j2ee.state.running";
-
     private static File stateFile = null;
+
+    private static final Logger LOGGER = Logger.getLogger(AppCloudLifecycleListener.class.getName());
 
     public void lifecycleEvent(LifecycleEvent event) {
         Lifecycle lifecycle = event.getLifecycle();
@@ -32,7 +34,7 @@ public class AppCloudLifecycleListener implements LifecycleListener, Notificatio
                     context.addNotificationListener(this, null, null);
                 }
             } else if (event.getType().equals(Lifecycle.AFTER_STOP_EVENT)) {
-                System.err.println("Stopping Tomcat because the context stopped.");
+                LOGGER.severe("Stopping Tomcat because the context stopped.");
                 System.exit(1);
             }
         }
