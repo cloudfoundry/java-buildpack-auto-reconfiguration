@@ -25,15 +25,18 @@ public class VirgoStartupListener implements BundleActivator {
         Deployer deployer = JMX.newMXBeanProxy(server, objectName, Deployer.class);
 
         File[] artifacts = new File("artifacts").listFiles();
-        LOGGER.info("Starting deployment of " + Arrays.toString(artifacts));
-        if (artifacts != null) {
-            for (File artifact : artifacts) {
-                LOGGER.info("Deploying artifact '" + artifact.getAbsolutePath() + "'");
-                deployer.deploy(artifact.toURI().toString(), true);
-            }
-            LOGGER.info("All artifacts deployed successfully");
-            StateFileHelper.createStateFile(stateFile != null ? stateFile : new File("..", "virgo.state"));
+        if (artifacts == null) {
+            LOGGER.info("Nothing to deploy");
+            return;
         }
+
+        LOGGER.info("Starting deployment of " + Arrays.toString(artifacts));
+        for (File artifact : artifacts) {
+            LOGGER.info("Deploying artifact '" + artifact.getAbsolutePath() + "'");
+            deployer.deploy(artifact.toURI().toString(), true);
+        }
+        LOGGER.info("All artifacts deployed successfully");
+        StateFileHelper.createStateFile(stateFile != null ? stateFile : new File("..", "virgo.state"));
     }
 
     public void stop(BundleContext context) throws Exception {
