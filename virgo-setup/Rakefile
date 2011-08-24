@@ -1,0 +1,106 @@
+require 'yaml'
+require 'fileutils'
+require 'digest/md5'
+require 'tmpdir'
+require 'pp'
+
+update_steps = [#'virgo:download',
+                #'virgo:prepare',
+                'virgo:install']
+
+desc "Update Virgo installation used by Cloud Foundry"
+task :update => update_steps
+
+namespace "virgo" do
+  desc "Download Virgo from an Eclipse mirror"
+  task :download do
+    puts "\nStarting Virgo download"
+    manifest_file = "virgo_manifest.yml"
+    @manifest = YAML.load_file(manifest_file)
+    @download_dest = File.join(Dir.tmpdir, "virgo-tomcat-server-#{@manifest['version']}")
+    @download_file = @manifest['download_uri'].split("/").last
+    puts "\tDownloading Virgo v#{@manifest['version']} from '#{@manifest['download_uri']}' to '#{@download_dest}'"
+    if File.exists?(@download_dest)
+      FileUtils.remove_dir(@download_dest)
+    end
+    FileUtils.mkdir_p(@download_dest)
+    Dir.chdir(@download_dest) do
+      system "wget -q -O #{@download_file} #{@manifest['download_uri']}"
+      system "wget -q -O #{@download_file}.md5 #{@manifest['md5_uri']}"
+      verify_download
+    end
+    puts "Virgo download completed"
+  end
+
+  desc "Prepare Virgo for CloudFoundry"
+  task :prepare => 'virgo:download' do
+    puts "\nPreparing Virgo"
+    Dir.chdir(@download_dest) do
+      system "unzip -qq #{@download_file}"
+      exp_dir = `find . -type d ! -name . | cut -f2 -d\/ | uniq`.split("\n").first
+      virgo_dir = "virgo"
+      FileUtils.mv exp_dir, virgo_dir
+      @targetdir = File.join(@download_dest, virgo_dir)
+    end
+    handle_replace_files
+    handle_clear_dirs
+    handle_remove_files_and_dirs
+    handle_add_jars
+    Dir.chdir(@download_dest) do
+      system "zip -q -r virgo.zip virgo"
+    end
+    puts "Virgo prepare completed"
+  end
+
+  desc "Copying Virgo into CloudFoundry"
+  task :install => 'virgo:prepare' do
+    puts "\nCopying Virgo"
+      FileUtils.copy(File.join(@download_dest, "virgo.zip"), @manifest['destination'])
+    puts "Virgo copy completed\n"
+  end
+
+  def verify_download
+    puts "\tVerifying download"
+    digest = Digest::MD5.hexdigest(File.read(@download_file))
+    md5sum = IO.readlines("#{@download_file}.md5")[0].split[0]
+    raise "MD5Sum verification check failed" unless digest == md5sum
+  end
+
+  def handle_replace_files
+    @manifest['replace_files'].each do |file|
+      target_file = File.join(@targetdir, file)
+      source_file = File.join("resources", file)
+      puts "\tReplacing '#{target_file}' with '#{source_file}'"
+      FileUtils.remove(target_file)
+      FileUtils.copy(source_file, target_file)
+    end
+  end
+
+  def handle_clear_dirs
+    @manifest['clear_dirs'].each do |file|
+      target_file = File.join(@targetdir, file)
+      puts "\tClearing '#{target_file}'"
+      Dir.chdir target_file do
+        FileUtils.rm_r Dir.glob('*')
+      end
+    end
+  end
+
+  def handle_remove_files_and_dirs
+    @manifest['remove_files'].each do |file|
+      target_file = File.join(@targetdir, file)
+      puts "\tRemoving '#{target_file}'"
+      FileUtils.rm_r target_file
+    end
+  end
+
+  def handle_add_jars
+    @manifest['add_jars'].each do |file|
+      target_file = File.join(@targetdir, file)
+      source_file = File.join("resources", file)
+      puts "\tCopying jar '#{source_file}' to '#{target_file}"
+      FileUtils.copy(source_file, target_file)
+    end
+  end
+
+end

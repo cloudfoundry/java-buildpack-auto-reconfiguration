@@ -1,0 +1,12 @@
+---
+version: 3.0.0.RC1
+download_uri: http://www.eclipse.org/downloads/download.php?r=1\&nf=1\&file=/virgo/milestone/VTS/3.0.0.RC1/virgo-tomcat-server-3.0.0.RC1.zip
+md5_uri: http://www.eclipse.org/downloads/sums.php?type=md5\&file=/virgo/milestone/VTS/3.0.0.RC1/virgo-tomcat-server-3.0.0.RC1.zip
+
+replace_files: [config/tomcat-server.xml]
+clear_dirs: [pickup, work, about_files, docs]
+remove_files: [About.html, AboutKernel.html, epl-v10.html, notice.html, about_files, docs, repository/ext/org.eclipse.virgo.apps.admin.core-3.0.0.RC1.jar, repository/ext/org.eclipse.virgo.apps.admin.web-3.0.0.RC1.jar]
+add_jars: [pickup/org.cloudfoundry.plugins.virgo-1.0.jar]
+
+# Assumes that the 'vcap-java' manifests itself as a vcap submodule at 'vcap/java'
+destination: ../../cloud_controller/staging/java_common/resources/virgo.zip

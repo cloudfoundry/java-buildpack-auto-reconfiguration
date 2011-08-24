@@ -7,16 +7,19 @@ import org.apache.catalina.LifecycleListener;
 import org.apache.catalina.core.StandardContext;
 import org.apache.catalina.core.StandardEngine;
 
+import org.cloudfoundry.util.StateFileHelper;
+
 import javax.management.Notification;
 import javax.management.NotificationListener;
-import java.io.*;
+import java.io.File;
+import java.util.logging.Logger;
 
 public class AppCloudLifecycleListener implements LifecycleListener, NotificationListener {
 
-    private String stateFile;
-
-    private static final String APPCLOUD_STATE_FILE = "tomcat.state";
     private static final String J2EE_RUNNING_STATE = "j2ee.state.running";
+    private static File stateFile = null;
+
+    private static final Logger LOGGER = Logger.getLogger(AppCloudLifecycleListener.class.getName());
 
     public void lifecycleEvent(LifecycleEvent event) {
         Lifecycle lifecycle = event.getLifecycle();
@@ -27,16 +30,11 @@ public class AppCloudLifecycleListener implements LifecycleListener, Notificatio
                 Container grandParent = context.getParent().getParent();
                 if (grandParent instanceof StandardEngine) {
                     StandardEngine engine = (StandardEngine) grandParent;
-                    String relativePath = new StringBuilder()
-                            .append("..")
-                            .append(File.separator)
-                            .append(APPCLOUD_STATE_FILE)
-                            .toString();
-                    stateFile = new File(engine.getBaseDir(), relativePath).getAbsolutePath();
+                    stateFile = StateFileHelper.readStateFile(engine.getBaseDir());
                     context.addNotificationListener(this, null, null);
                 }
             } else if (event.getType().equals(Lifecycle.AFTER_STOP_EVENT)) {
-                System.err.println("Stopping Tomcat because the context stopped.");
+                LOGGER.severe("Stopping Tomcat because the context stopped.");
                 System.exit(1);
             }
         }
@@ -44,13 +42,8 @@ public class AppCloudLifecycleListener implements LifecycleListener, Notificatio
 
     public void handleNotification(Notification notification, Object handback) {
         if (J2EE_RUNNING_STATE.equals(notification.getType())) {
-            try {
-                PrintWriter writer = new PrintWriter(stateFile);
-                writer.println("{\"state\": \"RUNNING\"}");
-                writer.close();
-            } catch (FileNotFoundException e) {
-                e.printStackTrace();
-            }
+            StateFileHelper.createStateFile(stateFile);
         }
     }
+
 }
