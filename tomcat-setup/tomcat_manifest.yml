@@ -7,5 +7,9 @@ clear_dirs: [logs, temp, webapps, work]
 remove_files: [NOTICE, RELEASE-NOTES, RUNNING.txt, LICENSE]
 add_jars: [lib/mysql-connector-java-5.1.12-bin.jar, lib/postgresql-9.0-801.jdbc4.jar, lib/TomcatStartupListener-1.0.jar]
 
-# Assumes that the 'vcap-java' manifests itself as a vcap submodule at 'vcap/java'
-destination: ../../cloud_controller/staging/java_web/resources/tomcat.zip
+# Assumes that the environment variable 'VCAP' has been set to point to
+# the root of 'vcap' source hierarchy.
+destination: <%= ENV['VCAP']%>/staging/lib/vcap/staging/plugin/java_web/resources/tomcat.zip
+# Assumes that the environment variable 'VCAP_JAVA' has been set to point to
+# the root of 'vcap-java' source hierarchy.
+digest: <%= ENV['VCAP_JAVA']%>/tomcat-setup/cf-tomcat.zip.sha1
