@@ -2,10 +2,11 @@ require 'yaml'
 require 'fileutils'
 require 'digest/md5'
 require 'tmpdir'
-require 'pp'
 
 update_steps = [#'tomcat:download',
                 #'tomcat:prepare',
+                #'tomcat:fingerprint',
+                #'tomcat:package',
                 'tomcat:install']
 
 desc "Update Tomcat installation used by Cloud Foundry"
@@ -15,8 +16,8 @@ namespace "tomcat" do
   desc "Download Tomcat from an Apache mirror"
   task :download do
     puts "\nStarting Tomcat download"
-    manifest_file = "tomcat_manifest.yml"
-    @manifest = YAML.load_file(manifest_file)
+    @manifest_file = "tomcat_manifest.yml"
+    @manifest = YAML.load_file(@manifest_file)
     @download_dest = File.join(Dir.tmpdir, "tomcat-v#{@manifest['version']}")
     puts "\tDownloading Tomcat v#{@manifest['version']} from '#{@manifest['download_uri']}' to '#{@download_dest}'"
     if File.exists?(@download_dest)
@@ -32,7 +33,7 @@ namespace "tomcat" do
     puts "Tomcat download completed"
   end
 
-  desc "Prepare Tomcat for CloudFoundry"
+  desc "Prepare Tomcat for Cloud Foundry"
   task :prepare => 'tomcat:download' do
     puts "\nPreparing Tomcat"
     Dir.chdir(@download_dest) do
@@ -46,14 +47,33 @@ namespace "tomcat" do
     handle_clear_dirs
     handle_remove_files
     handle_add_jars
-    Dir.chdir(@download_dest) do
-      system "zip -q -r tomcat.zip tomcat"
-    end
     puts "Tomcat prepare completed"
   end
 
+  desc "Generate MD-5 fingerprint of the Cloud Foundry Tomcat components"
+  task :fingerprint => 'tomcat:prepare' do
+    puts "\nFingerprinting Tomcat prepared for Cloud Foundry"
+    fingerprint_hash = {}
+    add_digest_entries @manifest['replace_files'], fingerprint_hash
+    add_digest_entries @manifest['add_jars'], fingerprint_hash
+    add_digest_entry @manifest_file, @manifest_file, fingerprint_hash
+    puts "Fingerprint: \n#{YAML.dump(fingerprint_hash)}"
+    digest_file = File.join(@targetdir, "cf_tomcat.digest")
+    File.open(digest_file, 'w') {|f| YAML.dump(fingerprint_hash, f)}
+    puts "Fingerprint of Tomcat for Cloud Foundry completed"
+  end
+
+  desc "Generate the Tomcat for Cloud Foundry package"
+  task :package => 'tomcat:fingerprint' do
+    puts "\nGenerating Tomcat for Cloud Foundry package"
+    Dir.chdir(@download_dest) do
+      system "zip -q -r tomcat.zip tomcat"
+    end
+    puts "Tomcat for Cloud Foundry package generation completed"
+  end
+
   desc "Copying Tomcat into CloudFoundry"
-  task :install => 'tomcat:prepare' do
+  task :install => 'tomcat:package' do
     puts "\nCopying Tomcat"
       FileUtils.copy(File.join(@download_dest, "tomcat.zip"), @manifest['destination'])
     puts "Tomcat copy completed\n"
@@ -101,6 +121,21 @@ namespace "tomcat" do
       puts "\tCopying jar '#{source_file}' to '#{target_file}"
       FileUtils.copy(source_file, target_file)
     end
+  end
+
+  def add_digest_entries entries, fingerprint_hash
+    entries.each do |file|
+      add_digest_entry File.join(@targetdir, file), file, fingerprint_hash
+    end
+  end
+
+  def add_digest_entry target_file, entry_key, fingerprint_hash
+    digest = Digest::MD5.hexdigest(File.read(target_file))
+    size = File.size(target_file)
+    fingerprint_hash[entry_key] = {
+      :digest => digest,
+      :size => size
+    }
   end
 
 end
