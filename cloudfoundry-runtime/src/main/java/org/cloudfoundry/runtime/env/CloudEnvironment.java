@@ -6,6 +6,8 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
+import java.util.Properties;
 import java.util.Set;
 
 import org.codehaus.jackson.map.ObjectMapper;
@@ -62,6 +64,10 @@ public class CloudEnvironment {
 		return environment.getValue(key);
 	}
 	
+	public boolean isCloudFoundry() {
+		return getValue("VCAP_APPLICATION") != null;
+	}
+
 	@SuppressWarnings("unchecked")
 	public ApplicationInstanceInfo getInstanceInfo() {
 		String instanceInfoString = getValue("VCAP_APPLICATION");
@@ -174,7 +180,94 @@ public class CloudEnvironment {
 			throw new CloudServiceException("Failed to create service information for " + serviceInfoMap.get("name"), e);
 		}
 	}
-	
+
+	/**
+	 * <p>General properties take the form:
+	 * <code><pre>
+	 * cloud.application.name = helloworld
+	 * cloud.provider.url = cloudfoundry.com
+	 * </pre></code>
+	 *
+	 * <p>Service specific properties are also exposed for each bound service:
+	 * <code><pre>
+	 * cloud.services.customerDb.type = mysql-5.1
+	 * cloud.services.customerDb.plan = free
+	 * cloud.services.customerDb.connection.hostname = ...
+	 * cloud.services.customerDb.connection.port = ...
+	 * etc...
+	 * </pre></code>
+	 *
+	 * <p>If a there is only a single service of a given type, that service is
+	 * aliased to the service type.  For example, if there is only a single MySQL
+	 * service bound to the application, the service properties will also be
+	 * exposed under the '<code>mysql</code>' key:
+	 * <code><pre>
+	 * cloud.services.mysql.type = mysql-5.1
+	 * cloud.services.mysql.plan = free
+	 * cloud.services.mysql.connection.hostname = ...
+	 * cloud.services.mysql.connection.port = ...
+	 * etc...
+	 * </pre></code>
+	 * @return
+	 */
+	public Properties getCloudProperties() {
+		Properties properties = new Properties();
+		properties.putAll(providerProperties());
+		properties.putAll(applicationProperties());
+		properties.putAll(serviceProperties());
+		return properties;
+	}
+
+	private Properties providerProperties() {
+		Properties properties = new Properties();
+		properties.put("cloud.provider.url", getCloudApiUri().split("\\.", 2)[1]);
+		return properties;
+	}
+
+	private Properties applicationProperties() {
+		Properties properties = new Properties();
+		properties.put("cloud.application.name", getInstanceInfo().getName());
+		return properties;
+	}
+
+	private Properties serviceProperties() {
+		Properties properties = new Properties();
+		Map<String, Integer> serviceCounts = new HashMap<String, Integer>();
+		List<Map<String, Object>> services = getServices();
+		for (Map<String, Object> service : services) {
+			String shortType = serviceShortType(service);
+			// index services properties by name
+			properties.putAll(servicePropertiesHelper("cloud.services." + service.get("name"), service));
+			// count services by type (needed in next iteration)
+			int count = serviceCounts.containsKey(shortType) ? serviceCounts.get(shortType) : 0;
+			serviceCounts.put(shortType, count + 1);
+		}
+		for (Map<String, Object> service : services) {
+			// alias service properties by type, if unique and available
+			String shortType = serviceShortType(service);
+			if (serviceCounts.get(shortType) == 1 && !properties.containsKey("cloud.services." + shortType + ".type")) {
+				properties.putAll(servicePropertiesHelper("cloud.services." + shortType, service));
+			}
+		}
+		return properties;
+	}
+
+	@SuppressWarnings("unchecked")
+	private Properties servicePropertiesHelper(String propertyBase, Map<String, Object> service) {
+		Properties source = new Properties();
+		source.put(propertyBase + ".plan" , service.get("plan").toString());
+		source.put(propertyBase + ".type" , service.get("label").toString());
+		for (Entry<String, Object> connectionProperty : ((Map<String, Object>) service.get("credentials")).entrySet()) {
+			source.put(propertyBase + ".connection." + connectionProperty.getKey(), connectionProperty.getValue().toString());
+		}
+		return source;
+	}
+
+	private String serviceShortType(Map<String, Object> service) {
+		String type = (String) service.get("label");
+		return type.split("-", 2)[0];
+	}
+
 	/**
 	 * Environment available to the deployed app.
 	 * 
