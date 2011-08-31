@@ -116,10 +116,11 @@
 		</xsd:complexType>
 	</xsd:element>
 
-	<xsd:element name="service-properties">
+	<xsd:element name="properties">
 		<xsd:annotation>
-			<xsd:documentation source="org.cloudfoundry.runtime.env.CloudEnvironmentPropertiesFactoryBean"><![CDATA[
-				Exposes the available cloud services options as a Properties object (suitable for Spring Property Placeholder Configurer).
+			<xsd:documentation source="org.cloudfoundry.runtime.env.CloudPropertiesFactoryBean"><![CDATA[
+				Exposes cloud properties as a Properties object (suitable for Spring Property Placeholder Configurer).
+				Provides the same set of properties that are automatically exposed to Spring 3.1 (or later) based applications.
 			]]></xsd:documentation>
 			<xsd:appinfo>
 				<tool:annotation>

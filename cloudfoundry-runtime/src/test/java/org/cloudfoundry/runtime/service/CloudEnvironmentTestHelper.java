@@ -23,7 +23,7 @@ public class CloudEnvironmentTestHelper {
 
 	public static String getMongoServicePayload(String serviceName, 
 			String hostname, int port, 
-			String username, String password, String db) {
+			String username, String password, String db, String name) {
 		String payload = readTestDataFile("test-mongodb-info.json");
 		payload = payload.replace("$serviceName", serviceName);
 		payload = payload.replace("$hostname", hostname);
@@ -31,6 +31,7 @@ public class CloudEnvironmentTestHelper {
 		payload = payload.replace("$username", username);
 		payload = payload.replace("$password", password);
 		payload = payload.replace("$db", db);
+		payload = payload.replace("$name", name);
 		
 		return payload;
 	}
@@ -96,18 +97,30 @@ public class CloudEnvironmentTestHelper {
 			String[] rabbitServicePayloads) {
 		StringBuilder payload = new StringBuilder("{");
 		if (mysqlServicePayloads != null) {
+			if (payload.length() > 1) {
+				payload.append(",");
+			}
 			payload.append("\"mysql-5.1\":");
 			payload.append(getServicePayload(mysqlServicePayloads));
 		}
 		if (redisServicePayloads != null) {
+			if (payload.length() > 1) {
+				payload.append(",");
+			}
 			payload.append("\"redis-2.2\":");
 			payload.append(getServicePayload(redisServicePayloads));
 		}
 		if (mongodbServicePayloads != null) {
+			if (payload.length() > 1) {
+				payload.append(",");
+			}
 			payload.append("\"mongodb-1.8\":");
 			payload.append(getServicePayload(mongodbServicePayloads));
 		}
 		if (rabbitServicePayloads != null) {
+			if (payload.length() > 1) {
+				payload.append(",");
+			}
 			payload.append("\"rabbitmq-2.4\":");
 			payload.append(getServicePayload(rabbitServicePayloads));
 		}
@@ -116,9 +129,19 @@ public class CloudEnvironmentTestHelper {
 		return payload.toString();
 	}
 	
-	public static String getApplicationInstanceInfo(String uris) {
+	public static String getApplicationInstanceInfo(String name, String... uri) {
 		String payload = readTestDataFile("test-application-info.json");
-		payload = payload.replace("$uris", uris);
+		payload = payload.replace("$name", name);
+		StringBuilder uris = new StringBuilder();
+		for (String u : uri) {
+			if (uris.length() > 0) {
+				uris.append(",");
+			}
+			uris.append("\"");
+			uris.append(u);
+			uris.append("\"");
+		}
+		payload = payload.replace("$uris", uris.toString());
 		
 		return payload;
 	}

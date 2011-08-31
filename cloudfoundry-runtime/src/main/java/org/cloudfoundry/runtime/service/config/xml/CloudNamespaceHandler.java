@@ -1,6 +1,6 @@
 package org.cloudfoundry.runtime.service.config.xml;
 
-import org.cloudfoundry.runtime.env.CloudEnvironmentPropertiesFactoryBean;
+import org.cloudfoundry.runtime.env.CloudPropertiesFactoryBean;
 import org.cloudfoundry.runtime.env.MongoServiceInfo;
 import org.cloudfoundry.runtime.env.MysqlServiceInfo;
 import org.cloudfoundry.runtime.env.RabbitServiceInfo;
@@ -20,6 +20,7 @@ import org.w3c.dom.Element;
  * @author Mark Fisher
  * @author Costin Leau
  * @author Ramnivas Laddad
+ * @author Scott Andrews
  */
 public class CloudNamespaceHandler extends NamespaceHandlerSupport {
 
@@ -34,10 +35,10 @@ public class CloudNamespaceHandler extends NamespaceHandlerSupport {
 		this.registerBeanDefinitionParser("data-source",
 				new CloudServiceFactoryParser(CloudMySqlDataSourceFactory.class, MysqlServiceInfo.class));
 		
-		this.registerBeanDefinitionParser("service-properties", new AbstractSimpleBeanDefinitionParser() {
+		this.registerBeanDefinitionParser("properties", new AbstractSimpleBeanDefinitionParser() {
 			@Override
 			protected Class<?> getBeanClass(Element element) {
-				return CloudEnvironmentPropertiesFactoryBean.class;
+				return CloudPropertiesFactoryBean.class;
 			}
 		});
 		this.registerBeanDefinitionParser("service-scan", new AbstractSimpleBeanDefinitionParser() {
