@@ -11,6 +11,7 @@ import org.springframework.beans.factory.FactoryBean;
  * suitable for property placeholder processing.
  * 
  * @author Costin Leau
+ * @deprecated
  */
 public class CloudEnvironmentPropertiesFactoryBean implements FactoryBean<Properties> {
 

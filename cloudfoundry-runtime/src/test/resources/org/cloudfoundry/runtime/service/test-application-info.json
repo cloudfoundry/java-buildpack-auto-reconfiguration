@@ -1,7 +1,7 @@
 {
     "instance_id": "5b2332ca1b6ff9c2d481b5353cd117e8",
     "instance_index": 0,
-    "name": "env",
+    "name": "$name",
     "uris": [$uris],
     "users": ["user@company.com"],
     "version": "ab8f60342a583185452096875bca9bdc43213f88",
