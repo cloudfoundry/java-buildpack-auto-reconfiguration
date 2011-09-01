@@ -15,6 +15,8 @@ import org.cloudfoundry.runtime.env.AbstractDataSourceServiceInfo;
 import org.cloudfoundry.runtime.env.CloudEnvironment;
 import org.cloudfoundry.runtime.env.MysqlServiceInfo;
 import org.cloudfoundry.runtime.env.PostgresqlServiceInfo;
+import org.cloudfoundry.runtime.service.AbstractCloudServiceFactory;
+import org.cloudfoundry.runtime.service.CloudServicesAutoPopulator;
 import org.hibernate.SessionFactory;
 import org.hibernate.impl.SessionFactoryImpl;
 import org.hibernate.impl.SessionImpl;
@@ -42,6 +44,8 @@ public class CloudFactoryAutoStagingBeanFactoryPostProcessorTest {
 	@Mock private MysqlServiceInfo mockMysqlServiceInfo;
 	@Mock private PostgresqlServiceInfo mockPostgresqlServiceInfo;
 	@Mock private CloudEnvironment mockEnvironment;
+	@Mock private ConfigurableListableBeanFactory beanFactory;
+
 	
 	private CloudAutoStagingBeanFactoryPostProcessor testBFPP;
 
@@ -210,30 +214,35 @@ public class CloudFactoryAutoStagingBeanFactoryPostProcessorTest {
 	}
 
 	@Test
-	public void autostagingOffWhenPropertyFileSpecifiedOff() {
-		Assert.assertTrue(testBFPP.autoStagingOff("org/cloudfoundry/reconfiguration/test-autostaging-off.properties"));
+	public void autoStagingOffWhenUsingCloudServiceBean() {
+		String serviceJdbcUrl = "jdbc:mysql://10.20.20.40:1234/mysql-1";
+		List<MysqlServiceInfo> serviceInfos = new ArrayList<MysqlServiceInfo>();
+		serviceInfos.add(mockMysqlServiceInfo);
+		Map<String, Object> service = new HashMap<String, Object>();
+		service.put("label", "mysql-5.1");
+		List<Map<String, Object>> serviceList = new ArrayList<Map<String, Object>>();
+		serviceList.add(service);
+		when(mockMysqlServiceInfo.getUrl()).thenReturn(serviceJdbcUrl);
+		when(mockEnvironment.getServiceInfos(MysqlServiceInfo.class)).thenReturn(serviceInfos);
+		when(mockEnvironment.getServices()).thenReturn(serviceList);
+		ClassPathXmlApplicationContext context = getTestApplicationContext("test-auto-stage-off-cloud-service-context.xml");
+		Assert.assertTrue(testBFPP.autoStagingOff(context.getBeanFactory()));
 	}
 
+	@SuppressWarnings("rawtypes")
 	@Test
-	public void autostagingOnWhenPropertyFileSpecifiedOn() {
-		Assert.assertFalse(testBFPP.autoStagingOff("org/cloudfoundry/reconfiguration/test-autostaging-on.properties"));
-	}
-
-	@Test
-	public void autostagingOnWhenPropertyFileEmpty() {
-		Assert.assertFalse(testBFPP.autoStagingOff("org/cloudfoundry/reconfiguration/test-autostaging-empty.properties"));
+	public void autoStagingOffWhenUsingAutoPopulate() {
+		// Mock out BeanFactory here because we can't instantiate
+		// CloudServicesAutoPopulator in app context (postProcessBeanFactory
+		// depends on Spring 3.x)
+		when(beanFactory.getBeansOfType(AbstractCloudServiceFactory.class)).thenReturn(
+				new HashMap<String, AbstractCloudServiceFactory>(0, 1));
+		Map<String, CloudServicesAutoPopulator> autoPopulatorBeans = new HashMap<String, CloudServicesAutoPopulator>();
+		autoPopulatorBeans.put("autoPopBean", new CloudServicesAutoPopulator());
+		when(beanFactory.getBeansOfType(CloudServicesAutoPopulator.class)).thenReturn(autoPopulatorBeans);
+		Assert.assertTrue(testBFPP.autoStagingOff(beanFactory));
 	}
 	
-	@Test
-	public void autostagingOnWhenPropertyFileCorrupt() {
-		Assert.assertFalse(testBFPP.autoStagingOff("org/cloudfoundry/reconfiguration/test-autostaging-corrupt.properties"));
-	}
-
-	@Test
-	public void autostagingOnWhenPropertyFileDoesntExist() {
-		Assert.assertFalse(testBFPP.autoStagingOff("file-that-doesnt-exist"));
-	}
-
 	private void assertApplicationContextProcessingForMysql(String appContextFile) {
 		String serviceJdbcUrl = "jdbc:mysql://10.20.20.40:1234/mysql-1";
 		List<MysqlServiceInfo> serviceInfos = new ArrayList<MysqlServiceInfo>();
@@ -271,7 +280,7 @@ public class CloudFactoryAutoStagingBeanFactoryPostProcessorTest {
 		Assert.assertEquals("org.hibernate.dialect.PostgreSQLDialect", sessionFactory.getDialect().toString());
 	}
 	
-	private ApplicationContext getTestApplicationContext(String fileName) {
+	private ClassPathXmlApplicationContext getTestApplicationContext(String fileName) {
 		return new ClassPathXmlApplicationContext(new String[]{"org/cloudfoundry/reconfiguration/" + fileName, 
 															  "META-INF/cloud/cloudfoundry-auto-reconfiguration-context.xml"}) {
 			@Override

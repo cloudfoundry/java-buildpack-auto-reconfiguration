@@ -32,8 +32,6 @@ import org.springframework.beans.factory.support.DefaultListableBeanFactory;
 import org.springframework.beans.factory.support.ManagedList;
 import org.springframework.beans.factory.support.ManagedProperties;
 import org.springframework.core.Ordered;
-import org.springframework.core.io.DefaultResourceLoader;
-import org.springframework.core.io.Resource;
 import org.springframework.core.io.support.PropertiesLoaderUtils;
 
 /**
@@ -51,7 +49,6 @@ public class CloudAutoStagingBeanFactoryPostProcessor implements BeanFactoryPost
 
 	private CloudEnvironment cloudEnvironment;
 	
-	private static final String CLOUDFOUNDRY_PROPERTIES = "META-INF/cloudfoundry.properties";
 	private static final String APP_CLOUD_DATA_SOURCE_NAME = "__appCloudDataSource";
 	private static final String APP_CLOUD_JPA_MYSQL_REPLACEMENT_PROPERTIES = "__appCloudJpaMySQLReplacementProperties";
 	private static final String APP_CLOUD_HIBERNATE_MYSQL_REPLACEMENT_PROPERTIES = "__appCloudHibernateMySQLReplacementProperties";
@@ -59,7 +56,7 @@ public class CloudAutoStagingBeanFactoryPostProcessor implements BeanFactoryPost
 	private static final String APP_CLOUD_HIBERNATE_POSTGRESQL_REPLACEMENT_PROPERTIES = "__appCloudHibernatePostgreSQLReplacementProperties";
 
 	public void postProcessBeanFactory(ConfigurableListableBeanFactory beanFactory) throws BeansException {
-		if (autoStagingOff()) {
+		if (autoStagingOff(beanFactory)) {
 			return;
 		}
 		
@@ -84,38 +81,48 @@ public class CloudAutoStagingBeanFactoryPostProcessor implements BeanFactoryPost
 		}
 	}
 
-	private boolean autoStagingOff() {
-		return autoStagingOff(CLOUDFOUNDRY_PROPERTIES);
-	}
-	
 	/**
-	 * WARNING: Experimental support to opt out of autostaging, useful if autostaging comes in your way.
+	 * Recommends disabling auto-staging if beans of the following types are
+	 * detected in the {@link ConfigurableListableBeanFactory} 1)
+	 * {@link AbstractCloudServiceFactory} (corresponding to the specification
+	 * of cloud:data-source, cloud:mongo-db-factory, etc) 2)
+	 * {@link CloudServicesAutoPopulator} (cloud:auto-populate)
 	 * 
-	 * Turn off autostaging if we find a META-INF/cloudfoundry.properties on classpath and it
-	 * contains autostaging=false. Applications can opt-out of autostaging by adding a property 
-	 * to src/main/resources/META-INF/cloudfoundry.properties (assuming Maven layout).
-	 * 
-	 * @return return true to opt out of autostaging
+	 * @param beanFactory
+	 *            The {@link ConfigurableListableBeanFactory} to check for bean
+	 *            definitions that should disable auto-staging
+	 * @return true if auto-staging should be turned off
 	 */
-	boolean autoStagingOff(String propertyLocation) {
-		try {
-			Resource cloudfoundryConfig = new DefaultResourceLoader().getResource(propertyLocation);
-			if (!cloudfoundryConfig.exists()) {
-				logger.log(Level.INFO, "No 'META-INF/cloudfoundry.properties' found, autostaging is active");
-				return false;
-			}
-			Properties cloudfoundryProperties = PropertiesLoaderUtils.loadProperties(cloudfoundryConfig);
-			String autostagingStringValue = cloudfoundryProperties.getProperty("autostaging", "true");
-			boolean autostagingValue = Boolean.valueOf(autostagingStringValue);
-			if (!autostagingValue) {
-				logger.log(Level.INFO, "Application requested to skip autostaging");
-			}
-			return !autostagingValue;
-		} catch (Exception ex) {
-			// Turn off autostaging if anything goes wrong in our detection
+	boolean autoStagingOff(ConfigurableListableBeanFactory beanFactory) {
+		if(usingCloudServices(beanFactory) || usingAutoPopulate(beanFactory)) {
 			return true;
 		}
+		logger.log(Level.INFO,"Autostaging is active.");
+		return false;
 	}
+	
+	private boolean usingCloudServices(ConfigurableListableBeanFactory beanFactory) {
+		//Load the class dynamically and with name in multiple parts to avoid shade plugin rename
+		String packagePrefix = "org";
+		Class<?> cloudServiceFactoryClazz = loadClass(packagePrefix + ".cloudfoundry.runtime.service.AbstractCloudServiceFactory");
+		if(cloudServiceFactoryClazz == null || beanFactory.getBeansOfType(cloudServiceFactoryClazz).isEmpty()) {
+			return false;
+		}
+		logger.log(Level.INFO,"Found an instance of AbstractCloudServiceFactory.  Autostaging will be skipped.");
+		return true;
+	}
+	
+	private boolean usingAutoPopulate(ConfigurableListableBeanFactory beanFactory) {
+		//Load the class dynamically and with name in multiple parts to avoid shade plugin rename
+		String packagePrefix = "org";
+		Class<?> autoPopulatorClass = loadClass(packagePrefix + ".cloudfoundry.runtime.service.CloudServicesAutoPopulator");
+		if(autoPopulatorClass == null || beanFactory.getBeansOfType(autoPopulatorClass).isEmpty()) {
+			return false;
+		}
+		logger.log(Level.INFO,"Found an instance of CloudServicesAutoPopulator.  Autostaging will be skipped.");
+		return true;
+	}
+	
 
 	// Let this be the last to process
 	@Override
