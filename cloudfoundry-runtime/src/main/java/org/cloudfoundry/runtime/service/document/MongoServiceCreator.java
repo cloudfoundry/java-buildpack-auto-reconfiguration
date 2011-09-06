@@ -3,12 +3,12 @@ package org.cloudfoundry.runtime.service.document;
 import java.net.UnknownHostException;
 
 import org.cloudfoundry.runtime.env.CloudEnvironment;
-import org.cloudfoundry.runtime.env.MongoServiceInfo;
 import org.cloudfoundry.runtime.env.CloudServiceException;
+import org.cloudfoundry.runtime.env.MongoServiceInfo;
 import org.cloudfoundry.runtime.service.AbstractServiceCreator;
 import org.springframework.data.authentication.UserCredentials;
-import org.springframework.data.document.mongodb.MongoDbFactory;
-import org.springframework.data.document.mongodb.SimpleMongoDbFactory;
+import org.springframework.data.mongodb.MongoDbFactory;
+import org.springframework.data.mongodb.core.SimpleMongoDbFactory;
 
 import com.mongodb.Mongo;
 import com.mongodb.MongoException;

@@ -3,7 +3,7 @@ package org.cloudfoundry.runtime.service.document;
 import org.cloudfoundry.runtime.env.CloudEnvironment;
 import org.cloudfoundry.runtime.env.MongoServiceInfo;
 import org.cloudfoundry.runtime.service.AbstractCloudServiceFactory;
-import org.springframework.data.document.mongodb.MongoDbFactory;
+import org.springframework.data.mongodb.MongoDbFactory;
 
 /**
  * Spring factory bean for Mongo service.
