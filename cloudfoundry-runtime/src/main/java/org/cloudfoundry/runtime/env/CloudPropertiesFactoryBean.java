@@ -5,8 +5,8 @@ import java.util.Properties;
 import org.springframework.beans.factory.FactoryBean;
 
 /**
- * FactoryBean exposing the current cloud service settings as properties,
- * suitable for property placeholder processing.
+ * FactoryBean exposing cloud sproperties. Suitable for property placeholder
+ * processing.
  *
  * @author Scott Andrews
  */

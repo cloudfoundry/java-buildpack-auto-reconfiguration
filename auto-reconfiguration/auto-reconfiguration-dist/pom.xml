@@ -7,10 +7,21 @@
 	<packaging>jar</packaging>
 	<name>auto-reconfiguration</name>
 	<version>0.6.0-BUILD-SNAPSHOT</version>
+	<parent>
+		<groupId>org.cloudfoundry</groupId>
+		<artifactId>auto-reconfiguration-parent</artifactId>
+		<version>0.6.0-BUILD-SNAPSHOT</version>
+		<relativePath>../auto-reconfiguration-parent</relativePath>
+	</parent>
 	<dependencies>
 		<dependency>
 			<groupId>org.cloudfoundry</groupId>
 			<artifactId>auto-reconfiguration-core</artifactId>
+			<version>${project.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.cloudfoundry</groupId>
+			<artifactId>auto-reconfiguration-springenv</artifactId>
 			<version>${project.version}</version>
 		</dependency>
 	</dependencies>
