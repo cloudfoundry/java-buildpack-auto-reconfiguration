@@ -5,7 +5,7 @@ import org.cloudfoundry.runtime.env.MongoServiceInfo;
 import org.cloudfoundry.runtime.env.MysqlServiceInfo;
 import org.cloudfoundry.runtime.env.RabbitServiceInfo;
 import org.cloudfoundry.runtime.env.RedisServiceInfo;
-import org.cloudfoundry.runtime.service.CloudServicesAutoPopulator;
+import org.cloudfoundry.runtime.service.CloudServicesScanner;
 import org.cloudfoundry.runtime.service.document.CloudMongoDbFactoryBean;
 import org.cloudfoundry.runtime.service.keyvalue.CloudRedisConnectionFactoryBean;
 import org.cloudfoundry.runtime.service.messaging.CloudRabbitConnectionFactoryBean;
@@ -40,10 +40,10 @@ public class CloudNamespaceHandler extends NamespaceHandlerSupport {
 				return CloudEnvironmentPropertiesFactoryBean.class;
 			}
 		});
-		this.registerBeanDefinitionParser("auto-populate", new AbstractSimpleBeanDefinitionParser() {
+		this.registerBeanDefinitionParser("service-scan", new AbstractSimpleBeanDefinitionParser() {
 			@Override
 			protected Class<?> getBeanClass(Element element) {
-				return CloudServicesAutoPopulator.class;
+				return CloudServicesScanner.class;
 			}
 
 			@Override

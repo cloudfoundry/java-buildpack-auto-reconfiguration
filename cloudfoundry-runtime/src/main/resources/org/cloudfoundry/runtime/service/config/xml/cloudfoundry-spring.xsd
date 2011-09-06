@@ -138,9 +138,9 @@
 		</xsd:complexType>
 	</xsd:element>
 
-	<xsd:element name="auto-populate">
+	<xsd:element name="service-scan">
 		<xsd:annotation>
-			<xsd:documentation source="org.cloudfoundry.runtime.service.CloudServicesAutoPopulator"><![CDATA[
+			<xsd:documentation source="org.cloudfoundry.runtime.service.CloudServicesScanner"><![CDATA[
 				Exposes the available cloud services as beans, which then may be injected into other beans.
 			]]></xsd:documentation>
 		</xsd:annotation>
