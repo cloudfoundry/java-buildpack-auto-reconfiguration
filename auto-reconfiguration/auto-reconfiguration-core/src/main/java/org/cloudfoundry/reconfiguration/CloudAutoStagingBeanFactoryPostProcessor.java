@@ -13,6 +13,8 @@ import javax.sql.DataSource;
 
 import org.cloudfoundry.runtime.env.CloudEnvironment;
 import org.cloudfoundry.runtime.env.CloudServiceException;
+import org.cloudfoundry.runtime.service.AbstractCloudServiceFactory;
+import org.cloudfoundry.runtime.service.CloudServicesAutoPopulator;
 import org.cloudfoundry.runtime.service.relational.MysqlServiceCreator;
 import org.cloudfoundry.runtime.service.relational.PostgresqlServiceCreator;
 import org.springframework.beans.BeansException;
@@ -32,15 +34,13 @@ import org.springframework.beans.factory.support.DefaultListableBeanFactory;
 import org.springframework.beans.factory.support.ManagedList;
 import org.springframework.beans.factory.support.ManagedProperties;
 import org.springframework.core.Ordered;
-import org.springframework.core.io.DefaultResourceLoader;
-import org.springframework.core.io.Resource;
 import org.springframework.core.io.support.PropertiesLoaderUtils;
 
 /**
  * A bean factory post processor that auto-stage service-related beans.
  * <p>
  * Currently, this bean supports auto-staging of {@link DataSource} beans.
- * 
+ *
  * @author Ramnivas Laddad
  * @author Xin Li
  *
@@ -50,22 +50,22 @@ public class CloudAutoStagingBeanFactoryPostProcessor implements BeanFactoryPost
 	Logger logger = Logger.getLogger(CloudAutoStagingBeanFactoryPostProcessor.class.getName());
 
 	private CloudEnvironment cloudEnvironment;
-	
-	private static final String CLOUDFOUNDRY_PROPERTIES = "META-INF/cloudfoundry.properties";
+
 	private static final String APP_CLOUD_DATA_SOURCE_NAME = "__appCloudDataSource";
 	private static final String APP_CLOUD_JPA_MYSQL_REPLACEMENT_PROPERTIES = "__appCloudJpaMySQLReplacementProperties";
 	private static final String APP_CLOUD_HIBERNATE_MYSQL_REPLACEMENT_PROPERTIES = "__appCloudHibernateMySQLReplacementProperties";
 	private static final String APP_CLOUD_JPA_POSTGRESQL_REPLACEMENT_PROPERTIES = "__appCloudJpaPostgreSQLReplacementProperties";
 	private static final String APP_CLOUD_HIBERNATE_POSTGRESQL_REPLACEMENT_PROPERTIES = "__appCloudHibernatePostgreSQLReplacementProperties";
+	private static final String SHADED_PREFIX= "org.cloudfoundry";
 
 	public void postProcessBeanFactory(ConfigurableListableBeanFactory beanFactory) throws BeansException {
-		if (autoStagingOff()) {
+		if (autoStagingOff(beanFactory)) {
 			return;
 		}
-		
+
 		DefaultListableBeanFactory defaultListableBeanFactory = (DefaultListableBeanFactory) beanFactory;
-		
-		// defaultListableBeanFactory.getBean(CloudEnvironment.class) will do, 
+
+		// defaultListableBeanFactory.getBean(CloudEnvironment.class) will do,
 		// but we go through a mechanism that will work for spring-2.5.x as well
 		@SuppressWarnings("unchecked")
 		Map<String,CloudEnvironment> cloudEnvironmentBeans = defaultListableBeanFactory.getBeansOfType(CloudEnvironment.class);
@@ -77,44 +77,55 @@ public class CloudAutoStagingBeanFactoryPostProcessor implements BeanFactoryPost
 		} else {
 			cloudEnvironment = new CloudEnvironment();
 		}
-		 
+
 		if(processDatasources(defaultListableBeanFactory)) {
 			processJpaFactories(defaultListableBeanFactory);
 			processHibernateFactories(defaultListableBeanFactory);
 		}
 	}
 
-	private boolean autoStagingOff() {
-		return autoStagingOff(CLOUDFOUNDRY_PROPERTIES);
-	}
-	
 	/**
-	 * WARNING: Experimental support to opt out of autostaging, useful if autostaging comes in your way.
-	 * 
-	 * Turn off autostaging if we find a META-INF/cloudfoundry.properties on classpath and it
-	 * contains autostaging=false. Applications can opt-out of autostaging by adding a property 
-	 * to src/main/resources/META-INF/cloudfoundry.properties (assuming Maven layout).
-	 * 
-	 * @return return true to opt out of autostaging
+	 * Recommends disabling auto-staging if beans of the following types are
+	 * detected in the {@link ConfigurableListableBeanFactory} 1)
+	 * {@link AbstractCloudServiceFactory} (corresponding to the specification
+	 * of cloud:data-source, cloud:mongo-db-factory, etc) 2)
+	 * {@link CloudServicesAutoPopulator} (cloud:auto-populate)
+	 *
+	 * @param beanFactory
+	 *            The {@link ConfigurableListableBeanFactory} to check for bean
+	 *            definitions that should disable auto-staging
+	 * @return true if auto-staging should be turned off
 	 */
-	boolean autoStagingOff(String propertyLocation) {
-		try {
-			Resource cloudfoundryConfig = new DefaultResourceLoader().getResource(propertyLocation);
-			if (!cloudfoundryConfig.exists()) {
-				logger.log(Level.INFO, "No 'META-INF/cloudfoundry.properties' found, autostaging is active");
-				return false;
-			}
-			Properties cloudfoundryProperties = PropertiesLoaderUtils.loadProperties(cloudfoundryConfig);
-			String autostagingStringValue = cloudfoundryProperties.getProperty("autostaging", "true");
-			boolean autostagingValue = Boolean.valueOf(autostagingStringValue);
-			if (!autostagingValue) {
-				logger.log(Level.INFO, "Application requested to skip autostaging");
-			}
-			return !autostagingValue;
-		} catch (Exception ex) {
-			// Turn off autostaging if anything goes wrong in our detection
+	boolean autoStagingOff(ConfigurableListableBeanFactory beanFactory) {
+		if(usingCloudServices(beanFactory) || usingAutoPopulate(beanFactory)) {
 			return true;
 		}
+		logger.log(Level.INFO,"Autostaging is active.");
+		return false;
+	}
+
+	private boolean usingCloudServices(ConfigurableListableBeanFactory beanFactory) {
+		//Load the class dynamically and with name in multiple parts to avoid shade plugin rename
+		Class<?> cloudServiceFactoryClazz = loadClass(convertShadedClassName(AbstractCloudServiceFactory.class.getName()));
+		if(cloudServiceFactoryClazz == null || beanFactory.getBeanNamesForType(cloudServiceFactoryClazz).length == 0) {
+			return false;
+		}
+		logger.log(Level.INFO,"Found an instance of AbstractCloudServiceFactory.  Autostaging will be skipped.");
+		return true;
+	}
+
+	private boolean usingAutoPopulate(ConfigurableListableBeanFactory beanFactory) {
+		//Load the class dynamically and with name in multiple parts to avoid shade plugin rename
+		Class<?> autoPopulatorClass = loadClass(convertShadedClassName(CloudServicesAutoPopulator.class.getName()));
+		if(autoPopulatorClass == null || beanFactory.getBeanNamesForType(autoPopulatorClass).length == 0) {
+			return false;
+		}
+		logger.log(Level.INFO,"Found an instance of CloudServicesAutoPopulator.  Autostaging will be skipped.");
+		return true;
+	}
+
+	private String convertShadedClassName(String shadedClassName) {
+		return shadedClassName.substring(shadedClassName.lastIndexOf(SHADED_PREFIX));
 	}
 
 	// Let this be the last to process
@@ -139,7 +150,7 @@ public class CloudAutoStagingBeanFactoryPostProcessor implements BeanFactoryPost
 			if (label == null) {
 				continue;
 			}
-			
+
 			if (label.startsWith("postgresql")) {
 				try {
 					PostgresqlServiceCreator postgresqlCreationHelper = new PostgresqlServiceCreator(cloudEnvironment);
@@ -158,7 +169,7 @@ public class CloudAutoStagingBeanFactoryPostProcessor implements BeanFactoryPost
 				}
 			}
 		}
-		
+
 		if (dataSourceList.size() == 0) {
 			logger.log(Level.INFO, "No database service found. Skipping autostaging");
 			return false;
@@ -168,7 +179,7 @@ public class CloudAutoStagingBeanFactoryPostProcessor implements BeanFactoryPost
 		} else {
 			defaultListableBeanFactory.registerSingleton(APP_CLOUD_DATA_SOURCE_NAME, dataSourceList.get(0));
 		}
-		
+
 		for (String dataSourceBeanName : dataSourceBeanNames) {
 			if (dataSourceBeanName.equals(APP_CLOUD_DATA_SOURCE_NAME)) {
 				continue;
@@ -178,28 +189,28 @@ public class CloudAutoStagingBeanFactoryPostProcessor implements BeanFactoryPost
 		}
 		return true;
 	}
-	
+
 	private void processJpaFactories(DefaultListableBeanFactory beanFactory) {
 		for(Map<String, Object> service:  cloudEnvironment.getServices()) {
 			String label = (String) service.get("label");
-			
+
 			if (label == null) {
 				continue;
 			}
-			
+
 			if (label.startsWith("postgresql"))
 			{
-				processBeanProperties(beanFactory, "org.springframework.orm.jpa.AbstractEntityManagerFactoryBean", 
+				processBeanProperties(beanFactory, "org.springframework.orm.jpa.AbstractEntityManagerFactoryBean",
 						APP_CLOUD_JPA_POSTGRESQL_REPLACEMENT_PROPERTIES, "jpaProperties");
 			}
 			else if (label.startsWith("mysql"))
 			{
-				processBeanProperties(beanFactory, "org.springframework.orm.jpa.AbstractEntityManagerFactoryBean", 
+				processBeanProperties(beanFactory, "org.springframework.orm.jpa.AbstractEntityManagerFactoryBean",
 						APP_CLOUD_JPA_MYSQL_REPLACEMENT_PROPERTIES, "jpaProperties");
 			}
 		}
 	}
-	
+
 	private void processHibernateFactories(DefaultListableBeanFactory beanFactory) {
 		for(Map<String, Object> service:  cloudEnvironment.getServices()) {
 			String label = (String) service.get("label");
@@ -207,14 +218,14 @@ public class CloudAutoStagingBeanFactoryPostProcessor implements BeanFactoryPost
 				continue;
 			}
 			if (label.startsWith("postgresql")) {
-				processBeanProperties(beanFactory, "org.springframework.orm.hibernate3.AbstractSessionFactoryBean", 
+				processBeanProperties(beanFactory, "org.springframework.orm.hibernate3.AbstractSessionFactoryBean",
 						APP_CLOUD_HIBERNATE_POSTGRESQL_REPLACEMENT_PROPERTIES, "hibernateProperties");
 			}
 			else if (label.startsWith("mysql")) {
-				processBeanProperties(beanFactory, "org.springframework.orm.hibernate3.AbstractSessionFactoryBean", 
+				processBeanProperties(beanFactory, "org.springframework.orm.hibernate3.AbstractSessionFactoryBean",
 						APP_CLOUD_HIBERNATE_MYSQL_REPLACEMENT_PROPERTIES, "hibernateProperties");
 			}
-		}	
+		}
 	}
 
 	private void processBeanProperties(DefaultListableBeanFactory beanFactory,
@@ -235,7 +246,7 @@ public class CloudAutoStagingBeanFactoryPostProcessor implements BeanFactoryPost
 			BeanDefinition beanDefinition = getBeanDefinition(beanFactory, beanName);
 			MutablePropertyValues propertyValues = beanDefinition.getPropertyValues();
 			PropertyValue originalProperties = propertyValues.getPropertyValue(propertyKey);
-			
+
 			Properties originalPropertyValue = null;
 			if (originalProperties != null) {
 				Object value = originalProperties.getValue();
@@ -253,8 +264,8 @@ public class CloudAutoStagingBeanFactoryPostProcessor implements BeanFactoryPost
 			} else {
 				originalPropertyValue = new ManagedProperties();
 			}
-			
-			ManagedProperties replacementProperties 
+
+			ManagedProperties replacementProperties
 				= loadReplacementPropertyValues(beanFactory, replacementPropertiesName);
 			replacementProperties.setMergeEnabled(true);
 			replacementProperties = (ManagedProperties) replacementProperties.merge(originalPropertyValue);
@@ -270,10 +281,10 @@ public class CloudAutoStagingBeanFactoryPostProcessor implements BeanFactoryPost
 			throw new IllegalStateException("Error processing property replacement for a BeanDefinitionHolder", e);
 		}
 	}
-	
+
 	private Properties extractProperties(BeanReference beanReference, DefaultListableBeanFactory beanFactory) {
 		try {
-			BeanDefinition beanDefinition = getBeanDefinition(beanFactory, 
+			BeanDefinition beanDefinition = getBeanDefinition(beanFactory,
 																beanReference.getBeanName());
 			return getMapWrappingBeanProperties(beanDefinition);
 		} catch (Exception e) {
@@ -297,7 +308,7 @@ public class CloudAutoStagingBeanFactoryPostProcessor implements BeanFactoryPost
 			throw new IllegalStateException("Error processing property replacement for a TypedStringValue of value type " + value.getClass());
 		}
 	}
-	
+
 	private ManagedProperties loadReplacementPropertyValues(DefaultListableBeanFactory beanFactory, String replacementPropertiesName) {
 		BeanDefinition replacementPropertiesBeanDef = beanFactory.getBeanDefinition(replacementPropertiesName);
 		return (ManagedProperties) replacementPropertiesBeanDef.getPropertyValues().getPropertyValue("properties").getValue();
@@ -318,7 +329,7 @@ public class CloudAutoStagingBeanFactoryPostProcessor implements BeanFactoryPost
 				try {
 					if (getBeanDefinition(beanFactory, dataSourceBeanName) != null) {
 						realDSBeanNames.add(dataSourceBeanName);
-					} 
+					}
 				} catch (NoSuchBeanDefinitionException ex) {
 						// skip
 				}
@@ -326,7 +337,7 @@ public class CloudAutoStagingBeanFactoryPostProcessor implements BeanFactoryPost
 		}
 		return realDSBeanNames.toArray(new String[0]);
 	}
-	
+
 	private BeanDefinition getBeanDefinition(DefaultListableBeanFactory beanFactory, String beanName) {
 		if (beanName.startsWith(BeanFactory.FACTORY_BEAN_PREFIX)) {
 			beanName = beanName.substring(BeanFactory.FACTORY_BEAN_PREFIX.length());
@@ -334,7 +345,7 @@ public class CloudAutoStagingBeanFactoryPostProcessor implements BeanFactoryPost
 		return beanFactory.getBeanDefinition(beanName);
 
 	}
-	
+
 	@SuppressWarnings("unchecked")
 	private Properties getMapWrappingBeanProperties(BeanDefinition beanDefinition) {
 		if (beanDefinition.getBeanClassName().equals(PropertiesFactoryBean.class.getName())) {
@@ -362,12 +373,12 @@ public class CloudAutoStagingBeanFactoryPostProcessor implements BeanFactoryPost
 			return mapToProperties(sourceMap);
 		}
 	}
-	
+
 	private Properties loadPropertiesForLocation(PropertyValue locationPV) throws IOException {
 		Object locationValue = locationPV.getValue();
 		return loadPropertiesForLocation(locationValue);
 	}
-	
+
 	private Properties loadPropertiesForLocation(Object location) throws IOException {
 		if (location instanceof String) {
 			return PropertiesLoaderUtils.loadAllProperties((String) location);
@@ -391,7 +402,7 @@ public class CloudAutoStagingBeanFactoryPostProcessor implements BeanFactoryPost
 		}
 	}
 
-	
+
 	private Properties mapToProperties(Map<String, String> map) {
 		Properties properties = new Properties();
 		for (Map.Entry<String, String> entry : map.entrySet()) {
@@ -407,7 +418,7 @@ public class CloudAutoStagingBeanFactoryPostProcessor implements BeanFactoryPost
 			return null;
 		}
 	}
-	
+
 	private <T> boolean contains(T[] array, T searchElement) {
 		for (T element : array) {
 			if (element.equals(searchElement)) {
