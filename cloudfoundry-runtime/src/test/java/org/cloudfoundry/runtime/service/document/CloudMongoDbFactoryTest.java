@@ -10,7 +10,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
-import org.springframework.data.document.mongodb.MongoDbFactory;
+import org.springframework.data.mongodb.MongoDbFactory;
 
 public class CloudMongoDbFactoryTest {
 	@Mock private CloudEnvironment mockRuntime;
