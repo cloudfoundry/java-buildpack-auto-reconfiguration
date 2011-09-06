@@ -2,6 +2,7 @@ package org.cloudfoundry.reconfiguration;
 
 import static org.mockito.Mockito.when;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -15,6 +16,8 @@ import org.cloudfoundry.runtime.env.AbstractDataSourceServiceInfo;
 import org.cloudfoundry.runtime.env.CloudEnvironment;
 import org.cloudfoundry.runtime.env.MysqlServiceInfo;
 import org.cloudfoundry.runtime.env.PostgresqlServiceInfo;
+import org.cloudfoundry.runtime.service.AbstractCloudServiceFactory;
+import org.cloudfoundry.runtime.service.CloudServicesScanner;
 import org.hibernate.SessionFactory;
 import org.hibernate.impl.SessionFactoryImpl;
 import org.hibernate.impl.SessionImpl;
@@ -26,6 +29,8 @@ import org.mockito.MockitoAnnotations;
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
+import org.springframework.core.io.ClassPathResource;
+import org.springframework.core.io.Resource;
 import org.springframework.jdbc.datasource.AbstractDriverBasedDataSource;
 
 /**
@@ -34,15 +39,19 @@ import org.springframework.jdbc.datasource.AbstractDriverBasedDataSource;
  * This test uses a mock application context to introduce environment with services
  * to avoid the need of actual working application and services. The assertions
  * are made to check if the actual beans got replaced/not replaced with the mock beans.
- * 
+ *
  * @author Ramnivas Laddad
+ * @author Jennifer Hickey
  *
  */
 public class CloudFactoryAutoStagingBeanFactoryPostProcessorTest {
 	@Mock private MysqlServiceInfo mockMysqlServiceInfo;
 	@Mock private PostgresqlServiceInfo mockPostgresqlServiceInfo;
 	@Mock private CloudEnvironment mockEnvironment;
-	
+	@Mock private ConfigurableListableBeanFactory beanFactory;
+	@Mock private ApplicationContext applicationContext;
+	@Mock private Resource cloudServicesFile;
+
 	private CloudAutoStagingBeanFactoryPostProcessor testBFPP;
 
 	@Before
@@ -50,7 +59,7 @@ public class CloudFactoryAutoStagingBeanFactoryPostProcessorTest {
 		MockitoAnnotations.initMocks(this);
 		testBFPP = new CloudAutoStagingBeanFactoryPostProcessor();
 	}
-	
+
 	@Test
 	public void cloudDataSourceReplacesUserDataSourceIfMySqlServiceDetected() {
 		String serviceJdbcUrl = "jdbc:mysql://10.20.20.40:1234/mysql-1";
@@ -68,7 +77,7 @@ public class CloudFactoryAutoStagingBeanFactoryPostProcessorTest {
 		AbstractDriverBasedDataSource replacedDataSource = (AbstractDriverBasedDataSource) context.getBean("myDs", DataSource.class);
 		Assert.assertEquals(serviceJdbcUrl, replacedDataSource.getUrl());
 	}
-	
+
 	@Test
 	public void cloudDataSourceReplacesUserDataSourceIfPostgreSqlServiceDetected() {
 		String serviceJdbcUrl = "jdbc:postgresql://10.20.20.40:5432/mydb-1";
@@ -125,12 +134,12 @@ public class CloudFactoryAutoStagingBeanFactoryPostProcessorTest {
 		AbstractDriverBasedDataSource replacedDataSource = (AbstractDriverBasedDataSource) context.getBean("myDs", DataSource.class);
 		Assert.assertEquals("jdbc:hsql:localdb", replacedDataSource.getUrl());
 	}
-	
+
 	@Test
 	public void hibernateSessionFactoryDialectUpdated() {
 		assertApplicationContextProcessingForMysql("test-hibernate-good-context.xml");
 	}
-	
+
 	@Test
 	public void entityManagerFactoryMysqlDialectUpdated() {
 		String serviceJdbcUrl = "jdbc:mysql://10.20.20.40:1234/mysql-1";
@@ -151,7 +160,7 @@ public class CloudFactoryAutoStagingBeanFactoryPostProcessorTest {
 		SessionFactoryImpl underlyingSessionFactory = (SessionFactoryImpl) entityManagerDelegate.getSessionFactory();
 		Assert.assertEquals("org.hibernate.dialect.MySQLDialect", underlyingSessionFactory.getDialect().toString());
 	}
-	
+
 	@Test
 	public void entityManagerFactoryPostgresqlDialectUpdated() {
 		String serviceJdbcUrl = "jdbc:postgresql://10.20.20.40:5432/pg-1";
@@ -210,28 +219,72 @@ public class CloudFactoryAutoStagingBeanFactoryPostProcessorTest {
 	}
 
 	@Test
-	public void autostagingOffWhenPropertyFileSpecifiedOff() {
-		Assert.assertTrue(testBFPP.autoStagingOff("org/cloudfoundry/reconfiguration/test-autostaging-off.properties"));
+	public void autoStagingOffCloudServiceFound() throws IOException {
+		String cloudServicesFileLocation = "classpath:/org/cloudfoundry/reconfiguration/test-cloud-services-1";
+		when(applicationContext.getResources(cloudServicesFileLocation)).thenReturn(new Resource[] {
+				new ClassPathResource("/org/cloudfoundry/reconfiguration/test-cloud-services-1")} );
+		String[] beans = new String[] {"serviceScanBean"};
+		when(beanFactory.getBeanNamesForType(AbstractCloudServiceFactory.class)).thenReturn(new String[0]);
+		when(beanFactory.getBeanNamesForType(CloudServicesScanner.class)).thenReturn(beans);
+		testBFPP.setApplicationContext(applicationContext);
+		Assert.assertTrue(testBFPP.autoStagingOff(cloudServicesFileLocation,beanFactory));
+	}
+	@Test
+	public void autoStagingOffCloudServiceFoundMultipleFiles() throws IOException {
+		String cloudServicesFileLocation = "classpath:/org/cloudfoundry/reconfiguration/test-cloud-services-*";
+		when(applicationContext.getResources(cloudServicesFileLocation)).thenReturn(new Resource[] {
+				new ClassPathResource("/org/cloudfoundry/reconfiguration/test-cloud-services-1"), new ClassPathResource("/org/cloudfoundry/reconfiguration/test-cloud-services-2")} );
+		String[] beans = new String[] {"stringBean"};
+		when(beanFactory.getBeanNamesForType(AbstractCloudServiceFactory.class)).thenReturn(new String[0]);
+		when(beanFactory.getBeanNamesForType(CloudServicesScanner.class)).thenReturn(new String[0]);
+		when(beanFactory.getBeanNamesForType(String.class)).thenReturn(beans);
+		testBFPP.setApplicationContext(applicationContext);
+		Assert.assertTrue(testBFPP.autoStagingOff(cloudServicesFileLocation,beanFactory));
 	}
 
 	@Test
-	public void autostagingOnWhenPropertyFileSpecifiedOn() {
-		Assert.assertFalse(testBFPP.autoStagingOff("org/cloudfoundry/reconfiguration/test-autostaging-on.properties"));
+	public void autoStagingOffCloudServiceNotFound() throws IOException {
+		String cloudServicesFileLocation = "classpath:/org/cloudfoundry/reconfiguration/test-cloud-services-1";
+		when(applicationContext.getResources(cloudServicesFileLocation)).thenReturn(new Resource[] {
+				new ClassPathResource("/org/cloudfoundry/reconfiguration/test-cloud-services-1")} );
+		when(beanFactory.getBeanNamesForType(AbstractCloudServiceFactory.class)).thenReturn(new String[0]);
+		when(beanFactory.getBeanNamesForType(CloudServicesScanner.class)).thenReturn(new String[0]);
+		testBFPP.setApplicationContext(applicationContext);
+		Assert.assertFalse(testBFPP.autoStagingOff(cloudServicesFileLocation,beanFactory));
 	}
 
 	@Test
-	public void autostagingOnWhenPropertyFileEmpty() {
-		Assert.assertFalse(testBFPP.autoStagingOff("org/cloudfoundry/reconfiguration/test-autostaging-empty.properties"));
-	}
-	
-	@Test
-	public void autostagingOnWhenPropertyFileCorrupt() {
-		Assert.assertFalse(testBFPP.autoStagingOff("org/cloudfoundry/reconfiguration/test-autostaging-corrupt.properties"));
+	public void autoStagingOffCloudServiceClassNotFound() throws IOException {
+		String cloudServicesFileLocation = "classpath:/org/cloudfoundry/reconfiguration/test-invalid-cloud-services";
+		when(applicationContext.getResources(cloudServicesFileLocation)).thenReturn(new Resource[] {
+				new ClassPathResource("/org/cloudfoundry/reconfiguration/test-invalid-cloud-services")} );
+		testBFPP.setApplicationContext(applicationContext);
+		Assert.assertFalse(testBFPP.autoStagingOff(cloudServicesFileLocation,beanFactory));
 	}
 
 	@Test
-	public void autostagingOnWhenPropertyFileDoesntExist() {
-		Assert.assertFalse(testBFPP.autoStagingOff("file-that-doesnt-exist"));
+	public void autoStagingOffCloudServiceFilesNotFound() throws IOException {
+		String cloudServicesFileLocation = "classpath:/org/cloudfoundry/reconfiguration/test-nonexistent-cloud-services";
+		when(applicationContext.getResources(cloudServicesFileLocation)).thenReturn(new Resource[0]);
+		testBFPP.setApplicationContext(applicationContext);
+		Assert.assertFalse(testBFPP.autoStagingOff(cloudServicesFileLocation,beanFactory));
+	}
+
+	@Test
+	public void autoStagingOffErrorLookingForCloudServicesFile() throws IOException {
+		String cloudServicesFileLocation = "classpath:/org/cloudfoundry/reconfiguration/test-nonexistent-cloud-services";
+		when(applicationContext.getResources(cloudServicesFileLocation)).thenThrow(new IOException());
+		testBFPP.setApplicationContext(applicationContext);
+		Assert.assertFalse(testBFPP.autoStagingOff(cloudServicesFileLocation,beanFactory));
+	}
+
+	@Test
+	public void autoStagingOffErrorReadingCloudServicesFile() throws IOException {
+		String cloudServicesFileLocation = "classpath:/org/cloudfoundry/reconfiguration/test-nonexistent-cloud-services";
+		when(applicationContext.getResources(cloudServicesFileLocation)).thenReturn(new Resource[] {cloudServicesFile});
+		when(cloudServicesFile.getInputStream()).thenThrow(new IOException());
+		testBFPP.setApplicationContext(applicationContext);
+		Assert.assertFalse(testBFPP.autoStagingOff(cloudServicesFileLocation,beanFactory));
 	}
 
 	private void assertApplicationContextProcessingForMysql(String appContextFile) {
@@ -248,11 +301,11 @@ public class CloudFactoryAutoStagingBeanFactoryPostProcessorTest {
 
 		ApplicationContext context = getTestApplicationContext(appContextFile);
 		SessionFactoryImpl sessionFactory = (SessionFactoryImpl) context.getBean("sessionFactory", SessionFactory.class);
-		
+
 		Assert.assertEquals("org.hibernate.dialect.MySQLDialect", sessionFactory.getDialect().toString());
 
 	}
-	
+
 	private void assertApplicationContextProcessingForPostgresql(String appContextFile) {
 		String serviceJdbcUrl = "jdbc:postgresql://10.20.20.40:5432/pg-1";
 		List<PostgresqlServiceInfo> serviceInfos = new ArrayList<PostgresqlServiceInfo>();
@@ -267,12 +320,12 @@ public class CloudFactoryAutoStagingBeanFactoryPostProcessorTest {
 
 		ApplicationContext context = getTestApplicationContext(appContextFile);
 		SessionFactoryImpl sessionFactory = (SessionFactoryImpl) context.getBean("sessionFactory", SessionFactory.class);
-		
+
 		Assert.assertEquals("org.hibernate.dialect.PostgreSQLDialect", sessionFactory.getDialect().toString());
 	}
-	
-	private ApplicationContext getTestApplicationContext(String fileName) {
-		return new ClassPathXmlApplicationContext(new String[]{"org/cloudfoundry/reconfiguration/" + fileName, 
+
+	private ClassPathXmlApplicationContext getTestApplicationContext(String fileName) {
+		return new ClassPathXmlApplicationContext(new String[]{"org/cloudfoundry/reconfiguration/" + fileName,
 															  "META-INF/cloud/cloudfoundry-auto-reconfiguration-context.xml"}) {
 			@Override
 			protected void prepareBeanFactory(

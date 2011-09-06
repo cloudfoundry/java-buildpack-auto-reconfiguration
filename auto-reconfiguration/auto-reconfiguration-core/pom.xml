@@ -227,7 +227,8 @@
 							  <filter>
 							    <artifact>org.cloudfoundry:cloudfoundry-runtime</artifact>
 							    <excludes>
-							      <exclude>META-INF/**</exclude>
+							      <exclude>META-INF/*</exclude>
+							      <exclude>META-INF/maven*/**</exclude>
 							      <exclude>**/*.xsd</exclude>
 							      <exclude>**/*.gif</exclude>
 							    </excludes>
