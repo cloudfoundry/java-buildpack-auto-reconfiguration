@@ -76,11 +76,11 @@ public class ServiceController {
 
 	@RequestMapping(value = "/mongo", method = RequestMethod.GET)
 	public @ResponseBody
-	ResponseEntity<String> getMongoClass() {
+	ResponseEntity<String> getMongoHostAddress() {
 		if (serviceHolder.getMongoDbFactory() == null) {
 			return new ResponseEntity<String>(HttpStatus.NOT_FOUND);
 		}
-		return new ResponseEntity<String>(serviceHolder.getMongoDbFactory().getClass().getName(), HttpStatus.OK);
+		return new ResponseEntity<String>(serviceHolder.getMongoDbFactory().getDb().getMongo().getAddress().toString(), HttpStatus.OK);
 	}
 
 	@RequestMapping(value = "/rabbit", method = RequestMethod.GET)
