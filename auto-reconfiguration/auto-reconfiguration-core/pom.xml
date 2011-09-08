@@ -13,6 +13,7 @@
 		<relativePath>../auto-reconfiguration-parent</relativePath>
 	</parent>
 	<properties>
+	    <spring-data-mongo.version>1.0.0.M4</spring-data-mongo.version>
 		<spring.version>2.5.6</spring.version>
 	</properties>
 	<dependencies>
@@ -47,6 +48,13 @@
 			<groupId>org.springframework</groupId>
 			<artifactId>spring-orm</artifactId>
 			<version>${spring.version}</version>
+			<scope>provided</scope>
+		</dependency>
+
+		<dependency>
+			<groupId>org.springframework.data</groupId>
+			<artifactId>spring-data-mongodb</artifactId>
+			<version>${spring-data-mongo.version}</version>
 			<scope>provided</scope>
 		</dependency>
 
@@ -130,7 +138,7 @@
 				   </exclusion>
        </exclusions>
        <scope>provided</scope>
-    </dependency>                
+    </dependency>
 		<dependency>
 			<groupId>org.springframework</groupId>
 			<artifactId>spring-jdbc</artifactId>
