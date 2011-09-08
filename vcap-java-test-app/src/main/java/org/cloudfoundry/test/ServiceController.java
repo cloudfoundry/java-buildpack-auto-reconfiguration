@@ -48,8 +48,7 @@ public class ServiceController {
 	}
 
 	@RequestMapping(value = "/properties", method = RequestMethod.GET)
-	public @ResponseBody
-	ResponseEntity<Properties> getCloudProperties() {
+	public ResponseEntity<Properties> getCloudProperties() {
 		if (serviceHolder.getCloudProperties() == null) {
 			return new ResponseEntity<Properties>(HttpStatus.NOT_FOUND);
 		}
@@ -57,8 +56,7 @@ public class ServiceController {
 	}
 
 	@RequestMapping(value = "/mysql", method = RequestMethod.GET)
-	public @ResponseBody
-	ResponseEntity<String> getMySQLDataSourceDBUrl() {
+	public ResponseEntity<String> getMySQLDataSourceDBUrl() {
 		if (serviceHolder.getMySqlDataSource() == null) {
 			return new ResponseEntity<String>(HttpStatus.NOT_FOUND);
 		}
@@ -66,8 +64,7 @@ public class ServiceController {
 	}
 
 	@RequestMapping(value = "/postgres", method = RequestMethod.GET)
-	public @ResponseBody
-	ResponseEntity<String> getPostgresDataSourceDBUrl() {
+	public ResponseEntity<String> getPostgresDataSourceDBUrl() {
 		if (serviceHolder.getPostgresDataSource() == null) {
 			return new ResponseEntity<String>(HttpStatus.NOT_FOUND);
 		}
@@ -75,17 +72,16 @@ public class ServiceController {
 	}
 
 	@RequestMapping(value = "/mongo", method = RequestMethod.GET)
-	public @ResponseBody
-	ResponseEntity<String> getMongoClass() {
+	public ResponseEntity<String> getMongoHostAddress() {
 		if (serviceHolder.getMongoDbFactory() == null) {
 			return new ResponseEntity<String>(HttpStatus.NOT_FOUND);
 		}
-		return new ResponseEntity<String>(serviceHolder.getMongoDbFactory().getClass().getName(), HttpStatus.OK);
+		return new ResponseEntity<String>(serviceHolder.getMongoDbFactory().getDb().getMongo().getAddress().toString(),
+				HttpStatus.OK);
 	}
 
 	@RequestMapping(value = "/rabbit", method = RequestMethod.GET)
-	public @ResponseBody
-	ResponseEntity<String> getRabbitClass() {
+	public ResponseEntity<String> getRabbitClass() {
 		if (serviceHolder.getRabbitConnectionFactory() == null) {
 			return new ResponseEntity<String>(HttpStatus.NOT_FOUND);
 		}
@@ -94,8 +90,7 @@ public class ServiceController {
 	}
 
 	@RequestMapping(value = "/redis", method = RequestMethod.GET)
-	public @ResponseBody
-	ResponseEntity<String> getRedisClass() {
+	public ResponseEntity<String> getRedisClass() {
 		if (serviceHolder.getRedisConnectionFactory() == null) {
 			return new ResponseEntity<String>(HttpStatus.NOT_FOUND);
 		}

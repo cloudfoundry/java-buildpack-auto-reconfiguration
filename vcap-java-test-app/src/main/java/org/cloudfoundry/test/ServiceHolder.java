@@ -50,8 +50,7 @@ public class ServiceHolder {
 	@Autowired(required=false)
 	private RedisConnectionFactory redisConnectionFactory;
 
-	//Qualifier doesn't seem to work if Autowired is not required.  Need to investigate further if we add a profile that doesn't have a MySQL DataSource
-	@Autowired
+	@Autowired(required=false)
 	@Qualifier("test_mysql_database")
 	private DataSource mysqlDataSource;
 
