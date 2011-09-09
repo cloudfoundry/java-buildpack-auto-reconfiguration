@@ -21,6 +21,8 @@ import org.codehaus.jackson.map.ObjectMapper;
  * 
  * @author Ramnivas Laddad
  * @author Scott Andrews
+ * @author Thomas Risberg
+ *
  */
 public class CloudEnvironment {
 
@@ -42,10 +44,10 @@ public class CloudEnvironment {
 	}
 
 	static {
-		labelledServiceType(MysqlServiceInfo.class, "mysql-5.1");
+		labelledServiceType(RdbmsServiceInfo.class, "mysql-5.1");
+		labelledServiceType(RdbmsServiceInfo.class, "postgresql-9.0");
 		labelledServiceType(RedisServiceInfo.class, "redis-2.2");
 		labelledServiceType(MongoServiceInfo.class, "mongodb-1.8");
-		labelledServiceType(PostgresqlServiceInfo.class, "postgresql-9.0");
 
                 // the old rabbitmq service
 		labelledServiceType(RabbitServiceInfo.class, "rabbitmq-2.4");

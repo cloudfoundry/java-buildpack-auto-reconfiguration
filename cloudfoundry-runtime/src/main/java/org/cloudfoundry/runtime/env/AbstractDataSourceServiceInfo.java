@@ -6,16 +6,19 @@ import java.util.Map;
  * Base information for all database service types
  * 
  * @author Xin Li
+ * @author Thomas Risberg
  * 
  **/
 
 abstract public class AbstractDataSourceServiceInfo extends BaseServiceInfo {
 	private String database;
 	private String userName;
+	private String label;
 
 	public AbstractDataSourceServiceInfo(Map<String, Object> serviceInfo) {
 		super(serviceInfo);
 		
+		label = (String) serviceInfo.get("label");
 		@SuppressWarnings("unchecked")
 		Map<String, Object> credentials = (Map<String, Object>) serviceInfo.get("credentials");
 		database = (String) credentials.get("name");
@@ -30,5 +33,9 @@ abstract public class AbstractDataSourceServiceInfo extends BaseServiceInfo {
 
 	public String getDatabase() {
 		return database;
+	}
+
+	public String getLabel() {
+		return label;
 	}
 }
