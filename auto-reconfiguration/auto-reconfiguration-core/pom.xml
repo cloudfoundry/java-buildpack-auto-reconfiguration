@@ -14,7 +14,7 @@
 		<relativePath>../auto-reconfiguration-parent</relativePath>
 	</parent>
 	<properties>
-		<spring.version>2.5.6</spring.version>
+		<supported.spring.version>3.1.0.M2</supported.spring.version>
 	</properties>
 	<dependencies>
 		<dependency>
@@ -26,7 +26,7 @@
 		<dependency>
 			<groupId>org.springframework</groupId>
 			<artifactId>spring-context</artifactId>
-			<version>${spring.version}</version>
+			<version>${supported.spring.version}</version>
 			<exclusions>
 				<!-- Exclude Commons Logging in favor of SLF4j -->
 				<exclusion>
@@ -47,7 +47,7 @@
 		<dependency>
 			<groupId>org.springframework</groupId>
 			<artifactId>spring-orm</artifactId>
-			<version>${spring.version}</version>
+			<version>${supported.spring.version}</version>
 			<scope>provided</scope>
 		</dependency>
 
@@ -135,7 +135,7 @@
 		<dependency>
 			<groupId>org.springframework</groupId>
 			<artifactId>spring-jdbc</artifactId>
-			<version>${spring.version}</version>
+			<version>${supported.spring.version}</version>
 			<scope>test</scope>
 		</dependency>
 	<dependency>

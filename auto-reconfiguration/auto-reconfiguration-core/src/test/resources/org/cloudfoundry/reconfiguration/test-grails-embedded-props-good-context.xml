@@ -19,7 +19,7 @@
 		<property name="dataSource" ref="myDs"/>
 		<property name="hibernateProperties">
 			<util:map>
-				<entry key="hibernate.dialect" value="dialect.that.doesnt.exist.and.should.be.auto_replaced"/>
+				<entry key="hibernate.dialect" value="org.hibernate.dialect.HSQLDialect"/>
 				<entry key="hibernate.show_sql" value="true"/>
 				<entry key="hibernate.generate_statistics" value="false"/>
 			  <!--  To avoid connecting to database during testing -->
