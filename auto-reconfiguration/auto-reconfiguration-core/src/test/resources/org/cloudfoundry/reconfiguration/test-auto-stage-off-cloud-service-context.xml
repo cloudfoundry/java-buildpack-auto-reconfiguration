@@ -8,7 +8,7 @@
 	<!-- Using the bean directly instead of cloud:data-source b/c there is no
 		way to mock CloudEnvironment when using namespace -->
 	<bean
-		class="org.cloudfoundry.runtime.service.relational.CloudMySqlDataSourceFactory">
+		class="org.cloudfoundry.runtime.service.relational.CloudDataSourceFactory">
 		<constructor-arg ref="test-cloudEnvironment" />
 	</bean>
 

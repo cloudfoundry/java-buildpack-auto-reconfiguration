@@ -95,7 +95,7 @@ public class CloudEnvironmentTest {
 										   null,
 										   null,
 										   null));
-		MysqlServiceInfo info = testRuntime.getServiceInfo("mysql-1", MysqlServiceInfo.class);
+		RdbmsServiceInfo info = testRuntime.getServiceInfo("mysql-1", RdbmsServiceInfo.class);
 		assertEquals("mysql-1", info.getServiceName());
 		assertEquals("jdbc:mysql://"+ hostname + ":" + port + "/database-123", info.getUrl());
 		assertEquals(username, info.getUserName());
@@ -109,7 +109,7 @@ public class CloudEnvironmentTest {
 		    		null,
 		    		null,
 		    		null));
-		PostgresqlServiceInfo info = testRuntime.getServiceInfo("postgresql-1", PostgresqlServiceInfo.class);
+		RdbmsServiceInfo info = testRuntime.getServiceInfo("postgresql-1", RdbmsServiceInfo.class);
 		assertEquals("postgresql-1", info.getServiceName());
 		assertEquals("jdbc:postgresql://" + hostname + ":" + port + "/db-123", info.getUrl());
 		assertEquals(username, info.getUserName());
