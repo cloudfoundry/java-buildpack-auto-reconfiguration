@@ -1,11 +1,14 @@
 require 'yaml'
 require 'fileutils'
 require 'digest/md5'
+require 'digest/sha1'
 require 'tmpdir'
-require 'pp'
+require 'erb'
 
 update_steps = [#'tomcat:download',
                 #'tomcat:prepare',
+                #'tomcat:package',
+                #'tomcat:fingerprint',
                 'tomcat:install']
 
 desc "Update Tomcat installation used by Cloud Foundry"
@@ -16,7 +19,7 @@ namespace "tomcat" do
   task :download do
     puts "\nStarting Tomcat download"
     manifest_file = "tomcat_manifest.yml"
-    @manifest = YAML.load_file(manifest_file)
+    @manifest = load_yaml(manifest_file)
     @download_dest = File.join(Dir.tmpdir, "tomcat-v#{@manifest['version']}")
     puts "\tDownloading Tomcat v#{@manifest['version']} from '#{@manifest['download_uri']}' to '#{@download_dest}'"
     if File.exists?(@download_dest)
@@ -32,7 +35,7 @@ namespace "tomcat" do
     puts "Tomcat download completed"
   end
 
-  desc "Prepare Tomcat for CloudFoundry"
+  desc "Prepare Tomcat for Cloud Foundry"
   task :prepare => 'tomcat:download' do
     puts "\nPreparing Tomcat"
     Dir.chdir(@download_dest) do
@@ -46,24 +49,51 @@ namespace "tomcat" do
     handle_clear_dirs
     handle_remove_files
     handle_add_jars
-    Dir.chdir(@download_dest) do
-      system "zip -q -r tomcat.zip tomcat"
-    end
     puts "Tomcat prepare completed"
   end
 
-  desc "Copying Tomcat into CloudFoundry"
-  task :install => 'tomcat:prepare' do
-    puts "\nCopying Tomcat"
-      FileUtils.copy(File.join(@download_dest, "tomcat.zip"), @manifest['destination'])
-    puts "Tomcat copy completed\n"
+  desc "Generate the Tomcat for Cloud Foundry package"
+  task :package => 'tomcat:prepare' do
+    puts "\nGenerating Tomcat for Cloud Foundry package"
+    Dir.chdir(@download_dest) do
+      system "zip -q -r tomcat.zip tomcat"
+    end
+    puts "Tomcat for Cloud Foundry package generation completed"
+  end
+
+  desc "Generate SHA1 fingerprint of the Cloud Foundry Tomcat package"
+  task :fingerprint => 'tomcat:package' do
+    # Note: This fingerprint is used in a specific manner -
+    # A unit test in the CloudController component consults this fingerprint
+    # and verifies that it matches the fingerprint of the Tomcat package used
+    # by the CloudContoller for Java apps thus ensuring that the Tomcat package
+    # was not somehow modified outside of this update script.
+    puts "\nFingerprinting Tomcat prepared for Cloud Foundry"
+    target_file = File.join(@download_dest, "tomcat.zip")
+    digest = Digest::SHA1.file(target_file).hexdigest
+    puts "\tFingerprint of Tomcat package: '#{digest}'"
+    save_fingerprint digest
+    puts "Fingerprint of Tomcat for Cloud Foundry completed"
+  end
+
+  desc "Installing Tomcat into Cloud Foundry code-base"
+  task :install => 'tomcat:fingerprint' do
+    puts "\nInstalling Tomcat into CloudFoundry code-base"
+    source = File.join(@download_dest, "tomcat.zip")
+    dest = @manifest['destination']
+    puts "\tCopying Tomcat from '#{source}' to '#{dest}'"
+    FileUtils.copy(source, dest)
+    puts "Tomcat install into Cloud Foundry code-base completed\n"
   end
 
   def verify_download
     puts "\tVerifying download"
-    digest = Digest::MD5.hexdigest(File.read(@download_file))
+    # Note that we have to use MD5 here because that is the digest type
+    # published by Apache.
+    digest = Digest::MD5.file(@download_file).hexdigest
     md5sum = IO.readlines("#{@download_file}.md5")[0].split[0]
     raise "MD5Sum verification check failed" unless digest == md5sum
+    puts "\tDownload verification completed"
   end
 
   def handle_replace_files
@@ -98,8 +128,22 @@ namespace "tomcat" do
     @manifest['add_jars'].each do |file|
       target_file = File.join(@targetdir, file)
       source_file = File.join("resources", file)
-      puts "\tCopying jar '#{source_file}' to '#{target_file}"
+      puts "\tCopying jar '#{source_file}' to '#{target_file}'"
       FileUtils.copy(source_file, target_file)
+    end
+  end
+
+  def save_fingerprint digest
+    digest_file = @manifest['digest']
+    puts "\tSaving fingerprint in '#{digest_file}'"
+    # Digest file follows the conventions as per the Apache Tomcat MD5 file
+    File.open(digest_file, 'w') {|f| f.puts("#{digest} *tomcat.zip") }
+  end
+
+  def load_yaml(path)
+    File.open(path, 'rb') do |fh|
+      yaml = ERB.new(fh.read).result(binding)
+      return YAML.load(yaml)
     end
   end
 
