@@ -20,6 +20,7 @@ import java.util.Properties;
 
 import javax.servlet.http.HttpServletResponse;
 
+import org.hibernate.impl.SessionFactoryImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.connection.jedis.JedisConnectionFactory;
 import org.springframework.http.HttpStatus;
@@ -103,8 +104,19 @@ public class ServiceController {
 		if (serviceHolder.getRedisConnectionFactory() == null) {
 			return new ResponseEntity<String>(HttpStatus.NOT_FOUND);
 		}
-		//Jedis is the only client we currently support
-		JedisConnectionFactory jedisConnectionFactory = (JedisConnectionFactory)serviceHolder.getRedisConnectionFactory();
-		return new ResponseEntity<String>(jedisConnectionFactory.getHostName() + ':' + jedisConnectionFactory.getPort(), HttpStatus.OK);
+		// Jedis is the only client we currently support
+		JedisConnectionFactory jedisConnectionFactory = (JedisConnectionFactory) serviceHolder
+				.getRedisConnectionFactory();
+		return new ResponseEntity<String>(
+				jedisConnectionFactory.getHostName() + ':' + jedisConnectionFactory.getPort(), HttpStatus.OK);
+	}
+
+	@RequestMapping(value = "/hibernate", method = RequestMethod.GET)
+	public ResponseEntity<String> getHibernateDialectClass() {
+		if (serviceHolder.getSessionFactory() == null) {
+			return new ResponseEntity<String>(HttpStatus.NOT_FOUND);
+		}
+		return new ResponseEntity<String>(((SessionFactoryImpl)serviceHolder.getSessionFactory()).getDialect().getClass().getName(),
+				HttpStatus.OK);
 	}
 }

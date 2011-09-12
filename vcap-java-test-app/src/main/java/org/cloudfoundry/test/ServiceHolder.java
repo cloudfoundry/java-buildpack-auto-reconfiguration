@@ -20,6 +20,7 @@ import java.util.Properties;
 import javax.sql.DataSource;
 
 import org.apache.tomcat.dbcp.dbcp.BasicDataSource;
+import org.hibernate.SessionFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.amqp.rabbit.connection.ConnectionFactory;
@@ -62,6 +63,9 @@ public class ServiceHolder {
 	@Qualifier("test_postgres_database")
 	private DataSource postgresDataSource;
 
+	@Autowired(required=false)
+	private SessionFactory sessionFactory;
+
 	public MongoDbFactory getMongoDbFactory() {
 		return mongoDbFactory;
 	}
@@ -85,5 +89,9 @@ public class ServiceHolder {
 
 	public BasicDataSource getPostgresDataSource() {
 		return (BasicDataSource) postgresDataSource;
+	}
+
+	public SessionFactory getSessionFactory() {
+		return sessionFactory;
 	}
 }

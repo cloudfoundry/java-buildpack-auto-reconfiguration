@@ -59,4 +59,31 @@ http://www.springframework.org/schema/mvc/spring-mvc-3.1.xsd">
 		<cloud:service-scan />
 	</beans>
 
+	<beans profile="hibernate-auto-staging">
+		<bean name="test_mysql_database"
+			class="org.springframework.jdbc.datasource.DriverManagerDataSource">
+			<property name="url" value="jdbc:hsql:localdb" />
+		</bean>
+
+		<bean name="txAwareDXProxy"
+			class="org.springframework.jdbc.datasource.TransactionAwareDataSourceProxy">
+			<property name="targetDataSource" ref="test_mysql_database" />
+		</bean>
+
+		<bean id="sessionFactory"
+			class="org.springframework.orm.hibernate3.LocalSessionFactoryBean"
+			lazy-init="true">
+			<property name="dataSource" ref="test_mysql_database" />
+			<property name="hibernateProperties">
+				<props>
+					<prop key="hibernate.dialect">org.hibernate.dialect.HSQLDialect</prop>
+					<prop key="hibernate.show_sql">true</prop>
+					<prop key="hibernate.generate_statistics">false</prop>
+					<!-- To avoid connecting to database during testing -->
+					<prop key="hibernate.temp.use_jdbc_metadata_defaults">false</prop>
+				</props>
+			</property>
+		</bean>
+	</beans>
+
 </beans>

@@ -14,7 +14,7 @@
 	</parent>
 	<properties>
 	    <spring-data-mongo.version>1.0.0.M4</spring-data-mongo.version>
-		<spring.version>2.5.6</spring.version>
+		<spring.version>3.1.0.M2</spring.version>
 		<spring-data-redis.version>1.0.0.M4</spring-data-redis.version>
 	</properties>
 	<dependencies>

@@ -42,15 +42,23 @@ public class HibernateConfigurer implements Configurer {
 				continue;
 			}
 			if (label.startsWith("postgresql")) {
-				propertyReplacer.replaceProperty(beanFactory, "org.springframework.orm.hibernate3.AbstractSessionFactoryBean",
-						APP_CLOUD_HIBERNATE_POSTGRESQL_REPLACEMENT_PROPERTIES, "hibernateProperties");
+				replaceHibernateProperties(APP_CLOUD_HIBERNATE_POSTGRESQL_REPLACEMENT_PROPERTIES,beanFactory);
 				configured = true;
 			} else if (label.startsWith("mysql")) {
-				propertyReplacer.replaceProperty(beanFactory, "org.springframework.orm.hibernate3.AbstractSessionFactoryBean",
-						APP_CLOUD_HIBERNATE_MYSQL_REPLACEMENT_PROPERTIES, "hibernateProperties");
+				replaceHibernateProperties(APP_CLOUD_HIBERNATE_MYSQL_REPLACEMENT_PROPERTIES,beanFactory);
 				configured = true;
 			}
 		}
 		return configured;
 	}
+
+	private void replaceHibernateProperties(String replacementPropertiesBeanName, DefaultListableBeanFactory beanFactory) {
+		propertyReplacer.replaceProperty(beanFactory, "org.springframework.orm.hibernate3.AbstractSessionFactoryBean",
+				replacementPropertiesBeanName, "hibernateProperties");
+		// Spring 3.1
+		propertyReplacer.replaceProperty(beanFactory,
+				"org.springframework.orm.hibernate3.SessionFactoryBuilderSupport", replacementPropertiesBeanName,
+				"hibernateProperties");
+	}
+
 }
