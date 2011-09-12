@@ -239,14 +239,21 @@ public class CloudAutoStagingBeanFactoryPostProcessor implements BeanFactoryPost
 				continue;
 			}
 			if (label.startsWith("postgresql")) {
-				processBeanProperties(beanFactory, "org.springframework.orm.hibernate3.AbstractSessionFactoryBean",
-						APP_CLOUD_HIBERNATE_POSTGRESQL_REPLACEMENT_PROPERTIES, "hibernateProperties");
+				replaceHibernateProperties(APP_CLOUD_HIBERNATE_POSTGRESQL_REPLACEMENT_PROPERTIES, beanFactory);
 			}
 			else if (label.startsWith("mysql")) {
-				processBeanProperties(beanFactory, "org.springframework.orm.hibernate3.AbstractSessionFactoryBean",
-						APP_CLOUD_HIBERNATE_MYSQL_REPLACEMENT_PROPERTIES, "hibernateProperties");
+				replaceHibernateProperties(APP_CLOUD_HIBERNATE_MYSQL_REPLACEMENT_PROPERTIES, beanFactory);
 			}
 		}
+	}
+
+	private void replaceHibernateProperties(String replacementPropertiesBeanName, DefaultListableBeanFactory beanFactory) {
+		processBeanProperties(beanFactory, "org.springframework.orm.hibernate3.AbstractSessionFactoryBean",
+				replacementPropertiesBeanName, "hibernateProperties");
+		// Spring 3.1
+		processBeanProperties(beanFactory,
+				"org.springframework.orm.hibernate3.SessionFactoryBuilderSupport", replacementPropertiesBeanName,
+				"hibernateProperties");
 	}
 
 	private void processBeanProperties(DefaultListableBeanFactory beanFactory,
