@@ -57,8 +57,7 @@ public class MongoConfigurerTest {
 	@Before
 	public void setup() {
 		MockitoAnnotations.initMocks(this);
-		this.mongoConfigurer = new MongoConfigurer(mockEnvironment);
-		this.mongoConfigurer.setServiceCreator(serviceCreator);
+		this.mongoConfigurer = new MongoConfigurer(mockEnvironment, serviceCreator);
 	}
 
 	@Test
@@ -129,6 +128,23 @@ public class MongoConfigurerTest {
 				isA(MongoDbFactory.class));
 		verify(beanFactory, never()).removeBeanDefinition(isA(String.class));
 		verify(beanFactory, never()).registerAlias(eq(MongoConfigurer.CF_MONGO_DB_FACTORY_NAME), isA(String.class));
+	}
+
+	@Test
+	public void doesNothingIfMongoDbFactoryClassNotFound() {
+		MongoConfigurer configurer = new MockMongoConfigurer(mockEnvironment, serviceCreator);
+		assertFalse(configurer.configure(beanFactory));
+	}
+
+	private class MockMongoConfigurer extends MongoConfigurer {
+		public MockMongoConfigurer(CloudEnvironment cloudEnvironment, MongoServiceCreator serviceCreator) {
+			super(cloudEnvironment, serviceCreator);
+		}
+
+		@Override
+		protected Class<?> loadClass(String name) {
+			return null;
+		}
 	}
 
 }
