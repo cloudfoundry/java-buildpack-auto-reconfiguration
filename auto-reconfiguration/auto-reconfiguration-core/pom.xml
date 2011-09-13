@@ -15,6 +15,7 @@
 	<properties>
 	    <spring-data-mongo.version>1.0.0.M4</spring-data-mongo.version>
 		<spring.version>2.5.6</spring.version>
+		<spring-data-redis.version>1.0.0.M4</spring-data-redis.version>
 	</properties>
 	<dependencies>
 		<dependency>
@@ -150,6 +151,12 @@
 	  <artifactId>servlet-api</artifactId>
 	  <version>2.5</version>
 	  <scope>provided</scope>
+	</dependency>
+	<dependency>
+		<groupId>org.springframework.data</groupId>
+		<artifactId>spring-data-redis</artifactId>
+		<version>${spring-data-redis.version}</version>
+		<scope>provided</scope>
 	</dependency>
 	</dependencies>
 	<build>
