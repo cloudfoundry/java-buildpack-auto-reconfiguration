@@ -1,12 +1,12 @@
 package org.cloudfoundry.reconfiguration.data.document;
 
-import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.assertFalse;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
-import static org.mockito.Mockito.never;
+import static org.junit.Assert.assertTrue;
 import static org.mockito.Matchers.eq;
 import static org.mockito.Matchers.isA;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 import java.net.UnknownHostException;
 import java.util.ArrayList;
@@ -14,7 +14,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.cloudfoundry.runtime.env.CloudEnvironment;
 import org.cloudfoundry.runtime.env.CloudServiceException;
 import org.cloudfoundry.runtime.service.AbstractServiceCreator.ServiceNameTuple;
 import org.cloudfoundry.runtime.service.document.MongoServiceCreator;
@@ -44,21 +43,14 @@ import com.mongodb.MongoException;
 public class MongoConfigurerTest {
 
 	@Mock
-	private CloudEnvironment mockEnvironment;
-
-	@Mock
 	private DefaultListableBeanFactory beanFactory;
 
 	@Mock
 	private MongoServiceCreator serviceCreator;
 
-	private MongoConfigurer mongoConfigurer;
-
 	@Before
 	public void setup() {
 		MockitoAnnotations.initMocks(this);
-		this.mongoConfigurer = new MongoConfigurer(mockEnvironment);
-		this.mongoConfigurer.setServiceCreator(serviceCreator);
 	}
 
 	@Test
@@ -72,7 +64,7 @@ public class MongoConfigurerTest {
 		service.put("label", "mongodb-1.8");
 		List<Map<String, Object>> serviceList = new ArrayList<Map<String, Object>>();
 		serviceList.add(service);
-		when(mockEnvironment.getServices()).thenReturn(serviceList);
+		MongoConfigurer mongoConfigurer = new MongoConfigurer(serviceList, serviceCreator);
 		when(beanFactory.getBeanNamesForType(MongoDbFactory.class)).thenReturn(new String[] { mongoBeanName });
 		when(serviceCreator.createSingletonService()).thenReturn(expectedService);
 		assertTrue(mongoConfigurer.configure(beanFactory));
@@ -83,6 +75,7 @@ public class MongoConfigurerTest {
 
 	@Test
 	public void leavesOriginalInPlaceIfMultipleBeansDetected() {
+		MongoConfigurer mongoConfigurer = new MongoConfigurer(new ArrayList<Map<String, Object>>(), serviceCreator);
 		when(beanFactory.getBeanNamesForType(MongoDbFactory.class)).thenReturn(new String[] { "bean1", "bean2" });
 		assertFalse(mongoConfigurer.configure(beanFactory));
 		verify(beanFactory, never()).registerSingleton(eq(MongoConfigurer.CF_MONGO_DB_FACTORY_NAME),
@@ -98,7 +91,7 @@ public class MongoConfigurerTest {
 		service.put("label", "mongodb-1.8");
 		List<Map<String, Object>> serviceList = new ArrayList<Map<String, Object>>();
 		serviceList.add(service);
-		when(mockEnvironment.getServices()).thenReturn(serviceList);
+		MongoConfigurer mongoConfigurer = new MongoConfigurer(serviceList, serviceCreator);
 		when(beanFactory.getBeanNamesForType(MongoDbFactory.class)).thenReturn(new String[] { mongoBeanName });
 		when(serviceCreator.createSingletonService()).thenThrow(new CloudServiceException("Multiple services"));
 		assertFalse(mongoConfigurer.configure(beanFactory));
@@ -113,7 +106,7 @@ public class MongoConfigurerTest {
 		String mongoBeanName = "testMongoDb";
 		when(beanFactory.getBeanNamesForType(MongoDbFactory.class)).thenReturn(new String[] { mongoBeanName });
 		List<Map<String, Object>> serviceList = new ArrayList<Map<String, Object>>();
-		when(mockEnvironment.getServices()).thenReturn(serviceList);
+		MongoConfigurer mongoConfigurer = new MongoConfigurer(serviceList, serviceCreator);
 		assertFalse(mongoConfigurer.configure(beanFactory));
 		verify(beanFactory, never()).registerSingleton(eq(MongoConfigurer.CF_MONGO_DB_FACTORY_NAME),
 				isA(MongoDbFactory.class));
@@ -123,12 +116,30 @@ public class MongoConfigurerTest {
 
 	@Test
 	public void doesNothingIfNoMongoBeansDetected() {
+		MongoConfigurer mongoConfigurer = new MongoConfigurer(new ArrayList<Map<String, Object>>(), serviceCreator);
 		when(beanFactory.getBeanNamesForType(MongoDbFactory.class)).thenReturn(new String[0]);
 		assertFalse(mongoConfigurer.configure(beanFactory));
 		verify(beanFactory, never()).registerSingleton(eq(MongoConfigurer.CF_MONGO_DB_FACTORY_NAME),
 				isA(MongoDbFactory.class));
 		verify(beanFactory, never()).removeBeanDefinition(isA(String.class));
 		verify(beanFactory, never()).registerAlias(eq(MongoConfigurer.CF_MONGO_DB_FACTORY_NAME), isA(String.class));
+	}
+
+	@Test
+	public void doesNothingIfMongoDbFactoryClassNotFound() {
+		MongoConfigurer configurer = new StubMongoConfigurer(new ArrayList<Map<String, Object>>(), serviceCreator);
+		assertFalse(configurer.configure(beanFactory));
+	}
+
+	private class StubMongoConfigurer extends MongoConfigurer {
+		public StubMongoConfigurer(List<Map<String, Object>> cloudServices, MongoServiceCreator serviceCreator) {
+			super(cloudServices, serviceCreator);
+		}
+
+		@Override
+		protected Class<?> loadClass(String name) {
+			return null;
+		}
 	}
 
 }

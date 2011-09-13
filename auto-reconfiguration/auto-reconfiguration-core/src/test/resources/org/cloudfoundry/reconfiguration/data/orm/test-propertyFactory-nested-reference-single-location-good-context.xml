@@ -10,7 +10,7 @@
 	<bean name="myDs" class="org.springframework.jdbc.datasource.DriverManagerDataSource">
 		<property name="url" value="jdbc:hsql:localdb" />
 	</bean>
-	
+
 	<bean name="txAwareDXProxy" class="org.springframework.jdbc.datasource.TransactionAwareDataSourceProxy">
 		<property name="targetDataSource" ref="myDs"/>
 	</bean>
@@ -24,11 +24,10 @@
 		<property name="properties">
 			<bean class="org.springframework.beans.factory.config.PropertiesFactoryBean">
 				<property name="location">
-					<value>org/cloudfoundry/reconfiguration/hibernate.test.properties</value>
+					<value>org/cloudfoundry/reconfiguration/data/orm/hibernate.test.properties</value>
 				</property>
 			</bean>
 		</property>
 	</bean>
 
 </beans>
- 

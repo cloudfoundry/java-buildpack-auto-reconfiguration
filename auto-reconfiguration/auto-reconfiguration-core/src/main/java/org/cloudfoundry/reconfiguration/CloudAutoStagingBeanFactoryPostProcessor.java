@@ -4,6 +4,7 @@ package org.cloudfoundry.reconfiguration;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.util.List;
 import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -11,8 +12,13 @@ import java.util.logging.Logger;
 import javax.sql.DataSource;
 
 import org.cloudfoundry.reconfiguration.data.document.MongoConfigurer;
+import org.cloudfoundry.reconfiguration.data.keyvalue.RedisConfigurer;
 import org.cloudfoundry.reconfiguration.data.relational.DataSourceConfigurer;
 import org.cloudfoundry.runtime.env.CloudEnvironment;
+import org.cloudfoundry.runtime.service.document.MongoServiceCreator;
+import org.cloudfoundry.runtime.service.keyvalue.RedisServiceCreator;
+import org.cloudfoundry.runtime.service.relational.MysqlServiceCreator;
+import org.cloudfoundry.runtime.service.relational.PostgresqlServiceCreator;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.config.BeanFactoryPostProcessor;
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
@@ -64,8 +70,13 @@ public class CloudAutoStagingBeanFactoryPostProcessor implements BeanFactoryPost
 		} else {
 			cloudEnvironment = new CloudEnvironment();
 		}
-		new DataSourceConfigurer(cloudEnvironment).configure( defaultListableBeanFactory);
-		new MongoConfigurer(cloudEnvironment).configure(defaultListableBeanFactory);
+		final List<Map<String, Object>> cloudServices = cloudEnvironment.getServices();
+		new DataSourceConfigurer(cloudServices, new PostgresqlServiceCreator(cloudEnvironment),
+				new MysqlServiceCreator(cloudEnvironment)).configure(defaultListableBeanFactory);
+		new MongoConfigurer(cloudServices, new MongoServiceCreator(cloudEnvironment))
+				.configure(defaultListableBeanFactory);
+		new RedisConfigurer(cloudServices, new RedisServiceCreator(cloudEnvironment))
+				.configure(defaultListableBeanFactory);
 	}
 
 	/**
