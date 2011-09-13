@@ -11,6 +11,7 @@ import java.util.logging.Logger;
 import javax.sql.DataSource;
 
 import org.cloudfoundry.reconfiguration.data.document.MongoConfigurer;
+import org.cloudfoundry.reconfiguration.data.keyvalue.RedisConfigurer;
 import org.cloudfoundry.reconfiguration.data.relational.DataSourceConfigurer;
 import org.cloudfoundry.runtime.env.CloudEnvironment;
 import org.springframework.beans.BeansException;
@@ -66,6 +67,7 @@ public class CloudAutoStagingBeanFactoryPostProcessor implements BeanFactoryPost
 		}
 		new DataSourceConfigurer(cloudEnvironment).configure( defaultListableBeanFactory);
 		new MongoConfigurer(cloudEnvironment).configure(defaultListableBeanFactory);
+		new RedisConfigurer(cloudEnvironment).configure(defaultListableBeanFactory);
 	}
 
 	/**

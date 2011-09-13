@@ -16,6 +16,7 @@ import org.cloudfoundry.runtime.env.AbstractDataSourceServiceInfo;
 import org.cloudfoundry.runtime.env.CloudEnvironment;
 import org.cloudfoundry.runtime.env.MysqlServiceInfo;
 import org.cloudfoundry.runtime.env.PostgresqlServiceInfo;
+import org.cloudfoundry.runtime.env.RedisServiceInfo;
 import org.cloudfoundry.runtime.service.AbstractCloudServiceFactory;
 import org.hibernate.SessionFactory;
 import org.hibernate.impl.SessionFactoryImpl;
@@ -30,6 +31,8 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.Resource;
+import org.springframework.data.redis.connection.RedisConnectionFactory;
+import org.springframework.data.redis.connection.jedis.JedisConnectionFactory;
 import org.springframework.jdbc.datasource.AbstractDriverBasedDataSource;
 
 /**
@@ -46,10 +49,14 @@ import org.springframework.jdbc.datasource.AbstractDriverBasedDataSource;
 public class CloudFactoryAutoStagingBeanFactoryPostProcessorTest {
 	@Mock private MysqlServiceInfo mockMysqlServiceInfo;
 	@Mock private PostgresqlServiceInfo mockPostgresqlServiceInfo;
+	@Mock private RedisServiceInfo mockRedisServiceInfo;
+	@Mock private RedisServiceInfo mockRedisServiceInfo2;
 	@Mock private CloudEnvironment mockEnvironment;
+
 	@Mock private ConfigurableListableBeanFactory beanFactory;
 	@Mock private ApplicationContext applicationContext;
 	@Mock private Resource cloudServicesFile;
+
 
 	private CloudAutoStagingBeanFactoryPostProcessor testBFPP;
 
@@ -182,6 +189,74 @@ public class CloudFactoryAutoStagingBeanFactoryPostProcessorTest {
 	}
 
 	@Test
+	public void cloudRedisConnFactoryReplacesUserConnFactory() {
+		List<RedisServiceInfo> serviceInfos = new ArrayList<RedisServiceInfo>();
+		serviceInfos.add(mockRedisServiceInfo);
+		Map<String, Object> service = new HashMap<String, Object>();
+		service.put("label", "redis-2.2");
+		List<Map<String,Object>> serviceList = new ArrayList<Map<String,Object>>();
+		serviceList.add(service);
+		when(mockRedisServiceInfo.getHost()).thenReturn("cloudhost");
+		when(mockRedisServiceInfo.getPassword()).thenReturn("mypass");
+		when(mockRedisServiceInfo.getPort()).thenReturn(1234);
+		when(mockEnvironment.getServiceInfos(RedisServiceInfo.class)).thenReturn(serviceInfos);
+		when(mockEnvironment.getServices()).thenReturn(serviceList);
+
+		ApplicationContext context = getTestApplicationContext("test-redis-context.xml");
+		JedisConnectionFactory replacedConnFactory = (JedisConnectionFactory) context.getBean("redisConnection", RedisConnectionFactory.class);
+		Assert.assertEquals("cloudhost", replacedConnFactory.getHostName());
+		Assert.assertEquals("mypass", replacedConnFactory.getPassword());
+		Assert.assertEquals(1234, replacedConnFactory.getPort());
+	}
+
+	@Test
+	public void cloudRedisConnFactoryLeavesOriginalInPlaceIfMultipleBeansDetected() {
+		List<RedisServiceInfo> serviceInfos = new ArrayList<RedisServiceInfo>();
+		serviceInfos.add(mockRedisServiceInfo);
+		Map<String, Object> service = new HashMap<String, Object>();
+		service.put("label", "redis-2.2");
+		List<Map<String,Object>> serviceList = new ArrayList<Map<String,Object>>();
+		serviceList.add(service);
+		when(mockEnvironment.getServiceInfos(RedisServiceInfo.class)).thenReturn(serviceInfos);
+		when(mockEnvironment.getServices()).thenReturn(serviceList);
+
+		ApplicationContext context = getTestApplicationContext("test-multiple-redis-context.xml");
+		JedisConnectionFactory replacedConnFactory = (JedisConnectionFactory) context.getBean("redisConnection", RedisConnectionFactory.class);
+		Assert.assertEquals("localhost", replacedConnFactory.getHostName());
+		Assert.assertEquals("localpass", replacedConnFactory.getPassword());
+		Assert.assertEquals(6789, replacedConnFactory.getPort());
+	}
+
+	@Test
+	public void cloudRedisConnFactoryLeavesOriginalInPlaceIfMultipleServicesDetected() {
+		List<RedisServiceInfo> serviceInfos = new ArrayList<RedisServiceInfo>();
+		serviceInfos.add(mockRedisServiceInfo);
+		serviceInfos.add(mockRedisServiceInfo2);
+		Map<String, Object> service = new HashMap<String, Object>();
+		service.put("label", "redis-2.2");
+		List<Map<String,Object>> serviceList = new ArrayList<Map<String,Object>>();
+		serviceList.add(service);
+		when(mockEnvironment.getServiceInfos(RedisServiceInfo.class)).thenReturn(serviceInfos);
+		when(mockEnvironment.getServices()).thenReturn(serviceList);
+		ApplicationContext context = getTestApplicationContext("test-redis-context.xml");
+		JedisConnectionFactory replacedConnFactory = (JedisConnectionFactory) context.getBean("redisConnection", RedisConnectionFactory.class);
+		Assert.assertEquals("localhost", replacedConnFactory.getHostName());
+		Assert.assertEquals("localpass", replacedConnFactory.getPassword());
+		Assert.assertEquals(6789, replacedConnFactory.getPort());
+	}
+
+	@Test
+	public void cloudRedisConnFactoryLeavesOriginalInPlaceIfNoServicesDetected() {
+		List<Map<String,Object>> serviceList = new ArrayList<Map<String,Object>>();
+		when(mockEnvironment.getServices()).thenReturn(serviceList);
+		ApplicationContext context = getTestApplicationContext("test-redis-context.xml");
+		JedisConnectionFactory replacedConnFactory = (JedisConnectionFactory) context.getBean("redisConnection", RedisConnectionFactory.class);
+		Assert.assertEquals("localhost", replacedConnFactory.getHostName());
+		Assert.assertEquals("localpass", replacedConnFactory.getPassword());
+		Assert.assertEquals(6789, replacedConnFactory.getPort());
+	}
+
+	@Test
 	public void grailsLikeEmbeddedPropertyApplicationContextProcessed() {
 		assertApplicationContextProcessingForMysql("test-grails-embedded-props-good-context.xml");
 		assertApplicationContextProcessingForPostgresql("test-grails-embedded-props-good-context.xml");
@@ -261,6 +336,7 @@ public class CloudFactoryAutoStagingBeanFactoryPostProcessorTest {
 		Assert.assertFalse(testBFPP.autoStagingOff(cloudServicesFileLocation,beanFactory));
 	}
 
+
 	@Test
 	public void autoStagingOffCloudServiceFilesNotFound() throws IOException {
 		String cloudServicesFileLocation = "classpath:/org/cloudfoundry/reconfiguration/test-nonexistent-cloud-services";
@@ -268,6 +344,7 @@ public class CloudFactoryAutoStagingBeanFactoryPostProcessorTest {
 		testBFPP.setApplicationContext(applicationContext);
 		Assert.assertFalse(testBFPP.autoStagingOff(cloudServicesFileLocation,beanFactory));
 	}
+
 
 	@Test
 	public void autoStagingOffErrorLookingForCloudServicesFile() throws IOException {
@@ -322,6 +399,7 @@ public class CloudFactoryAutoStagingBeanFactoryPostProcessorTest {
 
 		Assert.assertEquals("org.hibernate.dialect.PostgreSQLDialect", sessionFactory.getDialect().toString());
 	}
+
 
 	private ClassPathXmlApplicationContext getTestApplicationContext(String fileName) {
 		return new ClassPathXmlApplicationContext(new String[]{"org/cloudfoundry/reconfiguration/" + fileName,

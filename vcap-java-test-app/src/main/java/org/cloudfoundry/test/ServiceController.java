@@ -21,6 +21,7 @@ import java.util.Properties;
 import javax.servlet.http.HttpServletResponse;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.redis.connection.jedis.JedisConnectionFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
@@ -89,11 +90,21 @@ public class ServiceController {
 				HttpStatus.OK);
 	}
 
-	@RequestMapping(value = "/redis", method = RequestMethod.GET)
+	@RequestMapping(value = "/redis/class", method = RequestMethod.GET)
 	public ResponseEntity<String> getRedisClass() {
 		if (serviceHolder.getRedisConnectionFactory() == null) {
 			return new ResponseEntity<String>(HttpStatus.NOT_FOUND);
 		}
 		return new ResponseEntity<String>(serviceHolder.getRedisConnectionFactory().getClass().getName(), HttpStatus.OK);
+	}
+
+	@RequestMapping(value = "/redis/host", method = RequestMethod.GET)
+	public ResponseEntity<String> getRedisHostAddress() {
+		if (serviceHolder.getRedisConnectionFactory() == null) {
+			return new ResponseEntity<String>(HttpStatus.NOT_FOUND);
+		}
+		//Jedis is the only client we currently support
+		JedisConnectionFactory jedisConnectionFactory = (JedisConnectionFactory)serviceHolder.getRedisConnectionFactory();
+		return new ResponseEntity<String>(jedisConnectionFactory.getHostName() + ':' + jedisConnectionFactory.getPort(), HttpStatus.OK);
 	}
 }
