@@ -6,11 +6,10 @@
 	<artifactId>auto-reconfiguration-core</artifactId>
 	<packaging>jar</packaging>
 	<name>auto-reconfiguration-core</name>
-	<version>0.6.0</version>
 	<parent>
 		<groupId>org.cloudfoundry</groupId>
 		<artifactId>auto-reconfiguration-parent</artifactId>
-		<version>0.6.0</version>
+		<version>0.6.1.BUILD-SNAPSHOT</version>
 		<relativePath>../auto-reconfiguration-parent</relativePath>
 	</parent>
 	<properties>
