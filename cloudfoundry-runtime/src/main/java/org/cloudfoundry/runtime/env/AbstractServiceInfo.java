@@ -11,10 +11,12 @@ import java.util.Map;
 public abstract class AbstractServiceInfo {
 	private String serviceName;
 	private String plan;
+	private String label;
 
 	public AbstractServiceInfo(Map<String, Object> serviceInfo) {
 		serviceName = (String) serviceInfo.get("name");
 		plan = (String) serviceInfo.get("plan");
+		label = (String) serviceInfo.get("label");
 	}
 
 	public String getServiceName() {
@@ -23,6 +25,10 @@ public abstract class AbstractServiceInfo {
 
 	public String getPlan() {
 		return plan;
+	}
+
+	public String getLabel() {
+		return label;
 	}
 
 	public abstract String getHost();

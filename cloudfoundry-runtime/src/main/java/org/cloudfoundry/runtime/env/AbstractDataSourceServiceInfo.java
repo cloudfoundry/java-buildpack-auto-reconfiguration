@@ -6,6 +6,7 @@ import java.util.Map;
  * Base information for all database service types
  * 
  * @author Xin Li
+ * @author Thomas Risberg
  * 
  **/
 

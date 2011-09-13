@@ -10,6 +10,7 @@ import javax.sql.DataSource;
 import org.cloudfoundry.runtime.env.CloudEnvironment;
 import org.cloudfoundry.runtime.env.MysqlServiceInfo;
 import org.cloudfoundry.runtime.env.PostgresqlServiceInfo;
+import org.cloudfoundry.runtime.env.RdbmsServiceInfo;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mock;
@@ -18,30 +19,27 @@ import org.springframework.test.util.ReflectionTestUtils;
 
 public class CloudDataSourceFactoryTest {
 	@Mock private CloudEnvironment mockRuntime;
-	@Mock private MysqlServiceInfo mockMysqlServiceInfo;
-	@Mock private PostgresqlServiceInfo mockPostgresqlServiceInfo;
-	private CloudMySqlDataSourceFactory mysqlFactory;
-	private CloudPostgresqlDataSourceFactory postgresqlFactory;
+	@Mock private RdbmsServiceInfo mockRdbmsServiceInfo;
+	private CloudDataSourceFactory rdbmsFactory;
 
 	@Before
 	public void setup() {
 		MockitoAnnotations.initMocks(this);
-		mysqlFactory = new CloudMySqlDataSourceFactory(mockRuntime);
-		postgresqlFactory = new CloudPostgresqlDataSourceFactory(mockRuntime);
+		rdbmsFactory = new CloudDataSourceFactory(mockRuntime);
 	}
 	
 	@Test
 	public void cloudMySQLDataSourceCreation() throws Exception {
-		when(mockRuntime.getServiceInfo("mysql-1", MysqlServiceInfo.class))
-			.thenReturn(mockMysqlServiceInfo);
-		when(mockMysqlServiceInfo.getUrl()).thenReturn("jdbc:mysql://10.20.30.40:3306/database-123");
-		when(mockMysqlServiceInfo.getUserName()).thenReturn("myuser");
-		when(mockMysqlServiceInfo.getPassword()).thenReturn("mypass");
+		when(mockRuntime.getServiceInfo("mysql-1", RdbmsServiceInfo.class))
+			.thenReturn(mockRdbmsServiceInfo);
+		when(mockRdbmsServiceInfo.getUrl()).thenReturn("jdbc:mysql://10.20.30.40:3306/database-123");
+		when(mockRdbmsServiceInfo.getUserName()).thenReturn("myuser");
+		when(mockRdbmsServiceInfo.getPassword()).thenReturn("mypass");
 		
-		mysqlFactory.setServiceName("mysql-1");
-		mysqlFactory.afterPropertiesSet();
+		rdbmsFactory.setServiceName("mysql-1");
+		rdbmsFactory.afterPropertiesSet();
 		
-		DataSource dataSource = mysqlFactory.getObject();
+		DataSource dataSource = rdbmsFactory.getObject();
 		assertNotNull(dataSource);
 		
 		assertEquals("jdbc:mysql://10.20.30.40:3306/database-123", ReflectionTestUtils.getField(dataSource, "url"));
@@ -53,16 +51,16 @@ public class CloudDataSourceFactoryTest {
 	
 	@Test
 	public void cloudPostgreSQLDataSourceCreation() throws Exception {
-		when(mockRuntime.getServiceInfo("postgres-1", PostgresqlServiceInfo.class))
-			.thenReturn(mockPostgresqlServiceInfo);
-		when(mockPostgresqlServiceInfo.getUrl()).thenReturn("jdbc:postgresql://10.20.30.40:5432/database-123");
-		when(mockPostgresqlServiceInfo.getUserName()).thenReturn("pguser");
-		when(mockPostgresqlServiceInfo.getPassword()).thenReturn("pgpass");
+		when(mockRuntime.getServiceInfo("postgres-1", RdbmsServiceInfo.class))
+			.thenReturn(mockRdbmsServiceInfo);
+		when(mockRdbmsServiceInfo.getUrl()).thenReturn("jdbc:postgresql://10.20.30.40:5432/database-123");
+		when(mockRdbmsServiceInfo.getUserName()).thenReturn("pguser");
+		when(mockRdbmsServiceInfo.getPassword()).thenReturn("pgpass");
 	
-		postgresqlFactory.setServiceName("postgres-1");
-		postgresqlFactory.afterPropertiesSet();
+		rdbmsFactory.setServiceName("postgres-1");
+		rdbmsFactory.afterPropertiesSet();
 		
-		DataSource dataSource = postgresqlFactory.getObject();
+		DataSource dataSource = rdbmsFactory.getObject();
 		assertNotNull(dataSource);
 		
 		assertEquals("jdbc:postgresql://10.20.30.40:5432/database-123", ReflectionTestUtils.getField(dataSource, "url"));
