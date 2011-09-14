@@ -10,7 +10,7 @@
 	<bean name="myDs" class="org.springframework.jdbc.datasource.DriverManagerDataSource">
 		<property name="url" value="jdbc:hsql:localdb" />
 	</bean>
-	
+
 	<bean name="txAwareDXProxy" class="org.springframework.jdbc.datasource.TransactionAwareDataSourceProxy">
 		<property name="targetDataSource" ref="myDs"/>
 	</bean>
@@ -20,14 +20,6 @@
 		<property name="hibernateProperties" ref="hibernateProperties"/>
 	</bean>
 
-
-	<util:map id="hibernateProperties">
-		<entry key="hibernate.dialect" value="dialect.that.doesnt.exist.and.should.be.auto_replaced"/>
-		<entry key="hibernate.show_sql" value="true"/>
-		<entry key="hibernate.generate_statistics" value="false"/>
-	  <!--  To avoid connecting to database during testing -->
-		<entry key="hibernate.temp.use_jdbc_metadata_defaults" value="false"/>
-	</util:map>
+	<util:properties id="hibernateProperties" location="org/cloudfoundry/reconfiguration/data/orm/hibernate.test.properties"/>
 
 </beans>
- 

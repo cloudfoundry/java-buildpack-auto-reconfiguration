@@ -3,11 +3,11 @@
  */
 package org.cloudfoundry.reconfiguration.data.orm;
 
+import java.util.List;
 import java.util.Map;
 
 import org.cloudfoundry.reconfiguration.Configurer;
 import org.cloudfoundry.reconfiguration.PropertyReplacer;
-import org.cloudfoundry.runtime.env.CloudEnvironment;
 import org.springframework.beans.factory.support.DefaultListableBeanFactory;
 
 /**
@@ -28,15 +28,15 @@ public class HibernateConfigurer implements Configurer {
 
 	private PropertyReplacer propertyReplacer = new PropertyReplacer();
 
-	private CloudEnvironment cloudEnvironment;
+	private List<Map<String,Object>> cloudServices;
 
-	public HibernateConfigurer(CloudEnvironment cloudEnvironment) {
-		this.cloudEnvironment = cloudEnvironment;
+	public HibernateConfigurer(List<Map<String,Object>> cloudServices) {
+		this.cloudServices = cloudServices;
 	}
 
 	public boolean configure(DefaultListableBeanFactory beanFactory) {
 		boolean configured = false;
-		for (Map<String, Object> service : cloudEnvironment.getServices()) {
+		for (Map<String, Object> service : cloudServices) {
 			String label = (String) service.get("label");
 			if (label == null) {
 				continue;

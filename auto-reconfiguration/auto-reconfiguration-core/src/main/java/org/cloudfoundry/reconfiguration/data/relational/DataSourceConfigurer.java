@@ -14,7 +14,6 @@ import javax.sql.DataSource;
 import org.cloudfoundry.reconfiguration.Configurer;
 import org.cloudfoundry.reconfiguration.data.orm.HibernateConfigurer;
 import org.cloudfoundry.reconfiguration.data.orm.JpaConfigurer;
-import org.cloudfoundry.runtime.env.CloudEnvironment;
 import org.cloudfoundry.runtime.env.CloudServiceException;
 import org.cloudfoundry.runtime.service.relational.MysqlServiceCreator;
 import org.cloudfoundry.runtime.service.relational.PostgresqlServiceCreator;
@@ -26,8 +25,8 @@ import org.springframework.beans.factory.support.DefaultListableBeanFactory;
 
 /**
  * Implementation of {@link Configurer} that replaces a single
- * {@link DataSource} with one connecting to a postgresql or mysql cloud service bound
- * to the current application.
+ * {@link DataSource} with one connecting to a postgresql or mysql cloud service
+ * bound to the current application.
  *
  * @author Ramnivas Laddad
  * @author Xin Li
@@ -44,12 +43,19 @@ public class DataSourceConfigurer implements Configurer {
 
 	private Configurer jpaConfigurer;
 
-	private CloudEnvironment cloudEnvironment;
+	private List<Map<String, Object>> cloudServices;
 
-	public DataSourceConfigurer(CloudEnvironment cloudEnvironment) {
-		this.cloudEnvironment = cloudEnvironment;
-		this.hibernateConfigurer = new HibernateConfigurer(cloudEnvironment);
-		this.jpaConfigurer = new JpaConfigurer(cloudEnvironment);
+	private PostgresqlServiceCreator postgresqlServiceCreator;
+
+	private MysqlServiceCreator mysqlServiceCreator;
+
+	public DataSourceConfigurer(List<Map<String, Object>> cloudServices,
+			PostgresqlServiceCreator postgresqlServiceCreator, MysqlServiceCreator mysqlServiceCreator) {
+		this.cloudServices = cloudServices;
+		this.postgresqlServiceCreator = postgresqlServiceCreator;
+		this.mysqlServiceCreator = mysqlServiceCreator;
+		this.hibernateConfigurer = new HibernateConfigurer(cloudServices);
+		this.jpaConfigurer = new JpaConfigurer(cloudServices);
 	}
 
 	public boolean configure(DefaultListableBeanFactory defaultListableBeanFactory) {
@@ -64,7 +70,7 @@ public class DataSourceConfigurer implements Configurer {
 		}
 
 		ArrayList<DataSource> dataSourceList = new ArrayList<DataSource>();
-		for (Map<String, Object> service : cloudEnvironment.getServices()) {
+		for (Map<String, Object> service : cloudServices) {
 			String label = (String) service.get("label");
 			if (label == null) {
 				continue;
@@ -72,16 +78,14 @@ public class DataSourceConfigurer implements Configurer {
 
 			if (label.startsWith("postgresql")) {
 				try {
-					PostgresqlServiceCreator postgresqlCreationHelper = new PostgresqlServiceCreator(cloudEnvironment);
-					dataSourceList.add(postgresqlCreationHelper.createSingletonService().service);
+					dataSourceList.add(postgresqlServiceCreator.createSingletonService().service);
 				} catch (CloudServiceException ex) {
 					logger.log(Level.INFO, "Multiple database services found. Skipping autostaging", ex);
 					return false;
 				}
 			} else if (label.startsWith("mysql")) {
 				try {
-					MysqlServiceCreator mysqlCreationHelper = new MysqlServiceCreator(cloudEnvironment);
-					dataSourceList.add(mysqlCreationHelper.createSingletonService().service);
+					dataSourceList.add(mysqlServiceCreator.createSingletonService().service);
 				} catch (CloudServiceException ex) {
 					logger.log(Level.INFO, "Multiple database services found. Skipping autostaging");
 					return false;

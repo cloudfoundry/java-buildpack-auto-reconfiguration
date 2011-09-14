@@ -34,6 +34,11 @@ http://www.springframework.org/schema/mvc/spring-mvc-3.1.xsd">
 		<mongo:db-factory id="mongoDbFactory" dbname="pwdtest" host="127.0.0.1" port="1234" username="test_user" password="efgh"/>
 	</beans>
 
+	<beans profile="redis-auto-staging">
+		 <bean id="jedisConnectionFactory" class="org.springframework.data.redis.connection.jedis.JedisConnectionFactory"
+		       p:hostName="localhost" p:port="1345"/>
+	</beans>
+
 	<beans profile="auto-staging-off-using-cloud-service">
 		<bean class="org.apache.tomcat.dbcp.dbcp.BasicDataSource" id="test_mysql_database">
 			<property name="driverClassName" value="${database.driverClassName}"/>
