@@ -14,34 +14,25 @@ import javax.sql.DataSource;
  */
 public class RdbmsServiceCreator extends AbstractDataSourceCreator<RdbmsServiceInfo> {
 
-	private AbstractDataSourceCreator delegate;
-	private CloudEnvironment cloudEnvironment;
+	private String driverClassName;
 
 	public RdbmsServiceCreator(CloudEnvironment cloudEnvironment) {
 		super(cloudEnvironment, RdbmsServiceInfo.class);
-		this.cloudEnvironment = cloudEnvironment;
 	}
 
 	@Override
 	public DataSource createService(AbstractDataSourceServiceInfo serviceInfo) {
 		if (serviceInfo.getLabel() != null && serviceInfo.getLabel().startsWith("postgres")) {
-			this.delegate = new PostgresqlServiceCreator(cloudEnvironment);
+			this.driverClassName = PostgresqlServiceCreator.POSTGRESQL_DRIVER_CLASS_NAME;
 		}
 		else {
-			this.delegate = new MysqlServiceCreator(cloudEnvironment);
+			this.driverClassName = MysqlServiceCreator.MYSQL_DRIVER_CLASS_NAME;
 		}
 		return super.createService(serviceInfo);
 	}
 
 	@Override
 	public String getDriverClassName() {
-		Assert.notNull(delegate, "DataSourceCreator delegate was not populated");
-		return delegate.getDriverClassName();
-	}
-
-	@Override
-	public String getValidationQuery() {
-		Assert.notNull(delegate, "DataSourceCreator delegate was not populated");
-		return delegate.getValidationQuery();
+		return this.driverClassName;
 	}
 }
