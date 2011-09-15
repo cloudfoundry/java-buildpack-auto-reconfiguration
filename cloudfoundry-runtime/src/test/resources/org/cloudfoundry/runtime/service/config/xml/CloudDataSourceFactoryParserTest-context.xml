@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:cloud="http://schema.cloudfoundry.org/spring"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+       http://schema.cloudfoundry.org/spring http://schema.cloudfoundry.org/spring/cloudfoundry-spring-0.8.xsd">
+
+    <cloud:data-source
+        id="dataSource"
+        connection-properties="sessionVariables=sql_mode='ANSI'"
+        validation-query="SELECT 0"
+        validation-query-timeout="2"
+        test-on-borrow="true"
+        test-on-return="true"
+        test-while-idle="true"
+        initial-size="10"
+        max-active="100"
+        max-idle="20"
+        min-idle="5"
+        max-wait="5000"
+        pool-prepared-statements="true"
+        max-open-prepared-statements="25"/>
+
+</beans>

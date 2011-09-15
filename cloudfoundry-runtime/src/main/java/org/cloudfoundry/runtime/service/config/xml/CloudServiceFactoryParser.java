@@ -57,7 +57,7 @@ class CloudServiceFactoryParser extends AbstractSingleBeanDefinitionParser {
 	}
 
 	@Override
-	protected final void doParse(Element element, ParserContext parserContext, BeanDefinitionBuilder builder) {
+	protected void doParse(Element element, ParserContext parserContext, BeanDefinitionBuilder builder) {
 		builder.addConstructorArgValue(this.cloudEnvironment);
 		String serviceName = element.getAttribute("service-name");
 		if (StringUtils.hasText(serviceName)) {

@@ -35,7 +35,7 @@ public class CloudNamespaceHandler extends NamespaceHandlerSupport {
 		this.registerBeanDefinitionParser("mongo-db-factory",
 				new CloudServiceFactoryParser(CloudMongoDbFactoryBean.class, MongoServiceInfo.class));
 		this.registerBeanDefinitionParser("data-source",
-				new CloudServiceFactoryParser(CloudDataSourceFactory.class, RdbmsServiceInfo.class));
+				new CloudDataSourceFactoryParser(CloudDataSourceFactory.class, RdbmsServiceInfo.class));
 		
 		this.registerBeanDefinitionParser("properties", new AbstractSimpleBeanDefinitionParser() {
 			@Override

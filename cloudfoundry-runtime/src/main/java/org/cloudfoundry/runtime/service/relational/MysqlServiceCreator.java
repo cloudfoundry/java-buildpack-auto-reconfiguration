@@ -8,11 +8,12 @@ import org.cloudfoundry.runtime.service.AbstractDataSourceCreator;
  * Simplified access to Mysql service.
  * 
  * @author Ramnivas Laddad
+ * @author Thomas Risberg
  *
  */
 public class MysqlServiceCreator extends AbstractDataSourceCreator<MysqlServiceInfo> {
 	
-	private static final String MYSQL_DRIVER_CLASS_NAME = "com.mysql.jdbc.Driver";
+	protected static final String MYSQL_DRIVER_CLASS_NAME = "com.mysql.jdbc.Driver";
 
 	/**
 	 * Validation query obtained from the MySQL reference manual:
@@ -22,15 +23,12 @@ public class MysqlServiceCreator extends AbstractDataSourceCreator<MysqlServiceI
 
 	public MysqlServiceCreator(CloudEnvironment cloudEnvironment) {
 		super(cloudEnvironment, MysqlServiceInfo.class);
+		getDataSourceConfiguration().setValidationQuery(VALIDATION_QUERY);
+		getDataSourceConfiguration().setTestOnBorrow(true);
 	}
-	
+
 	@Override
 	public String getDriverClassName() {
 		return MYSQL_DRIVER_CLASS_NAME;
-	}
-	
-	@Override
-	public String getValidationQuery() {
-		return VALIDATION_QUERY;
 	}
 }
