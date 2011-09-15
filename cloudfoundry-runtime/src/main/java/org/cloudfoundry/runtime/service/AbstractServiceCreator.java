@@ -44,7 +44,7 @@ public abstract class AbstractServiceCreator<S, SI extends AbstractServiceInfo> 
 	 * Create service based on the unique service of the required type.
 	 * 
 	 * @return service object along with the name of the matching service
-	 * @throws ServiceAccessException if unique service of the expected type isn't bound to the application
+	 * @throws CloudServiceException if unique service of the expected type isn't bound to the application
 	 */
 	public ServiceNameTuple<S> createSingletonService() {
 		List<SI> serviceInfos = cloudEnvironment.getServiceInfos(serviceInfoClass);

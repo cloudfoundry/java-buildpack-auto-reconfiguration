@@ -16,7 +16,7 @@ import org.w3c.dom.Element;
 
 /**
  * Handler for the 'cloud' namespace
- * 
+ *
  * @author Mark Fisher
  * @author Costin Leau
  * @author Ramnivas Laddad
@@ -35,14 +35,15 @@ public class CloudNamespaceHandler extends NamespaceHandlerSupport {
 		this.registerBeanDefinitionParser("mongo-db-factory",
 				new CloudServiceFactoryParser(CloudMongoDbFactoryBean.class, MongoServiceInfo.class));
 		this.registerBeanDefinitionParser("data-source",
-				new CloudServiceFactoryParser(CloudDataSourceFactory.class, RdbmsServiceInfo.class));
-		
+				new CloudDataSourceFactoryParser(CloudDataSourceFactory.class, RdbmsServiceInfo.class));
+
 		this.registerBeanDefinitionParser("properties", new AbstractSimpleBeanDefinitionParser() {
 			@Override
 			protected Class<?> getBeanClass(Element element) {
 				return CloudPropertiesFactoryBean.class;
 			}
 		});
+
 		this.registerBeanDefinitionParser("service-scan", new AbstractSimpleBeanDefinitionParser() {
 			@Override
 			protected Class<?> getBeanClass(Element element) {

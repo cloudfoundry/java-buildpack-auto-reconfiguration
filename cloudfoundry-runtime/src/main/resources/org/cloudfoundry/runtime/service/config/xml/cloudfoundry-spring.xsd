@@ -38,6 +38,102 @@
 					</xsd:documentation>
 				</xsd:annotation>
 			</xsd:attribute>
+            <xsd:attribute name="connection-properties" type="xsd:string" use="optional">
+                <xsd:annotation>
+                    <xsd:documentation>
+                        The connection properties that will be sent to the JDBC driver when establishing new
+                        connections. Format of the string must be [propertyName=property;]
+                    </xsd:documentation>
+                </xsd:annotation>
+            </xsd:attribute>
+            <xsd:attribute name="validation-query" type="xsd:string" use="optional">
+                <xsd:annotation>
+                    <xsd:documentation>
+                        The SQL query that will be used to validate connections from this pool, must return at least
+                        one row.
+                    </xsd:documentation>
+                </xsd:annotation>
+            </xsd:attribute>
+            <xsd:attribute name="validation-query-timeout" type="xsd:string" use="optional">
+                <xsd:annotation>
+                    <xsd:documentation>
+                        The timeout in seconds before connection validation queries fail.
+                    </xsd:documentation>
+                </xsd:annotation>
+            </xsd:attribute>
+            <xsd:attribute name="test-on-borrow" type="xsd:string" use="optional">
+                <xsd:annotation>
+                    <xsd:documentation>
+                        Whether objects will be validated before being borrowed from the pool (for a true value to have
+                        any effect, the validationQuery parameter must be set to a non-null string).
+                    </xsd:documentation>
+                </xsd:annotation>
+            </xsd:attribute>
+            <xsd:attribute name="test-on-return" type="xsd:string" use="optional">
+                <xsd:annotation>
+                    <xsd:documentation>
+                        Whether objects will be validated before being returned to the poo.
+                    </xsd:documentation>
+                </xsd:annotation>
+            </xsd:attribute>
+            <xsd:attribute name="test-while-idle" type="xsd:string" use="optional">
+                <xsd:annotation>
+                    <xsd:documentation>
+                        Whether objects will be validated by the idle object evictor (if any).
+                    </xsd:documentation>
+                </xsd:annotation>
+            </xsd:attribute>
+            <xsd:attribute name="initial-size" type="xsd:string" use="optional">
+                <xsd:annotation>
+                    <xsd:documentation>
+                        The initial size of the connection pool.
+                    </xsd:documentation>
+                </xsd:annotation>
+            </xsd:attribute>
+            <xsd:attribute name="max-active" type="xsd:string" use="optional">
+                <xsd:annotation>
+                    <xsd:documentation>
+                        The maximum number of active connections that can be allocated at the same time.
+                    </xsd:documentation>
+                </xsd:annotation>
+            </xsd:attribute>
+            <xsd:attribute name="max-idle" type="xsd:string" use="optional">
+                <xsd:annotation>
+                    <xsd:documentation>
+                        The maximum number of connections that can remain idle in the pool.
+                    </xsd:documentation>
+                </xsd:annotation>
+            </xsd:attribute>
+            <xsd:attribute name="min-idle" type="xsd:string" use="optional">
+                <xsd:annotation>
+                    <xsd:documentation>
+                        The minimum number of idle connections in the pool.
+                    </xsd:documentation>
+                </xsd:annotation>
+            </xsd:attribute>
+            <xsd:attribute name="max-wait" type="xsd:string" use="optional">
+                <xsd:annotation>
+                    <xsd:documentation>
+                        The maximum number of milliseconds that the pool will wait for a connection to be returned
+                        before throwing an exception.
+                    </xsd:documentation>
+                </xsd:annotation>
+            </xsd:attribute>
+            <xsd:attribute name="pool-prepared-statements" type="xsd:string" use="optional">
+                <xsd:annotation>
+                    <xsd:documentation>
+                        Whether to pool statements or not.
+                    </xsd:documentation>
+                </xsd:annotation>
+            </xsd:attribute>
+            <xsd:attribute name="max-open-prepared-statements" type="xsd:string" use="optional">
+                <xsd:annotation>
+                    <xsd:documentation>
+                        The maximum number of open statements that can be allocated from the statement pool at
+                        the same time.
+                    </xsd:documentation>
+                </xsd:annotation>
+            </xsd:attribute>
 		</xsd:complexType>
 	</xsd:element>
 	

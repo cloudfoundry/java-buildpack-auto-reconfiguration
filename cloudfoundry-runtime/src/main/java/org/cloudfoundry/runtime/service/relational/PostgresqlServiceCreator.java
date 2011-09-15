@@ -8,23 +8,24 @@ import org.cloudfoundry.runtime.service.AbstractDataSourceCreator;
  * Simplified access to PostgreSQL service.
  *
  * @author Jiajun Wang
+ * @author Thomas Risberg
+ *
  */
 public class PostgresqlServiceCreator extends AbstractDataSourceCreator<PostgresqlServiceInfo> {
-	
-	private static final String POSTGRESQL_DRIVER_CLASS_NAME = "org.postgresql.Driver";
+
+	protected static final String POSTGRESQL_DRIVER_CLASS_NAME = "org.postgresql.Driver";
+
 	private static final String VALIDATION_QUERY = "SELECT 1";
-	
-	@Override
-	public String getDriverClassName() {
-		return POSTGRESQL_DRIVER_CLASS_NAME;
-	}
-	
+
+
 	public PostgresqlServiceCreator(CloudEnvironment cloudEnvironment) {
 		super(cloudEnvironment, PostgresqlServiceInfo.class);
+		getDataSourceConfiguration().setValidationQuery(VALIDATION_QUERY);
+		getDataSourceConfiguration().setTestOnBorrow(true);
 	}
 
 	@Override
-	public String getValidationQuery() {
-		return VALIDATION_QUERY;
+	public String getDriverClassName() {
+		return POSTGRESQL_DRIVER_CLASS_NAME;
 	}
 }

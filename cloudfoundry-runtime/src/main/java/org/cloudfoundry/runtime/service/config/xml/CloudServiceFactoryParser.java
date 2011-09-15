@@ -1,6 +1,7 @@
 package org.cloudfoundry.runtime.service.config.xml;
 
 import java.util.List;
+import java.util.Map;
 
 import org.cloudfoundry.runtime.env.AbstractServiceInfo;
 import org.cloudfoundry.runtime.env.CloudEnvironment;
@@ -25,6 +26,8 @@ class CloudServiceFactoryParser extends AbstractSingleBeanDefinitionParser {
 
 	private final CloudEnvironment cloudEnvironment;
 
+	Map<String,String> namespaceToBeanPropertyMap;
+
 
 	public CloudServiceFactoryParser(Class<?> beanClass, Class<? extends AbstractServiceInfo> serviceInfoClass) {
 		Assert.notNull(beanClass, "beanClass must not be null");
@@ -32,6 +35,12 @@ class CloudServiceFactoryParser extends AbstractSingleBeanDefinitionParser {
 		this.beanClass = beanClass;
 		this.serviceInfoClass = serviceInfoClass;
 		this.cloudEnvironment = new CloudEnvironment();
+	}
+
+	public CloudServiceFactoryParser(Class<?> beanClass, Class<? extends AbstractServiceInfo> serviceInfoClass,
+				Map<String,String> namespaceToBeanPropertyMap) {
+		this(beanClass, serviceInfoClass);
+		this.namespaceToBeanPropertyMap = namespaceToBeanPropertyMap;
 	}
 
 
@@ -62,6 +71,15 @@ class CloudServiceFactoryParser extends AbstractSingleBeanDefinitionParser {
 		String serviceName = element.getAttribute("service-name");
 		if (StringUtils.hasText(serviceName)) {
 			builder.addPropertyValue("serviceName", serviceName);
+		}
+		if (namespaceToBeanPropertyMap != null) {
+			for (String attributeName : namespaceToBeanPropertyMap.keySet()) {
+				String propertyName = namespaceToBeanPropertyMap.get(attributeName);
+				String value = element.getAttribute(attributeName);
+				if (StringUtils.hasText(value)) {
+					builder.addPropertyValue(propertyName, value);
+				}
+			}
 		}
 	}
 

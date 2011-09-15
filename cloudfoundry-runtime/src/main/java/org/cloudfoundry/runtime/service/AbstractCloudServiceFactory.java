@@ -19,7 +19,7 @@ import org.springframework.beans.factory.config.AbstractFactoryBean;
 public abstract class AbstractCloudServiceFactory<S, SI extends AbstractServiceInfo> 
     extends AbstractFactoryBean<S> {
 	
-	private AbstractServiceCreator<S, SI> serviceCreator;
+	protected AbstractServiceCreator<S, SI> serviceCreator;
 
 	protected String serviceName;
 
