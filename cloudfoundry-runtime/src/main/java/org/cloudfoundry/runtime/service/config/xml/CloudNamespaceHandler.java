@@ -33,7 +33,7 @@ public class CloudNamespaceHandler extends NamespaceHandlerSupport {
 		this.registerBeanDefinitionParser("redis-connection-factory",
 				new CloudServiceFactoryParser(CloudRedisConnectionFactoryBean.class, RedisServiceInfo.class));
 		this.registerBeanDefinitionParser("mongo-db-factory",
-				new CloudServiceFactoryParser(CloudMongoDbFactoryBean.class, MongoServiceInfo.class));
+				new CloudMongoDbFactoryParser(CloudMongoDbFactoryBean.class, MongoServiceInfo.class));
 		this.registerBeanDefinitionParser("data-source",
 				new CloudDataSourceFactoryParser(CloudDataSourceFactory.class, RdbmsServiceInfo.class));
 
