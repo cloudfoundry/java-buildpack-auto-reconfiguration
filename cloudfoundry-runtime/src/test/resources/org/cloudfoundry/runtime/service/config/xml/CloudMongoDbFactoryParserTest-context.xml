@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:cloud="http://schema.cloudfoundry.org/spring"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+       http://schema.cloudfoundry.org/spring http://schema.cloudfoundry.org/spring/cloudfoundry-spring-0.8.xsd">
+
+	<cloud:mongo-db-factory
+		id="mongoDbFactory1"
+		auto-connect-retry="true"
+		max-auto-connect-retry-time="12000"
+		socket-keep-alive="true"
+		socket-timeout="10000"
+		write-fsync="true"
+		connections-per-host="20"
+		threads-allowed-to-block-for-connection-multiplier="8"
+		connect-timeout="11000"
+		max-wait-time="110000"/>
+
+	<cloud:mongo-db-factory
+		id="mongoDbFactory2"/>
+
+</beans>
