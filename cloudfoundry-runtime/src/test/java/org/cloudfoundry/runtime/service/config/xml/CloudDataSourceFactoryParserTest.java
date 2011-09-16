@@ -10,21 +10,12 @@ import org.junit.Before;
 import org.junit.Test;
 import org.springframework.beans.BeanWrapper;
 import org.springframework.beans.BeanWrapperImpl;
-import org.springframework.beans.factory.config.BeanDefinition;
-import org.springframework.beans.factory.xml.*;
 import org.springframework.context.support.GenericApplicationContext;
-import org.springframework.core.io.ClassPathResource;
-import org.springframework.test.util.ReflectionTestUtils;
-import org.w3c.dom.Element;
 
 import java.util.HashMap;
 import java.util.Map;
 
-public class CloudDataSourceFactoryParserTest {
-
-	private CloudDataSourceFactoryParser cloudParser;
-
-	private GenericApplicationContext appContext;
+public class CloudDataSourceFactoryParserTest  extends AbstractCloudParserTest {
 
 	@Before
 	public void setUp() {
@@ -42,10 +33,9 @@ public class CloudDataSourceFactoryParserTest {
 				new String[] {},
 				new String[] {}));
 		envMap.put("VCAP_APPLICATION", CloudEnvironmentTestHelper.getApplicationInstanceInfo("test", "test.vcap.me"));
-		CloudEnvironment env = (CloudEnvironment) ReflectionTestUtils.getField(cloudParser, "cloudEnvironment");
-		ReflectionTestUtils.setField(env, "environment", new MapEnvironmentAccessor(envMap));
+		replaceCloudEnvironmentAccessor(envMap);
 		loadContext("CloudDataSourceFactoryParserTest-context.xml", CloudDataSourceFactoryParserTest.class,
-				appContext, cloudParser);
+				appContext, cloudParser, "data-source");
 
 		Object bean = this.appContext.getBean("dataSource");
 		assertEquals("not the correct class", "org.apache.commons.dbcp.BasicDataSource", bean.getClass().getName());
@@ -70,40 +60,5 @@ public class CloudDataSourceFactoryParserTest {
 				dataSource.getPropertyValue("poolPreparedStatements"));
 		assertEquals("not the correct max-open-prepared-statements", 25,
 				dataSource.getPropertyValue("maxOpenPreparedStatements"));
-	}
-
-	private void loadContext(String fileName, Class relativeLocation, GenericApplicationContext context,
-					final BeanDefinitionParser parser) {
-		XmlBeanDefinitionReader reader = new XmlBeanDefinitionReader(context);
-		reader.setNamespaceHandlerResolver(new NamespaceHandlerResolver() {
-			@Override
-			public NamespaceHandler resolve(String namespaceUri) {
-				return new NamespaceHandlerSupport() {
-					@Override
-					public BeanDefinition parse(Element element, ParserContext parserContext) {
-						return parser.parse(element, parserContext);
-					}
-					@Override
-					public void init() {
-						registerBeanDefinitionParser("data-source", parser);
-					}
-				};
-			}
-		});
-		ClassPathResource resource = new ClassPathResource(fileName, relativeLocation);
-		reader.loadBeanDefinitions(resource);
-	}
-
-	public static class MapEnvironmentAccessor extends CloudEnvironment.EnvironmentAccessor {
-
-		Map<String, String> env;
-
-		public MapEnvironmentAccessor(Map<String, String> env) {
-			this.env = env;
-		}
-
-		public String getValue(String key) {
-			return env.get(key);
-		}
 	}
 }
