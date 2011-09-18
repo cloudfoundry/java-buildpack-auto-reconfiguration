@@ -83,12 +83,12 @@ public class ServiceController {
 	}
 
 	@RequestMapping(value = "/rabbit", method = RequestMethod.GET)
-	public ResponseEntity<String> getRabbitClass() {
+	public ResponseEntity<String> getRabbitHost() {
 		if (serviceHolder.getRabbitConnectionFactory() == null) {
 			return new ResponseEntity<String>(HttpStatus.NOT_FOUND);
 		}
-		return new ResponseEntity<String>(serviceHolder.getRabbitConnectionFactory().getClass().getName(),
-				HttpStatus.OK);
+		return new ResponseEntity<String>(serviceHolder.getRabbitConnectionFactory().getHost() + ":"
+				+ serviceHolder.getRabbitConnectionFactory().getPort(), HttpStatus.OK);
 	}
 
 	@RequestMapping(value = "/redis/class", method = RequestMethod.GET)

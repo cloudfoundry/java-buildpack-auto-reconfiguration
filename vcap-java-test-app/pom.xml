@@ -14,7 +14,7 @@
 		<org.aspectj-version>1.6.9</org.aspectj-version>
 		<org.slf4j-version>1.6.1</org.slf4j-version>
 		<rabbitmq.version>2.5.1</rabbitmq.version>
-		<spring.amqp.version>1.0.0.BUILD-SNAPSHOT</spring.amqp.version>
+		<spring.amqp.version>1.0.0.RELEASE</spring.amqp.version>
 		<spring-data-mongo.version>1.0.0.M4</spring-data-mongo.version>
 		<spring-data-redis.version>1.0.0.M4</spring-data-redis.version>
 	</properties>
@@ -172,11 +172,6 @@
 		<dependency>
 			<groupId>org.springframework.amqp</groupId>
 			<artifactId>spring-rabbit</artifactId>
-			<version>${spring.amqp.version}</version>
-		</dependency>
-		<dependency>
-			<groupId>org.springframework.amqp</groupId>
-			<artifactId>spring-rabbit-admin</artifactId>
 			<version>${spring.amqp.version}</version>
 		</dependency>
 		<dependency>

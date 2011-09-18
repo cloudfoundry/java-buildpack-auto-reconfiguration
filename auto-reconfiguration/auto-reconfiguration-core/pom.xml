@@ -13,6 +13,7 @@
 		<relativePath>../auto-reconfiguration-parent</relativePath>
 	</parent>
 	<properties>
+	    <spring.amqp.version>1.0.0.RELEASE</spring.amqp.version>
 	    <spring-data-mongo.version>1.0.0.M4</spring-data-mongo.version>
 		<spring.version>3.1.0.M2</spring.version>
 		<spring-data-redis.version>1.0.0.M4</spring-data-redis.version>
@@ -56,6 +57,13 @@
 			<groupId>org.springframework.data</groupId>
 			<artifactId>spring-data-mongodb</artifactId>
 			<version>${spring-data-mongo.version}</version>
+			<scope>provided</scope>
+		</dependency>
+
+		<dependency>
+			<groupId>org.springframework.amqp</groupId>
+			<artifactId>spring-rabbit</artifactId>
+			<version>${spring.amqp.version}</version>
 			<scope>provided</scope>
 		</dependency>
 
