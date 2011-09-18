@@ -82,12 +82,12 @@ public class ServiceController {
 	}
 
 	@RequestMapping(value = "/rabbit", method = RequestMethod.GET)
-	public ResponseEntity<String> getRabbitClass() {
+	public ResponseEntity<String> getRabbitHost() {
 		if (serviceHolder.getRabbitConnectionFactory() == null) {
 			return new ResponseEntity<String>(HttpStatus.NOT_FOUND);
 		}
-		return new ResponseEntity<String>(serviceHolder.getRabbitConnectionFactory().getClass().getName(),
-				HttpStatus.OK);
+		return new ResponseEntity<String>(serviceHolder.getRabbitConnectionFactory().getHost() + ":"
+				+ serviceHolder.getRabbitConnectionFactory().getPort(), HttpStatus.OK);
 	}
 
 	@RequestMapping(value = "/redis/class", method = RequestMethod.GET)
@@ -103,8 +103,10 @@ public class ServiceController {
 		if (serviceHolder.getRedisConnectionFactory() == null) {
 			return new ResponseEntity<String>(HttpStatus.NOT_FOUND);
 		}
-		//Jedis is the only client we currently support
-		JedisConnectionFactory jedisConnectionFactory = (JedisConnectionFactory)serviceHolder.getRedisConnectionFactory();
-		return new ResponseEntity<String>(jedisConnectionFactory.getHostName() + ':' + jedisConnectionFactory.getPort(), HttpStatus.OK);
+		// Jedis is the only client we currently support
+		JedisConnectionFactory jedisConnectionFactory = (JedisConnectionFactory) serviceHolder
+				.getRedisConnectionFactory();
+		return new ResponseEntity<String>(
+				jedisConnectionFactory.getHostName() + ':' + jedisConnectionFactory.getPort(), HttpStatus.OK);
 	}
 }

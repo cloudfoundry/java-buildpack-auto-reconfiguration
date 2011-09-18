@@ -14,9 +14,11 @@ import javax.sql.DataSource;
 import org.cloudfoundry.reconfiguration.data.document.MongoConfigurer;
 import org.cloudfoundry.reconfiguration.data.keyvalue.RedisConfigurer;
 import org.cloudfoundry.reconfiguration.data.relational.DataSourceConfigurer;
+import org.cloudfoundry.reconfiguration.messaging.RabbitConfigurer;
 import org.cloudfoundry.runtime.env.CloudEnvironment;
 import org.cloudfoundry.runtime.service.document.MongoServiceCreator;
 import org.cloudfoundry.runtime.service.keyvalue.RedisServiceCreator;
+import org.cloudfoundry.runtime.service.messaging.RabbitServiceCreator;
 import org.cloudfoundry.runtime.service.relational.MysqlServiceCreator;
 import org.cloudfoundry.runtime.service.relational.PostgresqlServiceCreator;
 import org.springframework.beans.BeansException;
@@ -76,6 +78,8 @@ public class CloudAutoStagingBeanFactoryPostProcessor implements BeanFactoryPost
 		new MongoConfigurer(cloudServices, new MongoServiceCreator(cloudEnvironment))
 				.configure(defaultListableBeanFactory);
 		new RedisConfigurer(cloudServices, new RedisServiceCreator(cloudEnvironment))
+				.configure(defaultListableBeanFactory);
+		new RabbitConfigurer(cloudServices, new RabbitServiceCreator(cloudEnvironment))
 				.configure(defaultListableBeanFactory);
 	}
 
