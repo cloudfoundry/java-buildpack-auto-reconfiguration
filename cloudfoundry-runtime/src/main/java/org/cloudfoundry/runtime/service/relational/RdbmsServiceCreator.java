@@ -15,20 +15,15 @@ import javax.sql.DataSource;
 public class RdbmsServiceCreator extends AbstractDataSourceCreator<RdbmsServiceInfo> {
 
 	private AbstractDataSourceCreator delegate;
-	private CloudEnvironment cloudEnvironment;
 
-	public RdbmsServiceCreator(CloudEnvironment cloudEnvironment) {
-		super(cloudEnvironment, RdbmsServiceInfo.class);
-		this.cloudEnvironment = cloudEnvironment;
-	}
 
 	@Override
 	public DataSource createService(AbstractDataSourceServiceInfo serviceInfo) {
 		if (serviceInfo.getLabel() != null && serviceInfo.getLabel().startsWith("postgres")) {
-			this.delegate = new PostgresqlServiceCreator(cloudEnvironment);
+			this.delegate = new PostgresqlServiceCreator();
 		}
 		else {
-			this.delegate = new MysqlServiceCreator(cloudEnvironment);
+			this.delegate = new MysqlServiceCreator();
 		}
 		return super.createService(serviceInfo);
 	}

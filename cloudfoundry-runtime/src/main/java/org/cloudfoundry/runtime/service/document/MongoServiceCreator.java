@@ -2,7 +2,6 @@ package org.cloudfoundry.runtime.service.document;
 
 import java.net.UnknownHostException;
 
-import org.cloudfoundry.runtime.env.CloudEnvironment;
 import org.cloudfoundry.runtime.env.CloudServiceException;
 import org.cloudfoundry.runtime.env.MongoServiceInfo;
 import org.cloudfoundry.runtime.service.AbstractServiceCreator;
@@ -20,9 +19,6 @@ import com.mongodb.MongoException;
  *
  */
 public class MongoServiceCreator extends AbstractServiceCreator<MongoDbFactory, MongoServiceInfo> {
-	public MongoServiceCreator(CloudEnvironment cloudEnvironment) {
-		super(cloudEnvironment, MongoServiceInfo.class);
-	}
 	
 	public MongoDbFactory createService(MongoServiceInfo serviceInfo) {
 		try {
@@ -35,4 +31,5 @@ public class MongoServiceCreator extends AbstractServiceCreator<MongoDbFactory, 
 			throw new CloudServiceException(e);
 		}
 	}
+
 }

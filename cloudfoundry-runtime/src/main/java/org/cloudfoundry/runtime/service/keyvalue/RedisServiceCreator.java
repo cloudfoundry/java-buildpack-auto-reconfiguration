@@ -1,6 +1,5 @@
 package org.cloudfoundry.runtime.service.keyvalue;
 
-import org.cloudfoundry.runtime.env.CloudEnvironment;
 import org.cloudfoundry.runtime.env.CloudServiceException;
 import org.cloudfoundry.runtime.env.RedisServiceInfo;
 import org.cloudfoundry.runtime.service.AbstractServiceCreator;
@@ -17,10 +16,6 @@ import org.springframework.data.redis.connection.jedis.JedisConnectionFactory;
 public class RedisServiceCreator extends AbstractServiceCreator<RedisConnectionFactory, RedisServiceInfo> {
 
 	private static final String REDIS_CLIENT_CLASS_NAME = "redis.clients.jedis.Jedis";
-
-	public RedisServiceCreator(CloudEnvironment cloudEnvironment) {
-		super(cloudEnvironment, RedisServiceInfo.class);
-	}
 
 	public RedisConnectionFactory createService(RedisServiceInfo serviceInfo) {
 		if (hasClass(REDIS_CLIENT_CLASS_NAME)) {

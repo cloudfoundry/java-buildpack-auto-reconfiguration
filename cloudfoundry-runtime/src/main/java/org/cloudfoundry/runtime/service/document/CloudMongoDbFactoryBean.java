@@ -13,11 +13,11 @@ import org.springframework.data.mongodb.MongoDbFactory;
  */
 public class CloudMongoDbFactoryBean extends AbstractCloudServiceFactory<MongoDbFactory, MongoServiceInfo> {
 	public CloudMongoDbFactoryBean(CloudEnvironment cloudEnvironment) {
-		super(new MongoServiceCreator(cloudEnvironment));
+		super(new MongoServiceCreator(),MongoServiceInfo.class,cloudEnvironment);
 	}
 
 	public CloudMongoDbFactoryBean() {
-		super(new MongoServiceCreator(new CloudEnvironment()));
+		this(new CloudEnvironment());
 	}
 
 	@Override

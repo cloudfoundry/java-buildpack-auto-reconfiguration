@@ -1,17 +1,20 @@
 package org.cloudfoundry.runtime.service;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Logger;
 
+import org.cloudfoundry.runtime.env.AbstractServiceInfo;
 import org.cloudfoundry.runtime.env.CloudEnvironment;
 import org.cloudfoundry.runtime.env.CloudServiceException;
+import org.cloudfoundry.runtime.env.MongoServiceInfo;
+import org.cloudfoundry.runtime.env.RabbitServiceInfo;
+import org.cloudfoundry.runtime.env.RdbmsServiceInfo;
+import org.cloudfoundry.runtime.env.RedisServiceInfo;
 import org.cloudfoundry.runtime.service.AbstractServiceCreator.ServiceNameTuple;
 import org.cloudfoundry.runtime.service.document.MongoServiceCreator;
 import org.cloudfoundry.runtime.service.keyvalue.RedisServiceCreator;
 import org.cloudfoundry.runtime.service.messaging.RabbitServiceCreator;
-import org.cloudfoundry.runtime.service.relational.MysqlServiceCreator;
-import org.cloudfoundry.runtime.service.relational.PostgresqlServiceCreator;
+import org.cloudfoundry.runtime.service.relational.RdbmsServiceCreator;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.config.BeanFactoryPostProcessor;
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
@@ -47,6 +50,7 @@ import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
  * You may, of course, use XML-based configuration.
  *
  * @author Ramnivas Laddad
+ * @author Jennifer Hickey
  *
  */
 public class CloudServicesScanner implements BeanFactoryPostProcessor {
@@ -54,7 +58,6 @@ public class CloudServicesScanner implements BeanFactoryPostProcessor {
 	Logger logger = Logger.getLogger(CloudServicesScanner.class.getName());
 
 	@Override
-	@SuppressWarnings({ "rawtypes", "unchecked" })
 	public void postProcessBeanFactory(ConfigurableListableBeanFactory beanFactory) throws BeansException {
 		CloudEnvironment cloudEnvironment;
 
@@ -68,24 +71,52 @@ public class CloudServicesScanner implements BeanFactoryPostProcessor {
 			throw new CloudServiceException("CloudServicesScanner expects 0 or 1 bean of CloudEnvironment, found "
 					+ envBeans.length);
 		}
-
-		List<AbstractServiceCreator> serviceCreators = new ArrayList<AbstractServiceCreator>();
-		serviceCreators.add(new MysqlServiceCreator(cloudEnvironment));
-		serviceCreators.add(new PostgresqlServiceCreator(cloudEnvironment));
-		serviceCreators.add(new RedisServiceCreator(cloudEnvironment));
-		serviceCreators.add(new RabbitServiceCreator(cloudEnvironment));
-		serviceCreators.add(new MongoServiceCreator(cloudEnvironment));
-
-		logger.info("Auto-creating service beans");
-
-		for (AbstractServiceCreator serviceCreator : serviceCreators) {
-			List<ServiceNameTuple<Object>> serviceNamePairs = serviceCreator.createServices();
-			for (ServiceNameTuple<Object> serviceNamePair : serviceNamePairs) {
-				logger.info("Auto-creating service bean for " + serviceNamePair.name);
-				beanFactory.registerSingleton(serviceNamePair.name, serviceNamePair.service);
-			}
-		}
-
+		createCloudServiceBeans(beanFactory, cloudEnvironment);
 	}
 
+	/**
+	 * Create and register beans for each cloud service bound to the application
+	 * @param beanFactory
+	 * @param cloudEnvironment
+	 */
+	protected void createCloudServiceBeans(ConfigurableListableBeanFactory beanFactory, CloudEnvironment cloudEnvironment) {
+		logger.info("Auto-creating service beans");
+		if(hasServicesOfType(cloudEnvironment, MongoServiceInfo.class)) {
+			registerServiceBeans(beanFactory,new MongoServiceCreator().createServices(cloudEnvironment.getServiceInfos(MongoServiceInfo.class)));
+		}
+		if(hasServicesOfType(cloudEnvironment, RedisServiceInfo.class)) {
+			registerServiceBeans(beanFactory,new RedisServiceCreator().createServices(cloudEnvironment.getServiceInfos(RedisServiceInfo.class)));
+		}
+		if(hasServicesOfType(cloudEnvironment, RabbitServiceInfo.class)) {
+			registerServiceBeans(beanFactory,new RabbitServiceCreator().createServices(cloudEnvironment.getServiceInfos(RabbitServiceInfo.class)));
+		}
+		if(hasServicesOfType(cloudEnvironment, RdbmsServiceInfo.class)) {
+			registerServiceBeans(beanFactory,new RdbmsServiceCreator().createServices(cloudEnvironment.getServiceInfos(RdbmsServiceInfo.class)));
+		}
+	}
+
+	/**
+	 *
+	 * @param cloudEnvironment
+	 * @param serviceInfoClass
+	 * @return If there are services of the specified type bound to the application
+	 */
+	protected boolean hasServicesOfType(CloudEnvironment cloudEnvironment, Class<? extends AbstractServiceInfo> serviceInfoClass) {
+		if(cloudEnvironment.getServiceInfos(serviceInfoClass).isEmpty()) {
+			return false;
+		}
+		return true;
+	}
+
+	/**
+	 * Registers specified service beans
+	 * @param beanFactory
+	 * @param serviceNamePairs
+	 */
+	protected <T extends Object> void registerServiceBeans(ConfigurableListableBeanFactory beanFactory, List<ServiceNameTuple<T>> serviceNamePairs) {
+		for (ServiceNameTuple<T> serviceNamePair : serviceNamePairs) {
+			logger.info("Auto-creating service bean for " + serviceNamePair.name);
+			beanFactory.registerSingleton(serviceNamePair.name, serviceNamePair.service);
+		}
+	}
 }

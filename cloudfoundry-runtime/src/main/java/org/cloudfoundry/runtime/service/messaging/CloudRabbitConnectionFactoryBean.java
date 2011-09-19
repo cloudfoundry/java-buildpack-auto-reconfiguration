@@ -14,11 +14,11 @@ import org.springframework.amqp.rabbit.connection.ConnectionFactory;
 public class CloudRabbitConnectionFactoryBean extends AbstractCloudServiceFactory<ConnectionFactory, RabbitServiceInfo> {
 
 	public CloudRabbitConnectionFactoryBean(CloudEnvironment cloudEnvironment) {
-		super(new RabbitServiceCreator(cloudEnvironment));
+		super(new RabbitServiceCreator(), RabbitServiceInfo.class,cloudEnvironment);
 	}
 	
 	public CloudRabbitConnectionFactoryBean() {
-		super(new RabbitServiceCreator(new CloudEnvironment()));
+		this(new CloudEnvironment());
 	}
 
 	@Override

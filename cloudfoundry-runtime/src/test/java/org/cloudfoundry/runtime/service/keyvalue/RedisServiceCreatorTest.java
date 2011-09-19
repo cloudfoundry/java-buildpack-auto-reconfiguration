@@ -1,6 +1,5 @@
 package org.cloudfoundry.runtime.service.keyvalue;
 
-import org.cloudfoundry.runtime.env.CloudEnvironment;
 import org.cloudfoundry.runtime.env.CloudServiceException;
 import org.cloudfoundry.runtime.env.RedisServiceInfo;
 import org.junit.Before;
@@ -16,9 +15,6 @@ import org.mockito.MockitoAnnotations;
  */
 public class RedisServiceCreatorTest {
 
-	@Mock
-	private CloudEnvironment mockRuntime;
-
 	private RedisServiceCreator serviceCreator;
 
 	@Mock
@@ -27,7 +23,7 @@ public class RedisServiceCreatorTest {
 	@Before
 	public void setup() {
 		MockitoAnnotations.initMocks(this);
-		serviceCreator = new StubRedisServiceCreator(mockRuntime);
+		serviceCreator = new StubRedisServiceCreator();
 	}
 
 	@Test(expected = CloudServiceException.class)
@@ -36,10 +32,6 @@ public class RedisServiceCreatorTest {
 	}
 
 	private class StubRedisServiceCreator extends RedisServiceCreator {
-		public StubRedisServiceCreator(CloudEnvironment cloudEnvironment) {
-			super(cloudEnvironment);
-		}
-
 		@Override
 		protected boolean hasClass(String name) {
 			return false;
