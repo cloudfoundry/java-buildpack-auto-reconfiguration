@@ -5,7 +5,6 @@ import java.sql.DriverManager;
 import javax.sql.DataSource;
 
 import org.cloudfoundry.runtime.env.AbstractDataSourceServiceInfo;
-import org.cloudfoundry.runtime.env.CloudEnvironment;
 import org.cloudfoundry.runtime.env.CloudServiceException;
 import org.springframework.jdbc.datasource.SimpleDriverDataSource;
 
@@ -16,11 +15,6 @@ import org.springframework.jdbc.datasource.SimpleDriverDataSource;
  */
 abstract public class AbstractDataSourceCreator<SI extends AbstractDataSourceServiceInfo> 
 extends AbstractServiceCreator<DataSource, SI> {
-
-	public AbstractDataSourceCreator(CloudEnvironment cloudEnvironment,
-			Class<SI> serviceInfoClass) {
-		super(cloudEnvironment, serviceInfoClass);
-	}
 	
 	abstract public String getDriverClassName();
 	abstract public String getValidationQuery();

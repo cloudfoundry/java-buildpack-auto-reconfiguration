@@ -4,8 +4,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.cloudfoundry.runtime.env.AbstractServiceInfo;
-import org.cloudfoundry.runtime.env.CloudEnvironment;
-import org.cloudfoundry.runtime.env.CloudServiceException;
 
 /**
  * Base service creator
@@ -18,19 +16,12 @@ import org.cloudfoundry.runtime.env.CloudServiceException;
  * </ul>
  * 
  * @author Ramnivas Laddad
+ * @author Jennifer Hickey
  *
  * @param <S> Service type to be create
  * @param <SI> ServiceInfo type
  */
 public abstract class AbstractServiceCreator<S, SI extends AbstractServiceInfo> {
-	
-	private CloudEnvironment cloudEnvironment;
-	private Class<SI> serviceInfoClass;
-	
-	public AbstractServiceCreator(CloudEnvironment cloudEnvironment, Class<SI> serviceInfoClass) {
-		this.cloudEnvironment = cloudEnvironment;
-		this.serviceInfoClass = serviceInfoClass;
-	}
 	
 	/**
 	 * Implementation of this method must create service based on the service info object passed.
@@ -43,41 +34,20 @@ public abstract class AbstractServiceCreator<S, SI extends AbstractServiceInfo> 
 	/**
 	 * Create service based on the unique service of the required type.
 	 * 
+	 * @param singletonServiceInfo
 	 * @return service object along with the name of the matching service
-	 * @throws ServiceAccessException if unique service of the expected type isn't bound to the application
 	 */
-	public ServiceNameTuple<S> createSingletonService() {
-		List<SI> serviceInfos = cloudEnvironment.getServiceInfos(serviceInfoClass);
-		
-		if (serviceInfos.size() != 1) {
-			throw new CloudServiceException("Expected 1 service of " + serviceInfoClass + " type, but found " + serviceInfos.size());
-		}
-		
-		SI singletonServiceInfo = serviceInfos.get(0);
+	public ServiceNameTuple<S> createSingletonService(SI singletonServiceInfo) {
 		return new ServiceNameTuple<S>(createService(singletonServiceInfo), singletonServiceInfo.getServiceName());
 	}
 	
 	/**
-	 * Create service object for the given name service bound to the application. 
+	 * Create service objects for all specified services
 	 * 
-	 * @param serviceName
-	 * @return service object
-	 */
-	public S createService(String serviceName) {
-		SI serviceInfo = cloudEnvironment.getServiceInfo(serviceName, serviceInfoClass);
-		if (serviceInfo != null) {
-			return createService(serviceInfo);
-		}
-		return null;
-	}
-	
-	/**
-	 * Create service objects for all services of the matching type bound to the application.
-	 * 
+	 * @param serviceInfos
 	 * @return service objects along with the name of the matching services
 	 */
-	public List<ServiceNameTuple<S>> createServices() {
-		List<SI> serviceInfos = cloudEnvironment.getServiceInfos(serviceInfoClass);
+	public List<ServiceNameTuple<S>> createServices(List<SI> serviceInfos) {
 		List<ServiceNameTuple<S>> services = new ArrayList<ServiceNameTuple<S>>();
 		for (SI serviceInfo : serviceInfos) {
 			services.add(new ServiceNameTuple<S>(createService(serviceInfo), serviceInfo.getServiceName()));

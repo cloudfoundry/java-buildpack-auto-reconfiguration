@@ -1,49 +1,81 @@
 package org.cloudfoundry.runtime.service;
 
+import java.util.List;
+
 import org.cloudfoundry.runtime.env.AbstractServiceInfo;
+import org.cloudfoundry.runtime.env.CloudEnvironment;
+import org.cloudfoundry.runtime.env.CloudServiceException;
+import org.cloudfoundry.runtime.service.AbstractServiceCreator.ServiceNameTuple;
 import org.springframework.beans.factory.config.AbstractFactoryBean;
 
 /**
  * Abstract base factory class.
  * <p>
- * This factory uses the service creator provided through the constructor to create services.
- * If the service name is provided it creates a service object based on the service bound 
- * to that name. Otherwise, it creates a singleton service and fails if it doesn't
- * find a unique service of the expected type.
- * 
+ * This factory uses the service creator provided through the constructor to
+ * create services. If the service name is provided it creates a service object
+ * based on the service bound to that name. Otherwise, it creates a singleton
+ * service and fails if it doesn't find a unique service of the expected type.
+ *
  * @author Ramnivas Laddad
  *
- * @param <S> The service type
- * @param <SI> The service info type matching the service to be created
+ * @param <S>
+ *            The service type
+ * @param <SI>
+ *            The service info type matching the service to be created
  */
-public abstract class AbstractCloudServiceFactory<S, SI extends AbstractServiceInfo> 
-    extends AbstractFactoryBean<S> {
-	
-	private AbstractServiceCreator<S, SI> serviceCreator;
+public abstract class AbstractCloudServiceFactory<S, SI extends AbstractServiceInfo> extends AbstractFactoryBean<S> {
+
+	private Class<SI> serviceInfoClass;
 
 	protected String serviceName;
 
-	public AbstractCloudServiceFactory(AbstractServiceCreator<S, SI> creationHelper) {
-		this.serviceCreator = creationHelper;
+	private CloudEnvironment cloudEnvironment;
+
+	private AbstractServiceCreator<S, SI> serviceCreator;
+
+	public AbstractCloudServiceFactory(AbstractServiceCreator<S, SI> serviceCreator, Class<SI> serviceInfoClass,
+			CloudEnvironment cloudEnvironment) {
+		this.serviceCreator = serviceCreator;
+		this.serviceInfoClass = serviceInfoClass;
+		this.cloudEnvironment = cloudEnvironment;
 	}
 
 	/**
-	 * Optional service name property. If this property isn't set or set to null,
-	 * unique service of the expected type (redis, for example) needs to be bound
-	 * to the application.
-	 * 
+	 * Optional service name property. If this property isn't set or set to
+	 * null, unique service of the expected type (redis, for example) needs to
+	 * be bound to the application.
+	 *
 	 * @param serviceName
 	 */
 	public void setServiceName(String serviceName) {
 		this.serviceName = serviceName;
 	}
-	
+
 	@Override
 	protected S createInstance() throws Exception {
 		if (serviceName != null) {
-			return serviceCreator.createService(serviceName);
+			SI serviceInfo = cloudEnvironment.getServiceInfo(serviceName, serviceInfoClass);
+			if (serviceInfo == null) {
+				return null;
+			}
+			return serviceCreator.createSingletonService(serviceInfo).service;
 		} else {
-			return serviceCreator.createSingletonService().service;
+			List<SI> serviceInfos = cloudEnvironment.getServiceInfos(serviceInfoClass);
+			if (serviceInfos.size() != 1) {
+				throw new CloudServiceException("Expected 1 service of " + serviceInfoClass + " type, but found"
+						+ serviceInfos.size());
+			}
+			return serviceCreator.createSingletonService(serviceInfos.get(0)).service;
 		}
+	}
+
+	/**
+	 *
+	 * @return A list of {@link ServiceNameTuple}s containing beans for each
+	 *         service of the expected type (redis, for example) bound to the
+	 *         application
+	 */
+	public List<ServiceNameTuple<S>> createInstances() {
+		return serviceCreator.createServices(cloudEnvironment.getServiceInfos(serviceInfoClass));
 	}
 }

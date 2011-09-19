@@ -1,6 +1,5 @@
 package org.cloudfoundry.runtime.service.relational;
 
-import org.cloudfoundry.runtime.env.CloudEnvironment;
 import org.cloudfoundry.runtime.env.PostgresqlServiceInfo;
 import org.cloudfoundry.runtime.service.AbstractDataSourceCreator;
 
@@ -17,10 +16,6 @@ public class PostgresqlServiceCreator extends AbstractDataSourceCreator<Postgres
 	@Override
 	public String getDriverClassName() {
 		return POSTGRESQL_DRIVER_CLASS_NAME;
-	}
-	
-	public PostgresqlServiceCreator(CloudEnvironment cloudEnvironment) {
-		super(cloudEnvironment, PostgresqlServiceInfo.class);
 	}
 
 	@Override
