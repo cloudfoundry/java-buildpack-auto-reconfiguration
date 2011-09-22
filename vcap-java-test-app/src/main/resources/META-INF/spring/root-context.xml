@@ -26,7 +26,8 @@ http://www.springframework.org/schema/rabbit/spring-rabbit-1.0.xsd">
 		<cloud:mongo-db-factory id="mongo" />
 		<cloud:redis-connection-factory id="redisConnectionFactory" />
 		<cloud:rabbit-connection-factory id="rabbitConnectionFactory" />
-		<cloud:data-source id="test_mysql_database" />
+		<cloud:data-source service-name="test_mysql_database" />
+		<cloud:data-source service-name="test_postgres_database" />
 	</beans>
 
 	<beans profile="service-scan">

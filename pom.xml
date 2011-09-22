@@ -8,11 +8,29 @@
 	<name>vcap-java</name>
 	<version>1.0.0-BUILD-SNAPSHOT</version>
 
-	<modules>
-		<module>cloudfoundry-runtime</module>
-		<module>auto-reconfiguration</module>
-		<module>plugins</module>
-	</modules>
+	<profiles>
+		<profile>
+			<id>default</id>
+			<activation>
+				<activeByDefault>true</activeByDefault>
+			</activation>
+			<modules>
+				<module>cloudfoundry-runtime</module>
+				<module>auto-reconfiguration</module>
+				<module>plugins</module>
+			</modules>
+		</profile>
+		<profile>
+			<id>integration-test</id>
+			<modules>
+				<module>cloudfoundry-runtime</module>
+				<module>vcap-java-test-app</module>
+				<module>cloudfoundry-runtime-tests</module>
+				<module>auto-reconfiguration</module>
+				<module>plugins</module>
+			</modules>
+		</profile>
+	</profiles>
 
 	<build>
 		<plugins>
