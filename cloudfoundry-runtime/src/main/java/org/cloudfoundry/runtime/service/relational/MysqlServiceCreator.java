@@ -1,6 +1,5 @@
 package org.cloudfoundry.runtime.service.relational;
 
-import org.cloudfoundry.runtime.env.CloudEnvironment;
 import org.cloudfoundry.runtime.env.MysqlServiceInfo;
 import org.cloudfoundry.runtime.service.AbstractDataSourceCreator;
 
@@ -19,10 +18,6 @@ public class MysqlServiceCreator extends AbstractDataSourceCreator<MysqlServiceI
 	 * http://dev.mysql.com/doc/refman/5.1/en/connector-j-usagenotes-j2ee.html
 	 */
 	private static final String VALIDATION_QUERY = "/* ping */ SELECT 1";
-
-	public MysqlServiceCreator(CloudEnvironment cloudEnvironment) {
-		super(cloudEnvironment, MysqlServiceInfo.class);
-	}
 	
 	@Override
 	public String getDriverClassName() {

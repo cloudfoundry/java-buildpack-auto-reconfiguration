@@ -13,11 +13,11 @@ import org.springframework.data.redis.connection.RedisConnectionFactory;
  */
 public class CloudRedisConnectionFactoryBean extends AbstractCloudServiceFactory<RedisConnectionFactory, RedisServiceInfo> {
 	public CloudRedisConnectionFactoryBean(CloudEnvironment cloudEnvironment) {
-		super(new RedisServiceCreator(cloudEnvironment));
+		super(new RedisServiceCreator(),RedisServiceInfo.class,cloudEnvironment);
 	}
 
 	public CloudRedisConnectionFactoryBean() {
-		super(new RedisServiceCreator(new CloudEnvironment()));
+		this(new CloudEnvironment());
 	}
 
 	@Override

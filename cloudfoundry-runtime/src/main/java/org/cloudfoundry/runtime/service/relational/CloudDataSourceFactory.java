@@ -16,11 +16,11 @@ import org.cloudfoundry.runtime.service.AbstractCloudServiceFactory;
 public class CloudDataSourceFactory extends AbstractCloudServiceFactory<DataSource, RdbmsServiceInfo> {
 
 	public CloudDataSourceFactory(CloudEnvironment cloudEnvironment) {
-		super(new RdbmsServiceCreator(cloudEnvironment));
+		super(new RdbmsServiceCreator(),RdbmsServiceInfo.class,cloudEnvironment);
 	}
 
 	public CloudDataSourceFactory() {
-		super(new RdbmsServiceCreator(new CloudEnvironment()));
+		this(new CloudEnvironment());
 	}
 
 	@Override

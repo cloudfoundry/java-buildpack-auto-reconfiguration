@@ -1,6 +1,5 @@
 package org.cloudfoundry.runtime.service.messaging;
 
-import org.cloudfoundry.runtime.env.CloudEnvironment;
 import org.cloudfoundry.runtime.env.RabbitServiceInfo;
 import org.cloudfoundry.runtime.service.AbstractServiceCreator;
 import org.springframework.amqp.rabbit.connection.CachingConnectionFactory;
@@ -16,10 +15,6 @@ import org.springframework.amqp.rabbit.connection.ConnectionFactory;
 public class RabbitServiceCreator 
 	extends AbstractServiceCreator<ConnectionFactory, RabbitServiceInfo> {
 
-	public RabbitServiceCreator(CloudEnvironment cloudEnvironment) {
-		super(cloudEnvironment, RabbitServiceInfo.class);
-	}
-	
 	public ConnectionFactory createService(RabbitServiceInfo serviceInfo) {
 		CachingConnectionFactory connectionFactory 
 		    = new CachingConnectionFactory(serviceInfo.getHost());
@@ -29,5 +24,4 @@ public class RabbitServiceCreator
 		connectionFactory.setPort(serviceInfo.getPort());
 		return connectionFactory;
 	}
-
 }
