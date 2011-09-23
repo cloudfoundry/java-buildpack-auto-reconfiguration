@@ -116,6 +116,10 @@ public class CloudEnvironmentTest {
 		assertEquals(password, info.getPassword());
 	}
 
+	/**
+	 * Verifies parsing of credentials in the format of "old"
+	 * Rabbit service (still used by chef recipe deployment)
+	 */
 	@Test
 	public void getServiceInfoRabbit() {
 		String serviceName = "rabbit-1";
@@ -133,6 +137,9 @@ public class CloudEnvironmentTest {
 		assertEquals(port, info.getPort());
 	}
 
+	/**
+	 * Verifies parsing of credentials in the existing Rabbit service
+	 */
 	@Test
 	public void getServiceSRSInfoRabbit() {
 		String serviceName = "rabbit-1";

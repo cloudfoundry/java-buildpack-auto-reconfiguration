@@ -2,6 +2,7 @@
 	"name":"$serviceName",
 	"label":"rabbitmq-2.4",
 	"plan":"free",
+	"tags":["rabbitmq"],
 	"credentials":{
 			"hostname":"$hostname",
 			"port":$port,

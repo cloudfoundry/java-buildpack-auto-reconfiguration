@@ -48,13 +48,7 @@ public class CloudEnvironment {
 		labelledServiceType(RdbmsServiceInfo.class, "postgresql-9.0");
 		labelledServiceType(RedisServiceInfo.class, "redis-2.2");
 		labelledServiceType(MongoServiceInfo.class, "mongodb-1.8");
-
-                // the old rabbitmq service
 		labelledServiceType(RabbitServiceInfo.class, "rabbitmq-2.4");
-                // rabbitmq SRS-based service, during testing
-		labelledServiceType(RabbitServiceInfo.class, "rabbitmq-srs-2.4.1");
-                // rabbitmq SRS-based service, after the old service is gone
-		labelledServiceType(RabbitServiceInfo.class, "rabbitmq-2.4.1");
 	}
 	
 	/* package for testing purpose */
