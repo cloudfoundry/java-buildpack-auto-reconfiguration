@@ -31,7 +31,7 @@ public abstract class AbstractCloudServiceFactory<S, SI extends AbstractServiceI
 
 	private CloudEnvironment cloudEnvironment;
 
-	private AbstractServiceCreator<S, SI> serviceCreator;
+	protected AbstractServiceCreator<S, SI> serviceCreator;
 
 	public AbstractCloudServiceFactory(AbstractServiceCreator<S, SI> serviceCreator, Class<SI> serviceInfoClass,
 			CloudEnvironment cloudEnvironment) {
