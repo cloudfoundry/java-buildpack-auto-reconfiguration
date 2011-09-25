@@ -16,6 +16,8 @@
 package org.cloudfoundry.test;
 
 import java.io.IOException;
+import java.sql.Connection;
+import java.sql.SQLException;
 import java.util.Properties;
 
 import javax.servlet.http.HttpServletResponse;
@@ -25,6 +27,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.connection.jedis.JedisConnectionFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -65,6 +68,24 @@ public class ServiceController {
 		return new ResponseEntity<String>(serviceHolder.getMySqlDataSource().getUrl(), HttpStatus.OK);
 	}
 
+	@RequestMapping(value = "/mysql/max-active", method = RequestMethod.GET)
+	public ResponseEntity<String> getMySQLDataSourceMaxActive() {
+		if (serviceHolder.getMySqlDataSource() == null) {
+			return new ResponseEntity<String>(HttpStatus.NOT_FOUND);
+		}
+		return new ResponseEntity<String>("" + serviceHolder.getMySqlDataSource().getMaxActive(), HttpStatus.OK);
+	}
+
+	@RequestMapping(value = "/mysql/char-set", method = RequestMethod.GET)
+	public ResponseEntity<String> getMySQLDataSourceCharSet() {
+		if (serviceHolder.getMySqlDataSource() == null) {
+			return new ResponseEntity<String>(HttpStatus.NOT_FOUND);
+		}
+		JdbcTemplate jt = new JdbcTemplate(serviceHolder.getMySqlDataSource());
+		String characterEncoding = jt.queryForObject("SELECT charset('Dåligt väder oroar semestersvensken')", String.class);
+		return new ResponseEntity<String>(characterEncoding, HttpStatus.OK);
+	}
+
 	@RequestMapping(value = "/postgres", method = RequestMethod.GET)
 	public ResponseEntity<String> getPostgresDataSourceDBUrl() {
 		if (serviceHolder.getPostgresDataSource() == null) {
@@ -79,6 +100,15 @@ public class ServiceController {
 			return new ResponseEntity<String>(HttpStatus.NOT_FOUND);
 		}
 		return new ResponseEntity<String>(serviceHolder.getMongoDbFactory().getDb().getMongo().getAddress().toString(),
+				HttpStatus.OK);
+	}
+
+	@RequestMapping(value = "/mongo/write-concern", method = RequestMethod.GET)
+	public ResponseEntity<String> getMongoWriteConcern() {
+		if (serviceHolder.getMongoDbFactory() == null) {
+			return new ResponseEntity<String>(HttpStatus.NOT_FOUND);
+		}
+		return new ResponseEntity<String>(serviceHolder.getMongoDbFactory().getDb().getWriteConcern().toString(),
 				HttpStatus.OK);
 	}
 
@@ -109,6 +139,17 @@ public class ServiceController {
 				.getRedisConnectionFactory();
 		return new ResponseEntity<String>(
 				jedisConnectionFactory.getHostName() + ':' + jedisConnectionFactory.getPort(), HttpStatus.OK);
+	}
+
+	@RequestMapping(value = "/redis/max-wait", method = RequestMethod.GET)
+	public ResponseEntity<String> getRedisPoolInitialSize() {
+		if (serviceHolder.getRedisConnectionFactory() == null) {
+			return new ResponseEntity<String>(HttpStatus.NOT_FOUND);
+		}
+		// Jedis is the only client we currently support
+		JedisConnectionFactory jedisConnectionFactory = (JedisConnectionFactory) serviceHolder
+				.getRedisConnectionFactory();
+		return new ResponseEntity<String>("" + jedisConnectionFactory.getPoolConfig().getMaxWait(), HttpStatus.OK);
 	}
 
 	@RequestMapping(value = "/hibernate", method = RequestMethod.GET)
