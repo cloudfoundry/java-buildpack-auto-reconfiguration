@@ -17,6 +17,7 @@ import org.springframework.beans.factory.config.AbstractFactoryBean;
  * service and fails if it doesn't find a unique service of the expected type.
  *
  * @author Ramnivas Laddad
+ * @author Thomas Risberg
  *
  * @param <S>
  *            The service type
@@ -31,11 +32,7 @@ public abstract class AbstractCloudServiceFactory<S, SI extends AbstractServiceI
 
 	private CloudEnvironment cloudEnvironment;
 
-	private AbstractServiceCreator<S, SI> serviceCreator;
-
-	public AbstractCloudServiceFactory(AbstractServiceCreator<S, SI> serviceCreator, Class<SI> serviceInfoClass,
-			CloudEnvironment cloudEnvironment) {
-		this.serviceCreator = serviceCreator;
+	public AbstractCloudServiceFactory(Class<SI> serviceInfoClass, CloudEnvironment cloudEnvironment) {
 		this.serviceInfoClass = serviceInfoClass;
 		this.cloudEnvironment = cloudEnvironment;
 	}
@@ -58,14 +55,14 @@ public abstract class AbstractCloudServiceFactory<S, SI extends AbstractServiceI
 			if (serviceInfo == null) {
 				return null;
 			}
-			return serviceCreator.createSingletonService(serviceInfo).service;
+			return getServiceCreator().createSingletonService(serviceInfo).service;
 		} else {
 			List<SI> serviceInfos = cloudEnvironment.getServiceInfos(serviceInfoClass);
 			if (serviceInfos.size() != 1) {
 				throw new CloudServiceException("Expected 1 service of " + serviceInfoClass + " type, but found"
 						+ serviceInfos.size());
 			}
-			return serviceCreator.createSingletonService(serviceInfos.get(0)).service;
+			return getServiceCreator().createSingletonService(serviceInfos.get(0)).service;
 		}
 	}
 
@@ -76,6 +73,8 @@ public abstract class AbstractCloudServiceFactory<S, SI extends AbstractServiceI
 	 *         application
 	 */
 	public List<ServiceNameTuple<S>> createInstances() {
-		return serviceCreator.createServices(cloudEnvironment.getServiceInfos(serviceInfoClass));
+		return getServiceCreator().createServices(cloudEnvironment.getServiceInfos(serviceInfoClass));
 	}
+
+	protected abstract AbstractServiceCreator<S, SI> getServiceCreator();
 }
