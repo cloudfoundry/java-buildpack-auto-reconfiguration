@@ -17,7 +17,7 @@ import org.w3c.dom.Element;
 /**
  * @author Mark Fisher
  */
-class CloudServiceFactoryParser extends AbstractSingleBeanDefinitionParser {
+class AbstractCloudServiceFactoryParser extends AbstractSingleBeanDefinitionParser {
 
 	private final Class<?> beanClass;
 
@@ -26,7 +26,7 @@ class CloudServiceFactoryParser extends AbstractSingleBeanDefinitionParser {
 	private final CloudEnvironment cloudEnvironment;
 
 
-	public CloudServiceFactoryParser(Class<?> beanClass, Class<? extends AbstractServiceInfo> serviceInfoClass) {
+	public AbstractCloudServiceFactoryParser(Class<?> beanClass, Class<? extends AbstractServiceInfo> serviceInfoClass) {
 		Assert.notNull(beanClass, "beanClass must not be null");
 		Assert.notNull(serviceInfoClass, "serviceInfoClass must not be null");
 		this.beanClass = beanClass;
@@ -57,12 +57,11 @@ class CloudServiceFactoryParser extends AbstractSingleBeanDefinitionParser {
 	}
 
 	@Override
-	protected final void doParse(Element element, ParserContext parserContext, BeanDefinitionBuilder builder) {
+	protected void doParse(Element element, ParserContext parserContext, BeanDefinitionBuilder builder) {
 		builder.addConstructorArgValue(this.cloudEnvironment);
 		String serviceName = element.getAttribute("service-name");
 		if (StringUtils.hasText(serviceName)) {
 			builder.addPropertyValue("serviceName", serviceName);
 		}
 	}
-
 }
