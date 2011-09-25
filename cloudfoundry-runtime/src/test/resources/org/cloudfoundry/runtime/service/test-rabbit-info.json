@@ -7,7 +7,7 @@
 			"hostname":"$hostname",
 			"port":$port,
 			"user":"$user",
-			"pass":"$password",
+			"pass":"$pass",
 			"vhost":"$vhost"
 		}
 }
