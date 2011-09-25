@@ -34,6 +34,23 @@ http://www.springframework.org/schema/rabbit/spring-rabbit-1.0.xsd">
 		<cloud:service-scan/>
 	</beans>
 
+	<beans profile="cloud-services-options">
+		<cloud:mongo-db-factory id="mongo" write-concern="FSYNC_SAFE">
+			<cloud:mongo-options connections-per-host="10" max-wait-time="10000"/>
+		</cloud:mongo-db-factory>
+		<cloud:redis-connection-factory id="redisConnectionFactory">
+			<cloud:pool pool-size="10" max-wait-time="5500"/>
+		</cloud:redis-connection-factory>
+		<cloud:rabbit-connection-factory id="rabbitConnectionFactory">
+			<cloud:rabbit-options channel-cache-size="10"/>
+		</cloud:rabbit-connection-factory>
+		<cloud:data-source service-name="test_mysql_database">
+			<cloud:connection properties="sessionVariables=sql_mode='ANSI';characterEncoding='UTF8'"/>
+			<cloud:pool pool-size="6-13" max-wait-time="5000"/>
+		</cloud:data-source>
+		<cloud:data-source service-name="test_postgres_database" />
+	</beans>
+
 	<beans profile="mongo-auto-staging">
 		<mongo:db-factory id="mongoDbFactory" dbname="pwdtest" host="127.0.0.1" port="1234" username="test_user" password="efgh"/>
 	</beans>

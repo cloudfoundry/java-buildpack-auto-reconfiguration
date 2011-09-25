@@ -16,7 +16,7 @@ import org.w3c.dom.Element;
 
 /**
  * Handler for the 'cloud' namespace
- * 
+ *
  * @author Mark Fisher
  * @author Costin Leau
  * @author Ramnivas Laddad
@@ -29,14 +29,14 @@ public class CloudNamespaceHandler extends NamespaceHandlerSupport {
 	@Override
 	public void init() {
 		this.registerBeanDefinitionParser("rabbit-connection-factory",
-				new CloudServiceFactoryParser(CloudRabbitConnectionFactoryBean.class, RabbitServiceInfo.class));
+				new CloudRabbitConnectionFactoryParser(CloudRabbitConnectionFactoryBean.class, RabbitServiceInfo.class));
 		this.registerBeanDefinitionParser("redis-connection-factory",
-				new CloudServiceFactoryParser(CloudRedisConnectionFactoryBean.class, RedisServiceInfo.class));
+				new CloudRedisConnectionFactoryParser(CloudRedisConnectionFactoryBean.class, RedisServiceInfo.class));
 		this.registerBeanDefinitionParser("mongo-db-factory",
-				new CloudServiceFactoryParser(CloudMongoDbFactoryBean.class, MongoServiceInfo.class));
+				new CloudMongoDbFactoryParser(CloudMongoDbFactoryBean.class, MongoServiceInfo.class));
 		this.registerBeanDefinitionParser("data-source",
-				new CloudServiceFactoryParser(CloudDataSourceFactory.class, RdbmsServiceInfo.class));
-		
+				new CloudDataSourceFactoryParser(CloudDataSourceFactory.class, RdbmsServiceInfo.class));
+
 		this.registerBeanDefinitionParser("properties", new AbstractSimpleBeanDefinitionParser() {
 			@Override
 			protected Class<?> getBeanClass(Element element) {

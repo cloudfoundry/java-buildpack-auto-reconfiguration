@@ -65,6 +65,14 @@ public class ServiceController {
 		return new ResponseEntity<String>(serviceHolder.getMySqlDataSource().getUrl(), HttpStatus.OK);
 	}
 
+	@RequestMapping(value = "/mysql/max-active", method = RequestMethod.GET)
+	public ResponseEntity<String> getMySQLDataSourcemaxActive() {
+		if (serviceHolder.getMySqlDataSource() == null) {
+			return new ResponseEntity<String>(HttpStatus.NOT_FOUND);
+		}
+		return new ResponseEntity<String>("" + serviceHolder.getMySqlDataSource().getMaxActive(), HttpStatus.OK);
+	}
+
 	@RequestMapping(value = "/postgres", method = RequestMethod.GET)
 	public ResponseEntity<String> getPostgresDataSourceDBUrl() {
 		if (serviceHolder.getPostgresDataSource() == null) {
@@ -79,6 +87,15 @@ public class ServiceController {
 			return new ResponseEntity<String>(HttpStatus.NOT_FOUND);
 		}
 		return new ResponseEntity<String>(serviceHolder.getMongoDbFactory().getDb().getMongo().getAddress().toString(),
+				HttpStatus.OK);
+	}
+
+	@RequestMapping(value = "/mongo/write-concern", method = RequestMethod.GET)
+	public ResponseEntity<String> getMongoWriteConcern() {
+		if (serviceHolder.getMongoDbFactory() == null) {
+			return new ResponseEntity<String>(HttpStatus.NOT_FOUND);
+		}
+		return new ResponseEntity<String>(serviceHolder.getMongoDbFactory().getDb().getWriteConcern().toString(),
 				HttpStatus.OK);
 	}
 
@@ -109,6 +126,17 @@ public class ServiceController {
 				.getRedisConnectionFactory();
 		return new ResponseEntity<String>(
 				jedisConnectionFactory.getHostName() + ':' + jedisConnectionFactory.getPort(), HttpStatus.OK);
+	}
+
+	@RequestMapping(value = "/redis/max-wait", method = RequestMethod.GET)
+	public ResponseEntity<String> getRedisPoolInitialSize() {
+		if (serviceHolder.getRedisConnectionFactory() == null) {
+			return new ResponseEntity<String>(HttpStatus.NOT_FOUND);
+		}
+		// Jedis is the only client we currently support
+		JedisConnectionFactory jedisConnectionFactory = (JedisConnectionFactory) serviceHolder
+				.getRedisConnectionFactory();
+		return new ResponseEntity<String>("" + jedisConnectionFactory.getPoolConfig().getMaxWait(), HttpStatus.OK);
 	}
 
 	@RequestMapping(value = "/hibernate", method = RequestMethod.GET)
