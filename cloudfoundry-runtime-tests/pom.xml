@@ -56,6 +56,13 @@
 			<type>war</type>
 			<scope>provided</scope>
 		</dependency>
+		<dependency>
+			<groupId>org.cloudfoundry</groupId>
+			<artifactId>missing-deps-test-app</artifactId>
+			<version>0.1.0.BUILD-SNAPSHOT</version>
+			<type>war</type>
+			<scope>provided</scope>
+		</dependency>
 	</dependencies>
 	<build>
 		<plugins>
@@ -72,9 +79,14 @@
 						<configuration>
 							<artifactItems>
 								<artifactItem>
-
 									<groupId>org.cloudfoundry</groupId>
 									<artifactId>vcap-java-test-app</artifactId>
+									<type>war</type>
+									<outputDirectory>${project.build.directory}/generated-test-resources</outputDirectory>
+								</artifactItem>
+								<artifactItem>
+									<groupId>org.cloudfoundry</groupId>
+									<artifactId>missing-deps-test-app</artifactId>
 									<type>war</type>
 									<outputDirectory>${project.build.directory}/generated-test-resources</outputDirectory>
 								</artifactItem>

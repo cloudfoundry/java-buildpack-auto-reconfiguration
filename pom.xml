@@ -24,7 +24,7 @@
 			<id>integration-test</id>
 			<modules>
 				<module>cloudfoundry-runtime</module>
-				<module>vcap-java-test-app</module>
+				<module>vcap-java-test-apps</module>
 				<module>cloudfoundry-runtime-tests</module>
 				<module>auto-reconfiguration</module>
 				<module>plugins</module>
