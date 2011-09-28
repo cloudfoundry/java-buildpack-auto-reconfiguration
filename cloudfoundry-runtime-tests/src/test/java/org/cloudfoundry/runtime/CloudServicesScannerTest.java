@@ -21,6 +21,7 @@ import static org.junit.Assert.fail;
 
 import java.io.IOException;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
@@ -82,6 +83,22 @@ public class CloudServicesScannerTest extends CloudServicesTest {
 				fail("Expected a 404 when looking for mongo service bean.  Got: " + e);
 			}
 		}
+	}
+
+	/**
+	 * Verifies that service scan will not throw any Exceptions if the app is
+	 * missing dependencies such as spring-data-mongo, etc. The
+	 * missing-deps-test-app uses cloud:service-scan and is actually missing
+	 * every service dependency (spring-amqp, spring-data, a DataSource), but
+	 * the app should start successfully as long as there are no services bound
+	 *
+	 * @throws IOException
+	 */
+	@SuppressWarnings("unchecked")
+	@Test
+	public void serviceScanMissingDependencies() throws IOException {
+		createAndStartApp("missing-deps-test-app", Collections.EMPTY_LIST);
+		assertTrue("Test application is not available", testAppCreator.isAppAvailable(computeAppUrl(), 500l, 120000l));
 	}
 
 	private List<String> createServicesMinusMongo() {

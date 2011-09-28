@@ -32,4 +32,3 @@ http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd">
 		<session-timeout>30</session-timeout>
 	</session-config>
 </web-app>
-

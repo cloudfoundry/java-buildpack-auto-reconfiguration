@@ -6,9 +6,13 @@
 	<artifactId>vcap-java-test-app</artifactId>
 	<name>vcap-java-test-app</name>
 	<packaging>war</packaging>
-	<version>0.1.0.BUILD-SNAPSHOT</version>
+	<parent>
+		<groupId>org.cloudfoundry</groupId>
+		<artifactId>vcap-java-test-apps-parent</artifactId>
+		<version>0.1.0.BUILD-SNAPSHOT</version>
+		<relativePath>../vcap-java-test-apps-parent</relativePath>
+	</parent>
 	<properties>
-		<java-version>1.6</java-version>
 		<org.springframework-version>3.1.0.M2</org.springframework-version>
 		<org.springframework.roo-version>1.0.2.RELEASE</org.springframework.roo-version>
 		<org.aspectj-version>1.6.9</org.aspectj-version>
@@ -132,7 +136,7 @@
 		<dependency>
 			<groupId>org.cloudfoundry</groupId>
 			<artifactId>cloudfoundry-runtime</artifactId>
-			<version>0.8.1.BUILD-SNAPSHOT</version>
+			<version>${cloudfoundry.runtime.version}</version>
 		</dependency>
 		<dependency>
 		    <groupId>postgresql</groupId>
@@ -214,37 +218,14 @@
 			<version>${spring-data-redis.version}</version>
 		</dependency>
 	</dependencies>
-	<repositories>
-		<!-- For testing against latest Spring snapshots -->
-		<repository>
-			<id>org.springframework.maven.snapshot</id>
-			<name>Spring Maven Snapshot Repository</name>
-			<url>http://maven.springframework.org/snapshot</url>
-			<releases>
-				<enabled>false</enabled>
-			</releases>
-			<snapshots>
-				<enabled>true</enabled>
-			</snapshots>
-		</repository>
-		<!-- For developing against latest Spring milestones -->
-		<repository>
-			<id>org.springframework.maven.milestone</id>
-			<name>Spring Maven Milestone Repository</name>
-			<url>http://maven.springframework.org/milestone</url>
-			<snapshots>
-				<enabled>false</enabled>
-			</snapshots>
-		</repository>
-	</repositories>
 	<build>
 		<plugins>
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-compiler-plugin</artifactId>
 				<configuration>
-					<source>${java-version}</source>
-					<target>${java-version}</target>
+					<source>${java.version}</source>
+					<target>${java.version}</target>
 				</configuration>
 			</plugin>
 			<plugin>
@@ -296,8 +277,8 @@
 				</executions>
 				<configuration>
 					<outxml>true</outxml>
-					<source>${java-version}</source>
-					<target>${java-version}</target>
+					<source>${java.version}</source>
+					<target>${java.version}</target>
 				</configuration>
 			</plugin>
 			<plugin>
@@ -354,4 +335,3 @@
 		</pluginManagement>
 	</build>
 </project>
-
