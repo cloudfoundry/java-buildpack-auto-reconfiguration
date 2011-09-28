@@ -10,7 +10,7 @@
 
 	<properties>
 		<java.version>1.6</java.version>
-		<cloudfoundry.runtime.version>0.8.1.BUILD-SNAPSHOT</cloudfoundry.runtime.version>
+		<cloudfoundry.runtime.version>0.8.1</cloudfoundry.runtime.version>
 	</properties>
 
 	<repositories>
