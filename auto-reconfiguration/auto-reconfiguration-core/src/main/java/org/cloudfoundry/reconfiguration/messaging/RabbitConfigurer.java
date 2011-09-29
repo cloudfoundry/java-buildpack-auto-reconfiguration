@@ -1,9 +1,9 @@
 package org.cloudfoundry.reconfiguration.messaging;
 
-import java.util.List;
-import java.util.Map;
-
 import org.cloudfoundry.reconfiguration.AbstractServiceConfigurer;
+import org.cloudfoundry.runtime.env.CloudEnvironment;
+import org.cloudfoundry.runtime.env.RabbitServiceInfo;
+import org.cloudfoundry.runtime.service.AbstractServiceCreator;
 import org.cloudfoundry.runtime.service.messaging.RabbitServiceCreator;
 import org.springframework.amqp.rabbit.connection.ConnectionFactory;
 
@@ -15,19 +15,14 @@ import org.springframework.amqp.rabbit.connection.ConnectionFactory;
  * @author Jennifer Hickey
  *
  */
-public class RabbitConfigurer extends AbstractServiceConfigurer<RabbitServiceCreator> {
+public class RabbitConfigurer extends AbstractServiceConfigurer<RabbitServiceInfo> {
 
 	private static final String CF_RABBIT_CONN_FACTORY_NAME = "__cloudFoundryRabbitConnectionFactory";
 
 	private static final String RABBIT_CONN_FACTORY_CLASS_NAME = "org.springframework.amqp.rabbit.connection.ConnectionFactory";
 
-	public RabbitConfigurer(List<Map<String, Object>> cloudServices, RabbitServiceCreator serviceCreator) {
-		super(cloudServices, serviceCreator);
-	}
-
-	@Override
-	public String getServiceLabel() {
-		return "rabbitmq";
+	public RabbitConfigurer(CloudEnvironment cloudEnvironment) {
+		super(cloudEnvironment, RabbitServiceInfo.class);
 	}
 
 	@Override
@@ -40,4 +35,8 @@ public class RabbitConfigurer extends AbstractServiceConfigurer<RabbitServiceCre
 		return CF_RABBIT_CONN_FACTORY_NAME;
 	}
 
+	@Override
+	public AbstractServiceCreator<?, RabbitServiceInfo> getServiceCreator() {
+		return new RabbitServiceCreator();
+	}
 }

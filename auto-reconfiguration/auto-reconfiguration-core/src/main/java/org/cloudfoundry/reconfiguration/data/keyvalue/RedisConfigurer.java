@@ -1,9 +1,9 @@
 package org.cloudfoundry.reconfiguration.data.keyvalue;
 
-import java.util.List;
-import java.util.Map;
-
 import org.cloudfoundry.reconfiguration.AbstractServiceConfigurer;
+import org.cloudfoundry.runtime.env.CloudEnvironment;
+import org.cloudfoundry.runtime.env.RedisServiceInfo;
+import org.cloudfoundry.runtime.service.AbstractServiceCreator;
 import org.cloudfoundry.runtime.service.keyvalue.RedisServiceCreator;
 import org.springframework.data.redis.connection.RedisConnectionFactory;
 
@@ -15,19 +15,14 @@ import org.springframework.data.redis.connection.RedisConnectionFactory;
  * @author Jennifer Hickey
  *
  */
-public class RedisConfigurer extends AbstractServiceConfigurer<RedisServiceCreator> {
+public class RedisConfigurer extends AbstractServiceConfigurer<RedisServiceInfo> {
 
 	private static final String CF_REDIS_CONN_FACTORY_NAME = "__cloudFoundryRedisConnectionFactory";
 
 	private static final String REDIS_CONN_FACTORY_CLASS_NAME = "org.springframework.data.redis.connection.RedisConnectionFactory";
 
-	public RedisConfigurer(List<Map<String, Object>> cloudServices, RedisServiceCreator serviceCreator) {
-		super(cloudServices, serviceCreator);
-	}
-
-	@Override
-	public String getServiceLabel() {
-		return "redis";
+	public RedisConfigurer(CloudEnvironment cloudEnvironment) {
+		super(cloudEnvironment, RedisServiceInfo.class);
 	}
 
 	@Override
@@ -40,4 +35,8 @@ public class RedisConfigurer extends AbstractServiceConfigurer<RedisServiceCreat
 		return CF_REDIS_CONN_FACTORY_NAME;
 	}
 
+	@Override
+	public AbstractServiceCreator<?, RedisServiceInfo> getServiceCreator() {
+		return new RedisServiceCreator();
+	}
 }

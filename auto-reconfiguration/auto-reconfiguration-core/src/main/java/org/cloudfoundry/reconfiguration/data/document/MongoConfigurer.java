@@ -1,9 +1,9 @@
 package org.cloudfoundry.reconfiguration.data.document;
 
-import java.util.List;
-import java.util.Map;
-
 import org.cloudfoundry.reconfiguration.AbstractServiceConfigurer;
+import org.cloudfoundry.runtime.env.CloudEnvironment;
+import org.cloudfoundry.runtime.env.MongoServiceInfo;
+import org.cloudfoundry.runtime.service.AbstractServiceCreator;
 import org.cloudfoundry.runtime.service.document.MongoServiceCreator;
 import org.springframework.data.mongodb.MongoDbFactory;
 
@@ -15,19 +15,14 @@ import org.springframework.data.mongodb.MongoDbFactory;
  * @author Jennifer Hickey
  *
  */
-public class MongoConfigurer extends AbstractServiceConfigurer<MongoServiceCreator> {
+public class MongoConfigurer extends AbstractServiceConfigurer<MongoServiceInfo> {
 
 	static final String CF_MONGO_DB_FACTORY_NAME = "__cloudFoundryMongoDbFactory";
 
 	private static final String MONGO_DB_FACTORY_CLASS_NAME = "org.springframework.data.mongodb.MongoDbFactory";
 
-	public MongoConfigurer(List<Map<String, Object>> cloudServices, MongoServiceCreator serviceCreator) {
-		super(cloudServices, serviceCreator);
-	}
-
-	@Override
-	public String getServiceLabel() {
-		return "mongodb";
+	public MongoConfigurer(CloudEnvironment cloudEnvironment) {
+		super(cloudEnvironment, MongoServiceInfo.class);
 	}
 
 	@Override
@@ -40,4 +35,8 @@ public class MongoConfigurer extends AbstractServiceConfigurer<MongoServiceCreat
 		return CF_MONGO_DB_FACTORY_NAME;
 	}
 
+	@Override
+	public AbstractServiceCreator<?, MongoServiceInfo> getServiceCreator() {
+		return new MongoServiceCreator();
+	}
 }

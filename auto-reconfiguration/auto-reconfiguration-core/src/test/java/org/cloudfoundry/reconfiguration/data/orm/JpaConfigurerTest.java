@@ -3,16 +3,13 @@ package org.cloudfoundry.reconfiguration.data.orm;
 import static org.mockito.Mockito.when;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 
 import org.cloudfoundry.reconfiguration.CloudEnvironmentMockingTest;
-import org.cloudfoundry.runtime.env.MysqlServiceInfo;
-import org.cloudfoundry.runtime.env.PostgresqlServiceInfo;
+import org.cloudfoundry.runtime.env.RdbmsServiceInfo;
 import org.hibernate.impl.SessionFactoryImpl;
 import org.hibernate.impl.SessionImpl;
 import org.junit.Assert;
@@ -33,24 +30,21 @@ import org.springframework.context.ApplicationContext;
  */
 public class JpaConfigurerTest extends CloudEnvironmentMockingTest {
 
-	@Mock private MysqlServiceInfo mockMysqlServiceInfo;
-	@Mock private PostgresqlServiceInfo mockPostgresqlServiceInfo;
+	@Mock
+	private RdbmsServiceInfo mockRdbmsServiceInfo;
 
 	@Test
 	public void entityManagerFactoryMysqlDialectUpdated() {
 		String serviceJdbcUrl = "jdbc:mysql://10.20.20.40:1234/mysql-1";
-		List<MysqlServiceInfo> serviceInfos = new ArrayList<MysqlServiceInfo>();
-		serviceInfos.add(mockMysqlServiceInfo);
-		Map<String, Object> service = new HashMap<String, Object>();
-		service.put("label", "mysql-5.1");
-		List<Map<String,Object>> serviceList = new ArrayList<Map<String,Object>>();
-		serviceList.add(service);
-		when(mockMysqlServiceInfo.getUrl()).thenReturn(serviceJdbcUrl);
-		when(mockEnvironment.getServiceInfos(MysqlServiceInfo.class)).thenReturn(serviceInfos);
-		when(mockEnvironment.getServices()).thenReturn(serviceList);
+		List<RdbmsServiceInfo> serviceInfos = new ArrayList<RdbmsServiceInfo>();
+		serviceInfos.add(mockRdbmsServiceInfo);
+		when(mockRdbmsServiceInfo.getUrl()).thenReturn(serviceJdbcUrl);
+		when(mockRdbmsServiceInfo.getLabel()).thenReturn("mysql-5.1");
+		when(mockEnvironment.getServiceInfos(RdbmsServiceInfo.class)).thenReturn(serviceInfos);
 
 		ApplicationContext context = getTestApplicationContext("test-jpa-good-context.xml");
-		EntityManagerFactory entityManagerFactory = (EntityManagerFactory) context.getBean("entityManagerFactory", EntityManagerFactory.class);
+		EntityManagerFactory entityManagerFactory = (EntityManagerFactory) context.getBean("entityManagerFactory",
+				EntityManagerFactory.class);
 		EntityManager entityManager = entityManagerFactory.createEntityManager();
 		SessionImpl entityManagerDelegate = (SessionImpl) entityManager.getDelegate();
 		SessionFactoryImpl underlyingSessionFactory = (SessionFactoryImpl) entityManagerDelegate.getSessionFactory();
@@ -60,24 +54,19 @@ public class JpaConfigurerTest extends CloudEnvironmentMockingTest {
 	@Test
 	public void entityManagerFactoryPostgresqlDialectUpdated() {
 		String serviceJdbcUrl = "jdbc:postgresql://10.20.20.40:5432/pg-1";
-		List<PostgresqlServiceInfo> serviceInfos = new ArrayList<PostgresqlServiceInfo>();
-		serviceInfos.add(mockPostgresqlServiceInfo);
-		Map<String, Object> service = new HashMap<String, Object>();
-		service.put("label", "postgresql-9.0");
-		List<Map<String,Object>> serviceList = new ArrayList<Map<String,Object>>();
-		serviceList.add(service);
-		when(mockPostgresqlServiceInfo.getUrl()).thenReturn(serviceJdbcUrl);
-		when(mockEnvironment.getServiceInfos(PostgresqlServiceInfo.class)).thenReturn(serviceInfos);
-		when(mockEnvironment.getServices()).thenReturn(serviceList);
+		List<RdbmsServiceInfo> serviceInfos = new ArrayList<RdbmsServiceInfo>();
+		serviceInfos.add(mockRdbmsServiceInfo);
+		when(mockRdbmsServiceInfo.getUrl()).thenReturn(serviceJdbcUrl);
+		when(mockRdbmsServiceInfo.getLabel()).thenReturn("postgresql-9.0");
+		when(mockEnvironment.getServiceInfos(RdbmsServiceInfo.class)).thenReturn(serviceInfos);
 
 		ApplicationContext context = getTestApplicationContext("test-jpa-good-context.xml");
-		EntityManagerFactory entityManagerFactory = (EntityManagerFactory) context.getBean("entityManagerFactory", EntityManagerFactory.class);
+		EntityManagerFactory entityManagerFactory = (EntityManagerFactory) context.getBean("entityManagerFactory",
+				EntityManagerFactory.class);
 		EntityManager entityManager = entityManagerFactory.createEntityManager();
 		SessionImpl entityManagerDelegate = (SessionImpl) entityManager.getDelegate();
 		SessionFactoryImpl underlyingSessionFactory = (SessionFactoryImpl) entityManagerDelegate.getSessionFactory();
 		Assert.assertEquals("org.hibernate.dialect.PostgreSQLDialect", underlyingSessionFactory.getDialect().toString());
 	}
-
-
 
 }

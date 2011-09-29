@@ -3,11 +3,10 @@
  */
 package org.cloudfoundry.reconfiguration.data.orm;
 
-import java.util.List;
-import java.util.Map;
-
 import org.cloudfoundry.reconfiguration.Configurer;
 import org.cloudfoundry.reconfiguration.PropertyReplacer;
+import org.cloudfoundry.runtime.env.CloudEnvironment;
+import org.cloudfoundry.runtime.env.RdbmsServiceInfo;
 import org.springframework.beans.factory.support.DefaultListableBeanFactory;
 
 /**
@@ -28,24 +27,20 @@ public class HibernateConfigurer implements Configurer {
 
 	private PropertyReplacer propertyReplacer = new PropertyReplacer();
 
-	private List<Map<String,Object>> cloudServices;
+	private CloudEnvironment cloudEnvironment;
 
-	public HibernateConfigurer(List<Map<String,Object>> cloudServices) {
-		this.cloudServices = cloudServices;
+	public HibernateConfigurer(CloudEnvironment cloudEnvironment) {
+		this.cloudEnvironment = cloudEnvironment;
 	}
 
 	public boolean configure(DefaultListableBeanFactory beanFactory) {
 		boolean configured = false;
-		for (Map<String, Object> service : cloudServices) {
-			String label = (String) service.get("label");
-			if (label == null) {
-				continue;
-			}
-			if (label.startsWith("postgresql")) {
-				replaceHibernateProperties(APP_CLOUD_HIBERNATE_POSTGRESQL_REPLACEMENT_PROPERTIES,beanFactory);
+		for (RdbmsServiceInfo service : cloudEnvironment.getServiceInfos(RdbmsServiceInfo.class)) {
+			if (service.getLabel().startsWith("postgresql")) {
+				replaceHibernateProperties(APP_CLOUD_HIBERNATE_POSTGRESQL_REPLACEMENT_PROPERTIES, beanFactory);
 				configured = true;
-			} else if (label.startsWith("mysql")) {
-				replaceHibernateProperties(APP_CLOUD_HIBERNATE_MYSQL_REPLACEMENT_PROPERTIES,beanFactory);
+			} else if (service.getLabel().startsWith("mysql")) {
+				replaceHibernateProperties(APP_CLOUD_HIBERNATE_MYSQL_REPLACEMENT_PROPERTIES, beanFactory);
 				configured = true;
 			}
 		}

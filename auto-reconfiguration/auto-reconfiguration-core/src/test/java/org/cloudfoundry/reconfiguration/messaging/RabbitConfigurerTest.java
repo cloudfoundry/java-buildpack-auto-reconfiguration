@@ -4,13 +4,11 @@ import static org.junit.Assert.assertFalse;
 import static org.mockito.Mockito.when;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import org.cloudfoundry.reconfiguration.CloudEnvironmentMockingTest;
+import org.cloudfoundry.runtime.env.CloudEnvironment;
 import org.cloudfoundry.runtime.env.RabbitServiceInfo;
-import org.cloudfoundry.runtime.service.messaging.RabbitServiceCreator;
 import org.junit.Assert;
 import org.junit.Test;
 import org.mockito.Mock;
@@ -42,24 +40,16 @@ public class RabbitConfigurerTest extends CloudEnvironmentMockingTest {
 	@Mock
 	private DefaultListableBeanFactory beanFactory;
 
-	@Mock
-	private RabbitServiceCreator serviceCreator;
-
 	@Test
 	public void cloudRabbitConnFactoryReplacesUserConnFactory() {
 		List<RabbitServiceInfo> serviceInfos = new ArrayList<RabbitServiceInfo>();
 		serviceInfos.add(mockRabbitServiceInfo);
-		Map<String, Object> service = new HashMap<String, Object>();
-		service.put("label", "rabbitmq-2.4.1");
-		List<Map<String, Object>> serviceList = new ArrayList<Map<String, Object>>();
-		serviceList.add(service);
 		when(mockRabbitServiceInfo.getHost()).thenReturn("cloudhost");
 		when(mockRabbitServiceInfo.getPassword()).thenReturn("mypass");
 		when(mockRabbitServiceInfo.getPort()).thenReturn(1234);
 		when(mockRabbitServiceInfo.getUserName()).thenReturn("clouduser");
 		when(mockRabbitServiceInfo.getVirtualHost()).thenReturn("cloudvirt");
 		when(mockEnvironment.getServiceInfos(RabbitServiceInfo.class)).thenReturn(serviceInfos);
-		when(mockEnvironment.getServices()).thenReturn(serviceList);
 
 		ApplicationContext context = getTestApplicationContext("test-rabbit-context.xml");
 		CachingConnectionFactory replacedConnFactory = (CachingConnectionFactory) context.getBean(
@@ -73,12 +63,7 @@ public class RabbitConfigurerTest extends CloudEnvironmentMockingTest {
 	public void cloudRabbitConnFactoryLeavesOriginalInPlaceIfMultipleBeansDetected() {
 		List<RabbitServiceInfo> serviceInfos = new ArrayList<RabbitServiceInfo>();
 		serviceInfos.add(mockRabbitServiceInfo);
-		Map<String, Object> service = new HashMap<String, Object>();
-		service.put("label", "rabbitmq-2.4.1");
-		List<Map<String, Object>> serviceList = new ArrayList<Map<String, Object>>();
-		serviceList.add(service);
 		when(mockEnvironment.getServiceInfos(RabbitServiceInfo.class)).thenReturn(serviceInfos);
-		when(mockEnvironment.getServices()).thenReturn(serviceList);
 
 		ApplicationContext context = getTestApplicationContext("test-multiple-rabbit-context.xml");
 		CachingConnectionFactory replacedConnFactory = (CachingConnectionFactory) context.getBean(
@@ -93,12 +78,7 @@ public class RabbitConfigurerTest extends CloudEnvironmentMockingTest {
 		List<RabbitServiceInfo> serviceInfos = new ArrayList<RabbitServiceInfo>();
 		serviceInfos.add(mockRabbitServiceInfo);
 		serviceInfos.add(mockRabbitServiceInfo2);
-		Map<String, Object> service = new HashMap<String, Object>();
-		service.put("label", "rabbitmq-2.4.1");
-		List<Map<String, Object>> serviceList = new ArrayList<Map<String, Object>>();
-		serviceList.add(service);
 		when(mockEnvironment.getServiceInfos(RabbitServiceInfo.class)).thenReturn(serviceInfos);
-		when(mockEnvironment.getServices()).thenReturn(serviceList);
 		ApplicationContext context = getTestApplicationContext("test-rabbit-context.xml");
 		CachingConnectionFactory replacedConnFactory = (CachingConnectionFactory) context.getBean(
 				"rabbitConnectionFactory", ConnectionFactory.class);
@@ -109,8 +89,8 @@ public class RabbitConfigurerTest extends CloudEnvironmentMockingTest {
 
 	@Test
 	public void cloudRabbitConnFactoryLeavesOriginalInPlaceIfNoServicesDetected() {
-		List<Map<String, Object>> serviceList = new ArrayList<Map<String, Object>>();
-		when(mockEnvironment.getServices()).thenReturn(serviceList);
+		List<RabbitServiceInfo> serviceInfos = new ArrayList<RabbitServiceInfo>();
+		when(mockEnvironment.getServiceInfos(RabbitServiceInfo.class)).thenReturn(serviceInfos);
 		ApplicationContext context = getTestApplicationContext("test-rabbit-context.xml");
 		CachingConnectionFactory replacedConnFactory = (CachingConnectionFactory) context.getBean(
 				"rabbitConnectionFactory", ConnectionFactory.class);
@@ -121,13 +101,13 @@ public class RabbitConfigurerTest extends CloudEnvironmentMockingTest {
 
 	@Test
 	public void doesNothingIfRabbitConnFactoryClassNotFound() {
-		RabbitConfigurer configurer = new StubRabbitConfigurer(new ArrayList<Map<String, Object>>(), serviceCreator);
+		RabbitConfigurer configurer = new StubRabbitConfigurer(mockEnvironment);
 		assertFalse(configurer.configure(beanFactory));
 	}
 
 	private class StubRabbitConfigurer extends RabbitConfigurer {
-		public StubRabbitConfigurer(List<Map<String, Object>> cloudServices, RabbitServiceCreator serviceCreator) {
-			super(cloudServices, serviceCreator);
+		public StubRabbitConfigurer(CloudEnvironment cloudEnvironment) {
+			super(cloudEnvironment);
 		}
 
 		@Override

@@ -1,65 +1,76 @@
 package org.cloudfoundry.reconfiguration;
 
 import java.util.List;
-import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import org.cloudfoundry.runtime.env.AbstractServiceInfo;
+import org.cloudfoundry.runtime.env.CloudEnvironment;
 import org.cloudfoundry.runtime.env.CloudServiceException;
 import org.cloudfoundry.runtime.service.AbstractServiceCreator;
 import org.springframework.beans.factory.support.DefaultListableBeanFactory;
 
-abstract public class AbstractServiceConfigurer<SC extends AbstractServiceCreator<?,?>> implements Configurer {
+abstract public class AbstractServiceConfigurer<SI extends AbstractServiceInfo>
+		implements Configurer {
 
 	private final Logger logger = Logger.getLogger(getClass().getName());
 
-	protected List<Map<String,Object>> cloudServices;
+	protected CloudEnvironment cloudEnvironment;
 
-	protected SC serviceCreator;
+	protected Class<SI> serviceInfoClass;
 
-	public AbstractServiceConfigurer(List<Map<String,Object>> cloudServices, SC serviceCreator) {
-		this.cloudServices = cloudServices;
-		this.serviceCreator = serviceCreator;
+	public AbstractServiceConfigurer(CloudEnvironment cloudEnvironment, Class<SI> serviceInfoClass) {
+		this.cloudEnvironment = cloudEnvironment;
+		this.serviceInfoClass = serviceInfoClass;
 	}
 
 	public boolean configure(DefaultListableBeanFactory beanFactory) {
-		Class<?> beanClass = loadClass(getBeanClass());
-		if(beanClass == null) {
-			logger.log(Level.INFO, "Class " + getBeanClass() + " not found.  Skipping autostaging.");
-			return false;
-		}
-		String[] beanNames = beanFactory.getBeanNamesForType(beanClass);
+		String[] beanNames = getBeanNames(beanFactory);
 		if (beanNames.length == 0) {
 			logger.log(Level.INFO, "No beans of type " + getBeanClass() + " found in application context");
 			return false;
 		} else if (beanNames.length > 1) {
-			logger.log(Level.INFO, "More than 1 (" + beanNames.length
-					+ ") beans of type " + getBeanClass() + "found in application context. Skipping autostaging.");
+			logger.log(Level.INFO, "More than 1 (" + beanNames.length + ") beans of type " + getBeanClass()
+					+ "found in application context. Skipping autostaging.");
 			return false;
 		}
-		for (Map<String, Object> service : cloudServices) {
-			String label = (String) service.get("label");
-			if (label == null) {
-				continue;
-			}
-			if (label.startsWith(getServiceLabel())) {
-				try {
-					beanFactory.registerSingleton(getServiceBeanName(),
-							serviceCreator.createSingletonService().service);
-					beanFactory.removeBeanDefinition(beanNames[0]);
-					beanFactory.registerAlias(getServiceBeanName(), beanNames[0]);
-					return true;
-				} catch (CloudServiceException ex) {
-					logger.log(Level.INFO, "Error creating cloud service. Skipping autostaging", ex);
-					return false;
-				}
-			}
+		List<SI> cloudServices = cloudEnvironment.getServiceInfos(serviceInfoClass);
+		if (cloudServices.isEmpty()) {
+			logger.log(Level.INFO, "No services found. Skipping autostaging");
+			return false;
 		}
-		logger.log(Level.INFO, "No services found. Skipping autostaging");
-		return false;
+		if (cloudServices.size() > 1) {
+			logger.log(Level.INFO, "Error creating cloud service. Skipping autostaging.  Expected 1 service of "
+					+ serviceInfoClass + " type, but found " + cloudServices.size());
+			return false;
+		}
+		try {
+			beanFactory.registerSingleton(getServiceBeanName(),
+					getServiceCreator().createSingletonService(cloudServices.get(0)).service);
+			beanFactory.removeBeanDefinition(beanNames[0]);
+			beanFactory.registerAlias(getServiceBeanName(), beanNames[0]);
+			return true;
+		} catch (CloudServiceException ex) {
+			logger.log(Level.INFO, "Error creating cloud service. Skipping autostaging", ex);
+			return false;
+		}
 	}
 
-	abstract public String getServiceLabel();
+	protected String[] getBeanNames(DefaultListableBeanFactory beanFactory) {
+		Class<?> beanClass = loadClass(getBeanClass());
+		if (beanClass == null) {
+			logger.log(Level.INFO, "Class " + getBeanClass() + " not found.  Skipping autostaging.");
+			return new String[0];
+		}
+		return beanFactory.getBeanNamesForType(beanClass);
+	}
+
+	/**
+	 * Avoid creating an {@link AbstractServiceCreator} until we need to create a bean, as the creators may have
+	 * dependencies on third party software (such as Mongo, Spring Data, etc)
+	 * @return The {@link AbstractServiceCreator} to use
+	 */
+	abstract public AbstractServiceCreator<?, SI> getServiceCreator();
 
 	abstract public String getBeanClass();
 

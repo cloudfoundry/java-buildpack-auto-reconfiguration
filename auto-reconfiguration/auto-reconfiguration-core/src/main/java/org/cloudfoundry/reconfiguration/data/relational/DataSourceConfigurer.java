@@ -5,18 +5,17 @@ package org.cloudfoundry.reconfiguration.data.relational;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 import javax.sql.DataSource;
 
+import org.cloudfoundry.reconfiguration.AbstractServiceConfigurer;
 import org.cloudfoundry.reconfiguration.Configurer;
 import org.cloudfoundry.reconfiguration.data.orm.HibernateConfigurer;
 import org.cloudfoundry.reconfiguration.data.orm.JpaConfigurer;
-import org.cloudfoundry.runtime.env.CloudServiceException;
-import org.cloudfoundry.runtime.service.relational.MysqlServiceCreator;
-import org.cloudfoundry.runtime.service.relational.PostgresqlServiceCreator;
+import org.cloudfoundry.runtime.env.CloudEnvironment;
+import org.cloudfoundry.runtime.env.RdbmsServiceInfo;
+import org.cloudfoundry.runtime.service.AbstractServiceCreator;
+import org.cloudfoundry.runtime.service.relational.RdbmsServiceCreator;
 import org.springframework.beans.factory.BeanFactory;
 import org.springframework.beans.factory.NoSuchBeanDefinitionException;
 import org.springframework.beans.factory.config.BeanDefinition;
@@ -33,92 +32,50 @@ import org.springframework.beans.factory.support.DefaultListableBeanFactory;
  * @author Jennifer Hickey
  *
  */
-public class DataSourceConfigurer implements Configurer {
-
-	private final Logger logger = Logger.getLogger(DataSourceConfigurer.class.getName());
+public class DataSourceConfigurer extends AbstractServiceConfigurer<RdbmsServiceInfo> {
 
 	private static final String APP_CLOUD_DATA_SOURCE_NAME = "__appCloudDataSource";
+
+	private static final String DATA_SOURCE_CLASS_NAME = "javax.sql.DataSource";
 
 	private Configurer hibernateConfigurer;
 
 	private Configurer jpaConfigurer;
 
-	private List<Map<String, Object>> cloudServices;
-
-	private PostgresqlServiceCreator postgresqlServiceCreator;
-
-	private MysqlServiceCreator mysqlServiceCreator;
-
-	public DataSourceConfigurer(List<Map<String, Object>> cloudServices,
-			PostgresqlServiceCreator postgresqlServiceCreator, MysqlServiceCreator mysqlServiceCreator) {
-		this.cloudServices = cloudServices;
-		this.postgresqlServiceCreator = postgresqlServiceCreator;
-		this.mysqlServiceCreator = mysqlServiceCreator;
-		this.hibernateConfigurer = new HibernateConfigurer(cloudServices);
-		this.jpaConfigurer = new JpaConfigurer(cloudServices);
+	public DataSourceConfigurer(CloudEnvironment cloudEnvironment) {
+		super(cloudEnvironment, RdbmsServiceInfo.class);
+		this.hibernateConfigurer = new HibernateConfigurer(cloudEnvironment);
+		this.jpaConfigurer = new JpaConfigurer(cloudEnvironment);
 	}
 
+	@Override
 	public boolean configure(DefaultListableBeanFactory defaultListableBeanFactory) {
-		String[] dataSourceBeanNames = getRealDataSources(defaultListableBeanFactory);
-		if (dataSourceBeanNames.length == 0) {
-			logger.log(Level.INFO, "No datasources found in application context");
-			return false;
-		} else if (dataSourceBeanNames.length > 1) {
-			logger.log(Level.INFO, "More than 1 (" + dataSourceBeanNames.length
-					+ ") real datasources found in application context. Skipping autostaging.");
-			return false;
+		boolean configured = super.configure(defaultListableBeanFactory);
+		if (configured) {
+			jpaConfigurer.configure(defaultListableBeanFactory);
+			hibernateConfigurer.configure(defaultListableBeanFactory);
 		}
-
-		ArrayList<DataSource> dataSourceList = new ArrayList<DataSource>();
-		for (Map<String, Object> service : cloudServices) {
-			String label = (String) service.get("label");
-			if (label == null) {
-				continue;
-			}
-
-			if (label.startsWith("postgresql")) {
-				try {
-					dataSourceList.add(postgresqlServiceCreator.createSingletonService().service);
-				} catch (CloudServiceException ex) {
-					logger.log(Level.INFO, "Multiple database services found. Skipping autostaging", ex);
-					return false;
-				}
-			} else if (label.startsWith("mysql")) {
-				try {
-					dataSourceList.add(mysqlServiceCreator.createSingletonService().service);
-				} catch (CloudServiceException ex) {
-					logger.log(Level.INFO, "Multiple database services found. Skipping autostaging");
-					return false;
-				}
-			}
-		}
-
-		if (dataSourceList.size() == 0) {
-			logger.log(Level.INFO, "No database service found. Skipping autostaging");
-			return false;
-		} else if (dataSourceList.size() > 1) {
-			logger.log(Level.INFO, "More than 1 (" + dataSourceList.size()
-					+ ") database services found. Skipping autostaging");
-			return false;
-		} else {
-			defaultListableBeanFactory.registerSingleton(APP_CLOUD_DATA_SOURCE_NAME, dataSourceList.get(0));
-		}
-
-		for (String dataSourceBeanName : dataSourceBeanNames) {
-			if (dataSourceBeanName.equals(APP_CLOUD_DATA_SOURCE_NAME)) {
-				continue;
-			}
-			defaultListableBeanFactory.removeBeanDefinition(dataSourceBeanName);
-			defaultListableBeanFactory.registerAlias(APP_CLOUD_DATA_SOURCE_NAME, dataSourceBeanName);
-		}
-
-		jpaConfigurer.configure(defaultListableBeanFactory);
-		hibernateConfigurer.configure(defaultListableBeanFactory);
-		return true;
+		return configured;
 	}
 
-	private String[] getRealDataSources(ConfigurableListableBeanFactory beanFactory) {
-		String[] dataSourceBeanNames = beanFactory.getBeanNamesForType(DataSource.class);
+	@Override
+	public String getBeanClass() {
+		return DATA_SOURCE_CLASS_NAME;
+	}
+
+	@Override
+	public String getServiceBeanName() {
+		return APP_CLOUD_DATA_SOURCE_NAME;
+	}
+
+	@Override
+	public AbstractServiceCreator<?, RdbmsServiceInfo> getServiceCreator() {
+		return new RdbmsServiceCreator();
+	}
+
+	@Override
+	protected String[] getBeanNames(DefaultListableBeanFactory beanFactory) {
+		String[] dataSourceBeanNames = super.getBeanNames(beanFactory);
 		Class<?> txAwareDSClass = loadClass("org.springframework.jdbc.datasource.TransactionAwareDataSourceProxy");
 		if (txAwareDSClass == null) {
 			return dataSourceBeanNames;
@@ -139,14 +96,6 @@ public class DataSourceConfigurer implements Configurer {
 			}
 		}
 		return realDSBeanNames.toArray(new String[0]);
-	}
-
-	private Class<?> loadClass(String name) {
-		try {
-			return Class.forName(name);
-		} catch (Throwable ex) {
-			return null;
-		}
 	}
 
 	private <T> boolean contains(T[] array, T searchElement) {

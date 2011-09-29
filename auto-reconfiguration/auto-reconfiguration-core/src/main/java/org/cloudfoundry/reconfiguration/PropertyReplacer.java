@@ -181,6 +181,7 @@ public class PropertyReplacer {
 		}
 	}
 
+	@SuppressWarnings("rawtypes")
 	private Properties loadPropertiesForLocations(PropertyValue locationPV) throws IOException {
 		Object locationsValue = locationPV.getValue();
 		if (locationsValue instanceof ManagedList) {

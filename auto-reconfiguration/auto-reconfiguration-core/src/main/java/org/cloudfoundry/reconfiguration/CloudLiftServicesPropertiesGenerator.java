@@ -15,13 +15,13 @@ import javax.servlet.ServletContextEvent;
 import javax.servlet.ServletContextListener;
 
 import org.cloudfoundry.runtime.env.CloudEnvironment;
-import org.cloudfoundry.runtime.env.MysqlServiceInfo;
+import org.cloudfoundry.runtime.env.RdbmsServiceInfo;
 
 /**
  * A ServletContextListener implementation that generates a properties file when a Lift web
  * app is initialized to contain service access credentials. Lift web applications consult
  * this properties file when binding to the contained services.
- * 
+ *
  * @author A.B.Srinivasan.
  *
  */
@@ -30,7 +30,7 @@ public class CloudLiftServicesPropertiesGenerator implements
 
     static final String PROPERTIES_FILE_PATH =
         "webapps/ROOT/WEB-INF/classes/props/";
-    static final String DRIVER_CLASS_NAME = "com.mysql.jdbc.Driver";
+    static final String MYSQL_DRIVER_CLASS_NAME = "com.mysql.jdbc.Driver";
     static final String PROPERTIES_FILE_SUFFIX = ".props";
 
     @Override
@@ -47,7 +47,7 @@ public class CloudLiftServicesPropertiesGenerator implements
     @Override
     public void contextDestroyed(ServletContextEvent sce) {
     }
-    
+
     void generatePropertiesFile(String propertiesFile,
             CloudEnvironment cloudEnvironment)
     throws IOException {
@@ -87,27 +87,31 @@ public class CloudLiftServicesPropertiesGenerator implements
     }
 
     Properties generateDBServiceProperties(CloudEnvironment cloudEnvironment) {
-        List<MysqlServiceInfo> dbServiceInfos =
-            cloudEnvironment.getServiceInfos(MysqlServiceInfo.class);
+        List<RdbmsServiceInfo> dbServiceInfos =
+            cloudEnvironment.getServiceInfos(RdbmsServiceInfo.class);
         Properties props = new Properties();
         if (dbServiceInfos.size() == 0) {
             return props;
-        } else {
-            // Note: Currently, the following is very specific to the
-            // MySql service and works only if there is one DB instance
-            // associated with the application.
-            if (dbServiceInfos.size() == 1) {
-                MysqlServiceInfo serviceInfo = dbServiceInfos.get(0);
-                props.setProperty("db.class", DRIVER_CLASS_NAME);
+        }
+        // Note: Currently, the following is very specific to the
+        // MySql service and works only if there is one DB instance
+        // associated with the application.
+        if (dbServiceInfos.size() == 1) {
+			RdbmsServiceInfo serviceInfo = dbServiceInfos.get(0);
+            if (serviceInfo.getLabel().startsWith("mysql")) {
+				props.setProperty("db.class", MYSQL_DRIVER_CLASS_NAME);
                 props.setProperty("db.url", serviceInfo.getUrl());
                 props.setProperty("db.user", serviceInfo.getUserName());
                 props.setProperty("db.pass", serviceInfo.getPassword());
                 return props;
             } else {
-                throw new CloudAutoStagingRuntimeException(
-                        "Lift services properties file generation failed: " +
-                        "application has more than one DB instance bound to it");
+                //We don't currently support other DB types
+                return props;
             }
+        } else {
+			throw new CloudAutoStagingRuntimeException(
+				"Lift services properties file generation failed: " +
+				"application has more than one DB instance bound to it");
         }
     }
 }
