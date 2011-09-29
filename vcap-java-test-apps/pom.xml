@@ -15,6 +15,7 @@
 	</parent>
 
 	<modules>
+		<module>vcap-java-test-apps-parent</module>
 		<module>vcap-java-test-app</module>
 		<module>missing-deps-test-app</module>
 	</modules>
