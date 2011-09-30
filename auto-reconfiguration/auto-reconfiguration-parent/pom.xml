@@ -4,7 +4,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>org.cloudfoundry</groupId>
 	<artifactId>auto-reconfiguration-parent</artifactId>
-	<version>0.6.1</version>
+	<version>0.6.2.BUILD-SNAPSHOT</version>
 	<name>parent</name>
 	<packaging>pom</packaging>
 
