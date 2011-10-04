@@ -15,18 +15,18 @@
  */
 package org.cloudfoundry.runtime;
 
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
-import org.springframework.http.HttpStatus;
-import org.springframework.web.client.HttpClientErrorException;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
-import static org.junit.Assert.*;
+import org.junit.After;
+import org.junit.Before;
+import org.junit.Test;
 
 /**
  * Integration test that deploys the test webapp and ensures that all
@@ -63,7 +63,7 @@ public class CloudServicesOptionsTest extends CloudServicesTest {
 	@Test
 	public void cloudServiceOptionsApplied() throws IOException {
 		List<String> serviceNames = createTestServices();
-		createAndStartApp("vcap-java-test-app", serviceNames);
+		createAndStartApp("cf-runtime-test-app", serviceNames);
 		assertTrue("Test application is not available", testAppCreator.isAppAvailable(computeAppUrl(), 500l, 120000l));
 		Map<String, Object> cloudProps = restTemplate.getForObject(computeAppUrl() + "/properties", Map.class);
 		assertFalse(cloudProps.isEmpty());

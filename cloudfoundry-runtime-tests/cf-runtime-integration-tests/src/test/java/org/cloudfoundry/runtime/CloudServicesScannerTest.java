@@ -66,7 +66,7 @@ public class CloudServicesScannerTest extends CloudServicesTest {
 	@Test
 	public void serviceScanMissingSomeServices() throws IOException {
 		List<String> serviceNames = createServicesMinusMongo();
-		createAndStartApp("vcap-java-test-app", serviceNames);
+		createAndStartApp("cf-runtime-test-app", serviceNames);
 		assertTrue("Test application is not available", testAppCreator.isAppAvailable(computeAppUrl(), 500l, 120000l));
 		Map<String, Object> cloudProps = restTemplate.getForObject(computeAppUrl() + "/properties", Map.class);
 		assertFalse(cloudProps.isEmpty());
@@ -97,7 +97,7 @@ public class CloudServicesScannerTest extends CloudServicesTest {
 	@SuppressWarnings("unchecked")
 	@Test
 	public void serviceScanMissingDependencies() throws IOException {
-		createAndStartApp("missing-deps-test-app", Collections.EMPTY_LIST);
+		createAndStartApp("cf-runtime-missing-deps-test-app", Collections.EMPTY_LIST);
 		assertTrue("Test application is not available", testAppCreator.isAppAvailable(computeAppUrl(), 500l, 120000l));
 	}
 

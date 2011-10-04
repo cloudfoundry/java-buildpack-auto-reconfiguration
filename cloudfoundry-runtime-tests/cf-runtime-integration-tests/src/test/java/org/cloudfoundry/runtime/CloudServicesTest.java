@@ -137,7 +137,7 @@ public class CloudServicesTest {
 	@Test
 	public void cloudServiceBindings() throws IOException {
 		List<String> serviceNames = createServices();
-		createAndStartApp("vcap-java-test-app", serviceNames);
+		createAndStartApp("cf-runtime-test-app", serviceNames);
 		assertTrue("Test application is not available", testAppCreator.isAppAvailable(computeAppUrl(), 500l, 120000l));
 		Map<String, Object> cloudProps = restTemplate.getForObject(computeAppUrl() + "/properties", Map.class);
 		assertFalse(cloudProps.isEmpty());
