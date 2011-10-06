@@ -14,7 +14,7 @@ package org.cloudfoundry.reconfiguration;
 public class CloudAutoStagingRuntimeException extends RuntimeException {
 
     private static final long serialVersionUID = 1522676140269706233L;
-    
+
     public CloudAutoStagingRuntimeException(String message) {
         super(message);
     }
