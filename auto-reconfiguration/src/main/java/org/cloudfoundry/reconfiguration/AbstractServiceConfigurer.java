@@ -62,7 +62,7 @@ abstract public class AbstractServiceConfigurer<SI extends AbstractServiceInfo>
 			logger.log(Level.INFO, "Class " + getBeanClass() + " not found.  Skipping autostaging.");
 			return new String[0];
 		}
-		return beanFactory.getBeanNamesForType(beanClass);
+		return beanFactory.getBeanNamesForType(beanClass,true,false);
 	}
 
 	/**

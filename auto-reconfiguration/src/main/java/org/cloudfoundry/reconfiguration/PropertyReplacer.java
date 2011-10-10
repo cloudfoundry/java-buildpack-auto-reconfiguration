@@ -60,7 +60,7 @@ public class PropertyReplacer {
 		} catch (Exception ex) {
 			return;
 		}
-		String[] beanNames = beanFactory.getBeanNamesForType(beanClass);
+		String[] beanNames = beanFactory.getBeanNamesForType(beanClass,true,false);
 		for (String beanName : beanNames) {
 			BeanDefinition beanDefinition = getBeanDefinition(beanFactory, beanName);
 			MutablePropertyValues propertyValues = beanDefinition.getPropertyValues();

@@ -17,4 +17,8 @@
       <property name="dataSource" ref="myDs"/>
   </bean>
 
+  <!-- Instantiates the FakeFactoryBean, which will cause an Exception if
+		our bean scan is prematurely instantiating FactoryBeans (allowEagerInit=true) -->
+	<context:component-scan base-package="org.cloudfoundry.reconfiguration" />
+
 </beans>

@@ -54,7 +54,7 @@ public class CloudAutoStagingBeanFactoryPostProcessor implements BeanFactoryPost
 		// defaultListableBeanFactory.getBean(CloudEnvironment.class) will do,
 		// but we go through a mechanism that will work for spring-2.5.x as well
 		Map<String, CloudEnvironment> cloudEnvironmentBeans = defaultListableBeanFactory
-				.getBeansOfType(CloudEnvironment.class);
+				.getBeansOfType(CloudEnvironment.class,true,false);
 		CloudEnvironment cloudEnvironment;
 		if (cloudEnvironmentBeans.size() > 1) {
 			logger.log(Level.INFO, "Multiple (" + cloudEnvironmentBeans.size()
@@ -122,7 +122,7 @@ public class CloudAutoStagingBeanFactoryPostProcessor implements BeanFactoryPost
 
 	private boolean usingCloudService(ConfigurableListableBeanFactory beanFactory, String cloudServiceClassName) {
 		Class<?> cloudServiceFactoryClazz = loadClass(cloudServiceClassName);
-		if(cloudServiceFactoryClazz == null || beanFactory.getBeanNamesForType(cloudServiceFactoryClazz).length == 0) {
+		if(cloudServiceFactoryClazz == null || beanFactory.getBeanNamesForType(cloudServiceFactoryClazz,true,false).length == 0) {
 			return false;
 		}
 		logger.log(Level.INFO,"Found an instance of " + cloudServiceClassName + ".  Autostaging will be skipped.");
