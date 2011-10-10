@@ -74,7 +74,7 @@ public class MongoConfigurerTest {
 		serviceInfos.add(mongoServiceInfo);
 		when(cloudEnvironment.getServiceInfos(MongoServiceInfo.class)).thenReturn(serviceInfos);
 		MongoConfigurer mongoConfigurer = new StubMongoConfigurer(cloudEnvironment);
-		when(beanFactory.getBeanNamesForType(MongoDbFactory.class)).thenReturn(new String[] { mongoBeanName });
+		when(beanFactory.getBeanNamesForType(MongoDbFactory.class,true,false)).thenReturn(new String[] { mongoBeanName });
 		when(serviceCreator.createSingletonService(mongoServiceInfo)).thenReturn(expectedService);
 		assertTrue(mongoConfigurer.configure(beanFactory));
 		verify(beanFactory).registerSingleton(MongoConfigurer.CF_MONGO_DB_FACTORY_NAME, expectedFactory);
@@ -89,7 +89,7 @@ public class MongoConfigurerTest {
 		serviceInfos.add(mongoServiceInfo);
 		when(cloudEnvironment.getServiceInfos(MongoServiceInfo.class)).thenReturn(serviceInfos);
 		MongoConfigurer mongoConfigurer = new StubMongoConfigurer(cloudEnvironment);
-		when(beanFactory.getBeanNamesForType(MongoDbFactory.class)).thenReturn(new String[] { mongoBeanName });
+		when(beanFactory.getBeanNamesForType(MongoDbFactory.class,true,false)).thenReturn(new String[] { mongoBeanName });
 		when(serviceCreator.createSingletonService(mongoServiceInfo)).thenThrow(
 				new CloudServiceException("Something went wrong"));
 		assertFalse(mongoConfigurer.configure(beanFactory));
@@ -100,7 +100,7 @@ public class MongoConfigurerTest {
 		List<MongoServiceInfo> serviceInfos = new ArrayList<MongoServiceInfo>();
 		when(cloudEnvironment.getServiceInfos(MongoServiceInfo.class)).thenReturn(serviceInfos);
 		MongoConfigurer mongoConfigurer = new StubMongoConfigurer(cloudEnvironment);
-		when(beanFactory.getBeanNamesForType(MongoDbFactory.class)).thenReturn(new String[] { "bean1", "bean2" });
+		when(beanFactory.getBeanNamesForType(MongoDbFactory.class,true,false)).thenReturn(new String[] { "bean1", "bean2" });
 		assertFalse(mongoConfigurer.configure(beanFactory));
 		verify(beanFactory, never()).registerSingleton(eq(MongoConfigurer.CF_MONGO_DB_FACTORY_NAME),
 				isA(MongoDbFactory.class));
@@ -116,7 +116,7 @@ public class MongoConfigurerTest {
 		serviceInfos.add(mongoServiceInfo2);
 		when(cloudEnvironment.getServiceInfos(MongoServiceInfo.class)).thenReturn(serviceInfos);
 		MongoConfigurer mongoConfigurer = new StubMongoConfigurer(cloudEnvironment);
-		when(beanFactory.getBeanNamesForType(MongoDbFactory.class)).thenReturn(new String[] { mongoBeanName });
+		when(beanFactory.getBeanNamesForType(MongoDbFactory.class,true,false)).thenReturn(new String[] { mongoBeanName });
 		assertFalse(mongoConfigurer.configure(beanFactory));
 		verify(beanFactory, never()).registerSingleton(eq(MongoConfigurer.CF_MONGO_DB_FACTORY_NAME),
 				isA(MongoDbFactory.class));
@@ -127,7 +127,7 @@ public class MongoConfigurerTest {
 	@Test
 	public void leavesOriginalInPlaceIfNoServicesDetected() {
 		String mongoBeanName = "testMongoDb";
-		when(beanFactory.getBeanNamesForType(MongoDbFactory.class)).thenReturn(new String[] { mongoBeanName });
+		when(beanFactory.getBeanNamesForType(MongoDbFactory.class,true,false)).thenReturn(new String[] { mongoBeanName });
 		when(cloudEnvironment.getServiceInfos(MongoServiceInfo.class)).thenReturn(new ArrayList<MongoServiceInfo>());
 		MongoConfigurer mongoConfigurer = new StubMongoConfigurer(cloudEnvironment);
 		assertFalse(mongoConfigurer.configure(beanFactory));
@@ -140,7 +140,7 @@ public class MongoConfigurerTest {
 	@Test
 	public void doesNothingIfNoMongoBeansDetected() {
 		MongoConfigurer mongoConfigurer = new StubMongoConfigurer(cloudEnvironment);
-		when(beanFactory.getBeanNamesForType(MongoDbFactory.class)).thenReturn(new String[0]);
+		when(beanFactory.getBeanNamesForType(MongoDbFactory.class,true,false)).thenReturn(new String[0]);
 		assertFalse(mongoConfigurer.configure(beanFactory));
 		verify(beanFactory, never()).registerSingleton(eq(MongoConfigurer.CF_MONGO_DB_FACTORY_NAME),
 				isA(MongoDbFactory.class));
