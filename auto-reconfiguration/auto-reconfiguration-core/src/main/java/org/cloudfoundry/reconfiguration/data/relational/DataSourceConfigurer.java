@@ -81,7 +81,7 @@ public class DataSourceConfigurer extends AbstractServiceConfigurer<RdbmsService
 			return dataSourceBeanNames;
 		}
 		// In Scala, could have been one line and not even need contains()!
-		String[] txAwareDSBeanNames = beanFactory.getBeanNamesForType(txAwareDSClass);
+		String[] txAwareDSBeanNames = beanFactory.getBeanNamesForType(txAwareDSClass,true,false);
 		List<String> realDSBeanNames = new ArrayList<String>();
 		for (String dataSourceBeanName : dataSourceBeanNames) {
 			if (!contains(txAwareDSBeanNames, dataSourceBeanName)) {

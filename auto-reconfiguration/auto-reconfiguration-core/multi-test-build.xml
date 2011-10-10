@@ -2,7 +2,7 @@
 	<!-- Runs maven project tests against a specified version of Spring.  The surefire:test goal will also resolve
 	dependencies so new Spring versions will be downloaded if not in local repo-->
 	<target name="test">
-	 <exec executable="mvn" outputproperty="results" dir="${basedir}" searchpath="true" failonerror="true">
+	 <exec executable="mvn" outputproperty="results" dir="${basedir}" searchpath="true" failonerror="false">
 		  <arg value="-Dspring.version=${test.spring.version}"/>
           <arg value="surefire:test"/>
         </exec>

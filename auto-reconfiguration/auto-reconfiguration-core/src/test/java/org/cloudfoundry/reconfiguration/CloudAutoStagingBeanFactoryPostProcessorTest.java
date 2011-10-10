@@ -21,7 +21,7 @@ import org.springframework.core.io.Resource;
  * @author Jennifer Hickey
  *
  */
-public class CloudAutoStagingBeanFactoryPostProcessorTest {
+public class CloudAutoStagingBeanFactoryPostProcessorTest extends CloudEnvironmentMockingTest {
 
 	@Mock
 	private ConfigurableListableBeanFactory beanFactory;
@@ -44,8 +44,8 @@ public class CloudAutoStagingBeanFactoryPostProcessorTest {
 		when(applicationContext.getResources(cloudServicesFileLocation)).thenReturn(
 				new Resource[] { new ClassPathResource("/org/cloudfoundry/reconfiguration/test-cloud-services-1") });
 		String[] beans = new String[] { "intBean" };
-		when(beanFactory.getBeanNamesForType(AbstractCloudServiceFactory.class)).thenReturn(new String[0]);
-		when(beanFactory.getBeanNamesForType(Integer.class)).thenReturn(beans);
+		when(beanFactory.getBeanNamesForType(AbstractCloudServiceFactory.class,true,false)).thenReturn(new String[0]);
+		when(beanFactory.getBeanNamesForType(Integer.class,true,false)).thenReturn(beans);
 		testBFPP.setApplicationContext(applicationContext);
 		Assert.assertTrue(testBFPP.autoStagingOff(cloudServicesFileLocation, beanFactory));
 	}
@@ -57,9 +57,9 @@ public class CloudAutoStagingBeanFactoryPostProcessorTest {
 				new Resource[] { new ClassPathResource("/org/cloudfoundry/reconfiguration/test-cloud-services-1"),
 						new ClassPathResource("/org/cloudfoundry/reconfiguration/test-cloud-services-2") });
 		String[] beans = new String[] { "stringBean" };
-		when(beanFactory.getBeanNamesForType(AbstractCloudServiceFactory.class)).thenReturn(new String[0]);
-		when(beanFactory.getBeanNamesForType(Integer.class)).thenReturn(new String[0]);
-		when(beanFactory.getBeanNamesForType(String.class)).thenReturn(beans);
+		when(beanFactory.getBeanNamesForType(AbstractCloudServiceFactory.class,true,false)).thenReturn(new String[0]);
+		when(beanFactory.getBeanNamesForType(Integer.class,true,false)).thenReturn(new String[0]);
+		when(beanFactory.getBeanNamesForType(String.class,true,false)).thenReturn(beans);
 		testBFPP.setApplicationContext(applicationContext);
 		Assert.assertTrue(testBFPP.autoStagingOff(cloudServicesFileLocation, beanFactory));
 	}
@@ -69,8 +69,8 @@ public class CloudAutoStagingBeanFactoryPostProcessorTest {
 		String cloudServicesFileLocation = "classpath:/org/cloudfoundry/reconfiguration/test-cloud-services-1";
 		when(applicationContext.getResources(cloudServicesFileLocation)).thenReturn(
 				new Resource[] { new ClassPathResource("/org/cloudfoundry/reconfiguration/test-cloud-services-1") });
-		when(beanFactory.getBeanNamesForType(AbstractCloudServiceFactory.class)).thenReturn(new String[0]);
-		when(beanFactory.getBeanNamesForType(Integer.class)).thenReturn(new String[0]);
+		when(beanFactory.getBeanNamesForType(AbstractCloudServiceFactory.class,true,false)).thenReturn(new String[0]);
+		when(beanFactory.getBeanNamesForType(Integer.class,true,false)).thenReturn(new String[0]);
 		testBFPP.setApplicationContext(applicationContext);
 		Assert.assertFalse(testBFPP.autoStagingOff(cloudServicesFileLocation, beanFactory));
 	}
@@ -110,5 +110,17 @@ public class CloudAutoStagingBeanFactoryPostProcessorTest {
 		when(cloudServicesFile.getInputStream()).thenThrow(new IOException());
 		testBFPP.setApplicationContext(applicationContext);
 		Assert.assertFalse(testBFPP.autoStagingOff(cloudServicesFileLocation, beanFactory));
+	}
+
+	/**
+	 * Loads a context that includes the {@link FakeFactoryBean}. This bean uses
+	 * an autowired constructor and is missing a no-arg constructor, so the
+	 * loading of the app context will blow up if getBeanNamesForType causes
+	 * premature instantiation of FactoryBeans (allowEagerInit=true). This test
+	 * verifies that we are not allowing eager instantiation
+	 */
+	@Test
+	public void autoStagingScanDoesNotInstantiateFactoryBean() {
+		getTestApplicationContext("test-autostaging-context.xml");
 	}
 }
