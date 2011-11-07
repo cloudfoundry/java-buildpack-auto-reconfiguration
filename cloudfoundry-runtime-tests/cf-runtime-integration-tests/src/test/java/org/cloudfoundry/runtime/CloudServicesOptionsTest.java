@@ -64,16 +64,16 @@ public class CloudServicesOptionsTest extends CloudServicesTest {
 	public void cloudServiceOptionsApplied() throws IOException {
 		List<String> serviceNames = createTestServices();
 		createAndStartApp("cf-runtime-test-app", serviceNames);
-		assertTrue("Test application is not available", testAppCreator.isAppAvailable(computeAppUrl(), 500l, 120000l));
-		Map<String, Object> cloudProps = restTemplate.getForObject(computeAppUrl() + "/properties", Map.class);
+		assertTrue("Test application is not available", testAppCreator.isAppAvailable(computeAppUrl() + "/?", 500l, 120000l));
+		Map<String, Object> cloudProps = restTemplate.getForObject(computeAppUrl() + "/properties/?", Map.class);
 		assertFalse(cloudProps.isEmpty());
-		String charSet = restTemplate.getForObject(computeAppUrl() + "/mysql/char-set", String.class);
+		String charSet = restTemplate.getForObject(computeAppUrl() + "/mysql/char-set/?", String.class);
 		assertEquals("Wrong charSet", "utf8", charSet);
-		String maxActive = restTemplate.getForObject(computeAppUrl() + "/mysql/max-active", String.class);
+		String maxActive = restTemplate.getForObject(computeAppUrl() + "/mysql/max-active/?", String.class);
 		assertEquals("Wrong max-active", "13", maxActive);
-		String maxWait = restTemplate.getForObject(computeAppUrl() + "/redis/max-wait", String.class);
+		String maxWait = restTemplate.getForObject(computeAppUrl() + "/redis/max-wait/?", String.class);
 		assertEquals("Wrong max-wait", "5500", maxWait);
-		String writeConcern = restTemplate.getForObject(computeAppUrl() + "/mongo/write-concern", String.class);
+		String writeConcern = restTemplate.getForObject(computeAppUrl() + "/mongo/write-concern/?", String.class);
 		assertTrue("Wrong fsync in WriteConcern", writeConcern.contains("\"fsync\" : true"));
 		assertTrue("Wrong w in WriteConcern", writeConcern.contains("\"w\" : 1"));
 		restTemplate.getForObject(computeAppUrl() + "/rabbit", String.class);

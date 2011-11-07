@@ -67,16 +67,16 @@ public class CloudServicesScannerTest extends CloudServicesTest {
 	public void serviceScanMissingSomeServices() throws IOException {
 		List<String> serviceNames = createServicesMinusMongo();
 		createAndStartApp("cf-runtime-test-app", serviceNames);
-		assertTrue("Test application is not available", testAppCreator.isAppAvailable(computeAppUrl(), 500l, 120000l));
-		Map<String, Object> cloudProps = restTemplate.getForObject(computeAppUrl() + "/properties", Map.class);
+		assertTrue("Test application is not available", testAppCreator.isAppAvailable(computeAppUrl() + "/?", 500l, 120000l));
+		Map<String, Object> cloudProps = restTemplate.getForObject(computeAppUrl() + "/properties/?", Map.class);
 		assertFalse(cloudProps.isEmpty());
 		// Check for 404s on rest of dependencies
-		restTemplate.getForObject(computeAppUrl() + "/mysql", String.class);
-		restTemplate.getForObject(computeAppUrl() + "/redis/class", String.class);
-		restTemplate.getForObject(computeAppUrl() + "/rabbit", String.class);
-		restTemplate.getForObject(computeAppUrl() + "/postgres", String.class);
+		restTemplate.getForObject(computeAppUrl() + "/mysql/?", String.class);
+		restTemplate.getForObject(computeAppUrl() + "/redis/class/?", String.class);
+		restTemplate.getForObject(computeAppUrl() + "/rabbit/?", String.class);
+		restTemplate.getForObject(computeAppUrl() + "/postgres/?", String.class);
 		try {
-			restTemplate.getForObject(computeAppUrl() + "/mongo", String.class);
+			restTemplate.getForObject(computeAppUrl() + "/mongo/?", String.class);
 			fail("Mongo service bean should not be created");
 		} catch (HttpClientErrorException e) {
 			if (!(e.getStatusCode().equals(HttpStatus.NOT_FOUND))) {
@@ -98,7 +98,7 @@ public class CloudServicesScannerTest extends CloudServicesTest {
 	@Test
 	public void serviceScanMissingDependencies() throws IOException {
 		createAndStartApp("cf-runtime-missing-deps-test-app", Collections.EMPTY_LIST);
-		assertTrue("Test application is not available", testAppCreator.isAppAvailable(computeAppUrl(), 500l, 120000l));
+		assertTrue("Test application is not available", testAppCreator.isAppAvailable(computeAppUrl() + "/?", 500l, 120000l));
 	}
 
 	private List<String> createServicesMinusMongo() {

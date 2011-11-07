@@ -50,7 +50,7 @@ public class CloudServicesTest {
 	private static final String TEST_USER_PASS = System.getProperty("vcap.passwd");
 	private static final String TEST_NAMESPACE = System.getProperty("vcap.test.namespace",
 			TEST_USER_EMAIL.substring(0, TEST_USER_EMAIL.indexOf('@')));
-	private static final String APP_NAME = namespacedAppName("cf_runtime_test");
+	private static final String APP_NAME = namespacedAppName("cf_runtime_tests2");
 	protected static final String DB_SERVICE_NAME = "test_mysql_database";
 	protected static final String MONGO_SERVICE_NAME = "test_mongo";
 	protected static final String REDIS_SERVICE_NAME = "test_redis";
@@ -138,15 +138,15 @@ public class CloudServicesTest {
 	public void cloudServiceBindings() throws IOException {
 		List<String> serviceNames = createServices();
 		createAndStartApp("cf-runtime-test-app", serviceNames);
-		assertTrue("Test application is not available", testAppCreator.isAppAvailable(computeAppUrl(), 500l, 120000l));
-		Map<String, Object> cloudProps = restTemplate.getForObject(computeAppUrl() + "/properties", Map.class);
+		assertTrue("Test application is not available", testAppCreator.isAppAvailable(computeAppUrl() + "/?", 500l, 120000l));
+		Map<String, Object> cloudProps = restTemplate.getForObject(computeAppUrl() + "/properties/?", Map.class);
 		assertFalse(cloudProps.isEmpty());
 		// Check for 404s on rest of dependencies
-		restTemplate.getForObject(computeAppUrl() + "/mysql", String.class);
-		restTemplate.getForObject(computeAppUrl() + "/mongo", String.class);
-		restTemplate.getForObject(computeAppUrl() + "/redis/class", String.class);
-		restTemplate.getForObject(computeAppUrl() + "/rabbit", String.class);
-		restTemplate.getForObject(computeAppUrl() + "/postgres", String.class);
+		restTemplate.getForObject(computeAppUrl() + "/mysql/?", String.class);
+		restTemplate.getForObject(computeAppUrl() + "/mongo/?", String.class);
+		restTemplate.getForObject(computeAppUrl() + "/redis/class/?", String.class);
+		restTemplate.getForObject(computeAppUrl() + "/rabbit/?", String.class);
+		restTemplate.getForObject(computeAppUrl() + "/postgres/?", String.class);
 	}
 
 	protected String computeAppUrl() {
