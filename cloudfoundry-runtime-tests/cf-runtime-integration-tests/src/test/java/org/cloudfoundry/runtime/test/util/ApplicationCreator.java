@@ -114,6 +114,12 @@ public class ApplicationCreator {
 	 *         minutes)
 	 */
 	public boolean isAppAvailable(final String urlToCheck, final long retryInterval, final long timeout) {
+		try {
+			Thread.sleep(60000l);
+		} catch (InterruptedException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		}
 		SpinBarrier waitForAppStart = new SpinBarrier(timeout, retryInterval,new SpinBarrierCondition() {
 			@Override
 			public boolean evaluate() {

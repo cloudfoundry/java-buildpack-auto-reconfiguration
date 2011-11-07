@@ -50,7 +50,7 @@ public class CloudServicesTest {
 	private static final String TEST_USER_PASS = System.getProperty("vcap.passwd");
 	private static final String TEST_NAMESPACE = System.getProperty("vcap.test.namespace",
 			TEST_USER_EMAIL.substring(0, TEST_USER_EMAIL.indexOf('@')));
-	private static final String APP_NAME = namespacedAppName("cf_runtime_test");
+	private static final String APP_NAME = namespacedAppName("cf_runtime_tests");
 	protected static final String DB_SERVICE_NAME = "test_mysql_database";
 	protected static final String MONGO_SERVICE_NAME = "test_mongo";
 	protected static final String REDIS_SERVICE_NAME = "test_redis";
