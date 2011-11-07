@@ -85,8 +85,8 @@ public class CloudServicesTest {
 		client.login();
 
 		// clean up old apps and services
-		client.deleteAllApplications();
-		client.deleteAllServices();
+		//client.deleteAllApplications();
+		//client.deleteAllServices();
 
 	}
 
@@ -123,8 +123,8 @@ public class CloudServicesTest {
 
 	@After
 	public void tearDown() {
-		client.deleteAllApplications();
-		client.deleteAllServices();
+		//client.deleteAllApplications();
+		//client.deleteAllServices();
 	}
 
 	/**
