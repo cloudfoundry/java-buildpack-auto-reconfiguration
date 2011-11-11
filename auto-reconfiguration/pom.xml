@@ -10,7 +10,7 @@
 
 	<properties>
 		<java.version>1.6</java.version>
-		<cloudfoundry.runtime.version>0.8.1</cloudfoundry.runtime.version>
+		<cloudfoundry.runtime.version>0.8.2.BUILD-SNAPSHOT</cloudfoundry.runtime.version>
 		<spring.amqp.version>1.0.0.RELEASE</spring.amqp.version>
 		<spring-data-mongo.version>1.0.0.M4</spring-data-mongo.version>
 		<spring.version>3.1.0.M2</spring.version>
