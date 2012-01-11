@@ -13,3 +13,4 @@ com.vmware.sts.server.appcloud.releng/springsource/
 .classpath
 .project
 .settings
+*.swp
