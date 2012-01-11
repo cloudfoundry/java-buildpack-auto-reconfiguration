@@ -39,7 +39,7 @@ public class CloudAutoStagingBeanFactoryPostProcessor implements BeanFactoryPost
 
 	static final String CLOUD_SERVICES_FILE = "classpath*:/META-INF/cloud/cloud-services";
 
-	Logger logger = Logger.getLogger(CloudAutoStagingBeanFactoryPostProcessor.class.getName());
+	private static final Logger logger = Logger.getLogger(CloudAutoStagingBeanFactoryPostProcessor.class.getName());
 
 	private ApplicationContext applicationContext;
 
