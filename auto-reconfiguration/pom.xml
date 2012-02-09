@@ -10,11 +10,11 @@
 
 	<properties>
 		<java.version>1.6</java.version>
-		<cloudfoundry.runtime.version>0.8.1</cloudfoundry.runtime.version>
+		<cloudfoundry.runtime.version>0.8.2.BUILD-SNAPSHOT</cloudfoundry.runtime.version>
 		<spring.amqp.version>1.0.0.RELEASE</spring.amqp.version>
-		<spring-data-mongo.version>1.0.0.M4</spring-data-mongo.version>
-		<spring.version>3.1.0.M2</spring.version>
-		<spring-data-redis.version>1.0.0.M4</spring-data-redis.version>
+		<spring-data-mongo.version>1.0.0.RELEASE</spring-data-mongo.version>
+		<spring.version>3.1.0.RELEASE</spring.version>
+		<spring-data-redis.version>1.0.0.RELEASE</spring-data-redis.version>
 		<surefire.exclude>**/*$*</surefire.exclude>
 	</properties>
 
@@ -57,6 +57,21 @@
 			<groupId>org.springframework.data</groupId>
 			<artifactId>spring-data-mongodb</artifactId>
 			<version>${spring-data-mongo.version}</version>
+			<exclusions>
+				<!-- Exclude dependencies on newer Spring versions -->
+				<exclusion>
+					<groupId>org.springframework</groupId>
+					<artifactId>spring-beans</artifactId>
+				</exclusion>
+				<exclusion>
+					<groupId>org.springframework</groupId>
+					<artifactId>spring-expression</artifactId>
+				</exclusion>
+				<exclusion>
+					<groupId>org.springframework</groupId>
+					<artifactId>spring-tx</artifactId>
+				</exclusion>
+			</exclusions>
 			<scope>provided</scope>
 		</dependency>
 
@@ -163,6 +178,13 @@
 			<groupId>org.springframework.data</groupId>
 			<artifactId>spring-data-redis</artifactId>
 			<version>${spring-data-redis.version}</version>
+			<exclusions>
+				<!-- Exclude dependencies on newer Spring versions -->
+				<exclusion>
+					<groupId>org.springframework</groupId>
+					<artifactId>spring-context-support</artifactId>
+				</exclusion>
+			</exclusions>
 			<scope>provided</scope>
 		</dependency>
 	</dependencies>
