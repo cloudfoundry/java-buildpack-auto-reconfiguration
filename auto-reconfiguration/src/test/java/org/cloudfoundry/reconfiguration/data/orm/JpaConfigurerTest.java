@@ -69,4 +69,22 @@ public class JpaConfigurerTest extends CloudEnvironmentMockingTest {
 		Assert.assertEquals("org.hibernate.dialect.PostgreSQLDialect", underlyingSessionFactory.getDialect().toString());
 	}
 
+	@Test
+	public void entityManagerFactorySqlFireDialectUpdated() {
+		String serviceJdbcUrl = "jdbc:sqlfire://10.20.20.40:5432/sqlf-1";
+		List<RdbmsServiceInfo> serviceInfos = new ArrayList<RdbmsServiceInfo>();
+		serviceInfos.add(mockRdbmsServiceInfo);
+		when(mockRdbmsServiceInfo.getUrl()).thenReturn(serviceJdbcUrl);
+		when(mockRdbmsServiceInfo.getLabel()).thenReturn("sqlfire-1.0");
+		when(mockEnvironment.getServiceInfos(RdbmsServiceInfo.class)).thenReturn(serviceInfos);
+
+		ApplicationContext context = getTestApplicationContext("test-jpa-good-context.xml");
+		EntityManagerFactory entityManagerFactory = (EntityManagerFactory) context.getBean("entityManagerFactory",
+				EntityManagerFactory.class);
+		EntityManager entityManager = entityManagerFactory.createEntityManager();
+		SessionImpl entityManagerDelegate = (SessionImpl) entityManager.getDelegate();
+		SessionFactoryImpl underlyingSessionFactory = (SessionFactoryImpl) entityManagerDelegate.getSessionFactory();
+		Assert.assertEquals("org.hibernate.dialect.DerbyDialect", underlyingSessionFactory.getDialect().toString());
+	}
+
 }

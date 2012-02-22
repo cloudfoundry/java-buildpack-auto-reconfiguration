@@ -13,12 +13,18 @@
 	<util:properties id="__appCloudJpaMySQLReplacementProperties">
 		<prop key="hibernate.dialect">org.hibernate.dialect.MySQLDialect</prop>
 	</util:properties>
+	<util:properties id="__appCloudJpaSqlFireReplacementProperties">
+		<prop key="hibernate.dialect">org.hibernate.dialect.DerbyDialect</prop>
+	</util:properties>
 
 	<util:properties id="__appCloudHibernatePostgreSQLReplacementProperties">
 		<prop key="hibernate.dialect">org.hibernate.dialect.PostgreSQLDialect</prop>
 	</util:properties>
 	<util:properties id="__appCloudHibernateMySQLReplacementProperties">
 		<prop key="hibernate.dialect">org.hibernate.dialect.MySQLDialect</prop>
+	</util:properties>
+	<util:properties id="__appCloudHibernateSqlFireReplacementProperties">
+		<prop key="hibernate.dialect">org.hibernate.dialect.DerbyDialect</prop>
 	</util:properties>
 
 	<bean class="org.cloudfoundry.reconfiguration.CloudAutoStagingBeanFactoryPostProcessor"/>

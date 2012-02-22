@@ -39,36 +39,42 @@ public class HibernateConfigurerTest extends CloudEnvironmentMockingTest {
 	public void grailsLikeEmbeddedPropertyApplicationContextProcessed() {
 		assertApplicationContextProcessingForMysql("test-grails-embedded-props-good-context.xml");
 		assertApplicationContextProcessingForPostgresql("test-grails-embedded-props-good-context.xml");
+		assertApplicationContextProcessingForSqlFire("test-grails-embedded-props-good-context.xml");
 	}
 
 	@Test
 	public void grailsLikeReferencedMapApplicationContextProcessed() {
 		assertApplicationContextProcessingForMysql("test-grails-map-reference-good-context.xml");
 		assertApplicationContextProcessingForPostgresql("test-grails-map-reference-good-context.xml");
+		assertApplicationContextProcessingForSqlFire("test-grails-map-reference-good-context.xml");
 	}
 
 	@Test
 	public void grailsLikeReferencedPropertyFactoryApplicationContextProcessed() {
 		assertApplicationContextProcessingForMysql("test-grails-propertyFactory-reference-good-context.xml");
 		assertApplicationContextProcessingForPostgresql("test-grails-propertyFactory-reference-good-context.xml");
+		assertApplicationContextProcessingForSqlFire("test-grails-propertyFactory-reference-good-context.xml");
 	}
 
 	@Test
 	public void referencedNestedPropertyFactorySingleLocationApplicationContextProcessed() {
 		assertApplicationContextProcessingForMysql("test-propertyFactory-nested-reference-single-location-good-context.xml");
 		assertApplicationContextProcessingForPostgresql("test-propertyFactory-nested-reference-single-location-good-context.xml");
+		assertApplicationContextProcessingForSqlFire("test-propertyFactory-nested-reference-single-location-good-context.xml");
 	}
 
 	@Test
 	public void referencedNestedPropertyFactoryListLocationApplicationContextProcessed() {
 		assertApplicationContextProcessingForMysql("test-propertyFactory-nested-reference-list-location-good-context.xml");
 		assertApplicationContextProcessingForPostgresql("test-propertyFactory-nested-reference-list-location-good-context.xml");
+		assertApplicationContextProcessingForSqlFire("test-propertyFactory-nested-reference-list-location-good-context.xml");
 	}
 
 	@Test
 	public void typeStringValuePropertyApplicationContextProcessed() {
 		assertApplicationContextProcessingForMysql("test-jpa-typedStringValue-good-context.xml");
 		assertApplicationContextProcessingForPostgresql("test-jpa-typedStringValue-good-context.xml");
+		assertApplicationContextProcessingForSqlFire("test-jpa-typedStringValue-good-context.xml");
 	}
 
 	private void assertApplicationContextProcessingForMysql(String appContextFile) {
@@ -99,5 +105,20 @@ public class HibernateConfigurerTest extends CloudEnvironmentMockingTest {
 				.getBean("sessionFactory", SessionFactory.class);
 
 		Assert.assertEquals("org.hibernate.dialect.PostgreSQLDialect", sessionFactory.getDialect().toString());
+	}
+
+	private void assertApplicationContextProcessingForSqlFire(String appContextFile) {
+		String serviceJdbcUrl = "jdbc:sqlfire://10.20.20.40:5432/sqlf-1";
+		List<RdbmsServiceInfo> serviceInfos = new ArrayList<RdbmsServiceInfo>();
+		serviceInfos.add(mockRdbmsServiceInfo);
+		when(mockRdbmsServiceInfo.getUrl()).thenReturn(serviceJdbcUrl);
+		when(mockRdbmsServiceInfo.getLabel()).thenReturn("sqlfire-1.0");
+		when(mockEnvironment.getServiceInfos(RdbmsServiceInfo.class)).thenReturn(serviceInfos);
+
+		ApplicationContext context = getTestApplicationContext(appContextFile);
+		SessionFactoryImpl sessionFactory = (SessionFactoryImpl) context
+				.getBean("sessionFactory", SessionFactory.class);
+
+		Assert.assertEquals("org.hibernate.dialect.DerbyDialect", sessionFactory.getDialect().toString());
 	}
 }

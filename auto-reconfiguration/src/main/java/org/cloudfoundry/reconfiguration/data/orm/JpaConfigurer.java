@@ -25,6 +25,8 @@ public class JpaConfigurer implements Configurer {
 
 	private static final String APP_CLOUD_JPA_POSTGRESQL_REPLACEMENT_PROPERTIES = "__appCloudJpaPostgreSQLReplacementProperties";
 
+	private static final String APP_CLOUD_JPA_SQLFIRE_REPLACEMENT_PROPERTIES = "__appCloudJpaSqlFireReplacementProperties";
+
 	private PropertyReplacer propertyReplacer = new PropertyReplacer();
 
 	private CloudEnvironment cloudEnvironment;
@@ -45,6 +47,11 @@ public class JpaConfigurer implements Configurer {
 				propertyReplacer.replaceProperty(beanFactory,
 						"org.springframework.orm.jpa.AbstractEntityManagerFactoryBean",
 						APP_CLOUD_JPA_MYSQL_REPLACEMENT_PROPERTIES, "jpaProperties");
+				configured = true;
+			} else if (service.getLabel().startsWith("sqlfire")) {
+				propertyReplacer.replaceProperty(beanFactory,
+						"org.springframework.orm.jpa.AbstractEntityManagerFactoryBean",
+						APP_CLOUD_JPA_SQLFIRE_REPLACEMENT_PROPERTIES, "jpaProperties");
 				configured = true;
 			}
 		}

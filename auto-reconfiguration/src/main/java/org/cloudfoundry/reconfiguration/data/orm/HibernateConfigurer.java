@@ -25,6 +25,8 @@ public class HibernateConfigurer implements Configurer {
 
 	private static final String APP_CLOUD_HIBERNATE_POSTGRESQL_REPLACEMENT_PROPERTIES = "__appCloudHibernatePostgreSQLReplacementProperties";
 
+	private static final String APP_CLOUD_HIBERNATE_SQLFIRE_REPLACEMENT_PROPERTIES = "__appCloudHibernateSqlFireReplacementProperties";
+
 	private PropertyReplacer propertyReplacer = new PropertyReplacer();
 
 	private CloudEnvironment cloudEnvironment;
@@ -41,6 +43,9 @@ public class HibernateConfigurer implements Configurer {
 				configured = true;
 			} else if (service.getLabel().startsWith("mysql")) {
 				replaceHibernateProperties(APP_CLOUD_HIBERNATE_MYSQL_REPLACEMENT_PROPERTIES, beanFactory);
+				configured = true;
+			} else if (service.getLabel().startsWith("sqlfire")) {
+				replaceHibernateProperties(APP_CLOUD_HIBERNATE_SQLFIRE_REPLACEMENT_PROPERTIES, beanFactory);
 				configured = true;
 			}
 		}

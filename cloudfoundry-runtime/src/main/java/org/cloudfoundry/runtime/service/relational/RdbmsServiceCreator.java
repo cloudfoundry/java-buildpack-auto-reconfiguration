@@ -14,29 +14,31 @@ import javax.sql.DataSource;
  */
 public class RdbmsServiceCreator extends AbstractDataSourceCreator<RdbmsServiceInfo> {
 
-    private AbstractDataSourceCreator delegate;
+	private AbstractDataSourceCreator delegate;
 
-    @Override
-    public DataSource createService(AbstractDataSourceServiceInfo serviceInfo) {
-        if (serviceInfo.getLabel() != null && serviceInfo.getLabel().startsWith("postgres")) {
-            this.delegate = new PostgresqlServiceCreator();
-        } else if (serviceInfo.getLabel() != null && serviceInfo.getLabel().startsWith("sqlfire")) {
-            this.delegate = new SqlfireServiceCreator();
-        } else {
-            this.delegate = new MysqlServiceCreator();
-        }
-        return super.createService(serviceInfo);
-    }
+	@Override
+	public DataSource createService(AbstractDataSourceServiceInfo serviceInfo) {
+		if (serviceInfo.getLabel() != null && serviceInfo.getLabel().startsWith("postgres")) {
+			this.delegate = new PostgresqlServiceCreator();
+		}
+		else if (serviceInfo.getLabel() != null && serviceInfo.getLabel().startsWith("sqlfire")) {
+			this.delegate = new SqlfireServiceCreator();
+		}
+		else {
+			this.delegate = new MysqlServiceCreator();
+		}
+		return super.createService(serviceInfo);
+	}
 
-    @Override
-    public String getDriverClassName() {
-        Assert.notNull(delegate, "DataSourceCreator delegate was not populated");
-        return delegate.getDriverClassName();
-    }
+	@Override
+	public String getDriverClassName() {
+		Assert.notNull(delegate, "DataSourceCreator delegate was not populated");
+		return delegate.getDriverClassName();
+	}
 
-    @Override
-    public String getValidationQuery() {
-        Assert.notNull(delegate, "DataSourceCreator delegate was not populated");
-        return delegate.getValidationQuery();
-    }
+	@Override
+	public String getValidationQuery() {
+		Assert.notNull(delegate, "DataSourceCreator delegate was not populated");
+		return delegate.getValidationQuery();
+	}
 }

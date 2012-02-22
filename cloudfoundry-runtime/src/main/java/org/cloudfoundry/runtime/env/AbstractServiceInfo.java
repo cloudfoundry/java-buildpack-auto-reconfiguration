@@ -17,7 +17,7 @@ public abstract class AbstractServiceInfo {
 		serviceName = (String) serviceInfo.get("name");
 		plan = (String) serviceInfo.get("plan");
 		label = (String) serviceInfo.get("label");
-    }
+	}
 
 	public String getServiceName() {
 		return serviceName;
