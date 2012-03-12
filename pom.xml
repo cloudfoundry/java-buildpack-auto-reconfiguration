@@ -17,7 +17,6 @@
 			<modules>
 				<module>cloudfoundry-runtime</module>
 				<module>auto-reconfiguration</module>
-				<module>plugins</module>
 			</modules>
 		</profile>
 		<profile>
@@ -26,7 +25,6 @@
 				<module>cloudfoundry-runtime</module>
 				<module>cloudfoundry-runtime-tests</module>
 				<module>auto-reconfiguration</module>
-				<module>plugins</module>
 			</modules>
 		</profile>
 	</profiles>
