@@ -1,11 +1,11 @@
 ---
-version: 7.0.26
-download_uri: http://archive.apache.org/dist/tomcat/tomcat-7/v7.0.26/bin/apache-tomcat-7.0.26.tar.gz
+version: 6.0.35
+download_uri: http://archive.apache.org/dist/tomcat/tomcat-6/v6.0.35/bin/apache-tomcat-6.0.35.tar.gz
 
-replace_files: []
+replace_files: [conf/server.xml, conf/context.xml]
 clear_dirs: [logs, temp, webapps, work]
 remove_files: [NOTICE, RELEASE-NOTES, RUNNING.txt, LICENSE]
-add_jars: []
+add_jars: [lib/TomcatStartupListener-1.0.jar]
 
 # Assumes that the environment variable 'VCAP' has been set to point to
 # the root of 'vcap' source hierarchy.

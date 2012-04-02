@@ -3,33 +3,14 @@
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>org.cloudfoundry</groupId>
-	<artifactId>vcap-java</artifactId>
+	<artifactId>vcap-java-plugins</artifactId>
 	<packaging>pom</packaging>
-	<name>vcap-java</name>
+	<name>vcap-java-plugins</name>
 	<version>1.0.0-BUILD-SNAPSHOT</version>
 
-	<profiles>
-		<profile>
-			<id>default</id>
-			<activation>
-				<activeByDefault>true</activeByDefault>
-			</activation>
-			<modules>
-				<module>cloudfoundry-runtime</module>
-				<module>auto-reconfiguration</module>
-				<module>plugins</module>
-			</modules>
-		</profile>
-		<profile>
-			<id>integration-test</id>
-			<modules>
-				<module>cloudfoundry-runtime</module>
-				<module>cloudfoundry-runtime-tests</module>
-				<module>auto-reconfiguration</module>
-				<module>plugins</module>
-			</modules>
-		</profile>
-	</profiles>
+	<modules>
+		<module>tomcat_startup_listener</module>
+	</modules>
 
 	<build>
 		<plugins>
