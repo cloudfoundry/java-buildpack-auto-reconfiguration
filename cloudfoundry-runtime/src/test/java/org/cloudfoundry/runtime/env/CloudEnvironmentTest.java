@@ -100,6 +100,7 @@ public class CloudEnvironmentTest {
 		assertEquals("jdbc:mysql://"+ hostname + ":" + port + "/database-123", info.getUrl());
 		assertEquals(username, info.getUserName());
 		assertEquals(password, info.getPassword());
+		assertEquals("com.mysql.jdbc.Driver", info.getDriverClassName());
 	}
 	
 	@Test
@@ -114,6 +115,7 @@ public class CloudEnvironmentTest {
 		assertEquals("jdbc:postgresql://" + hostname + ":" + port + "/db-123", info.getUrl());
 		assertEquals(username, info.getUserName());
 		assertEquals(password, info.getPassword());
+		assertEquals("org.postgresql.Driver", info.getDriverClassName());
 	}
 
 	/**

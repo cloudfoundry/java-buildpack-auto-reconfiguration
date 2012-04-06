@@ -26,6 +26,11 @@ public class RdbmsServiceInfo extends AbstractDataSourceServiceInfo {
 	}
 
 	@Override
+	public String getDriverClassName() {
+		return delegate.getDriverClassName();
+	}
+
+	@Override
 	public String getUrl() {
 		return delegate.getUrl();
 	}

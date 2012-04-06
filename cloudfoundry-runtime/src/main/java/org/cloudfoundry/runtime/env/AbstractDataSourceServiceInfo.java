@@ -23,6 +23,8 @@ abstract public class AbstractDataSourceServiceInfo extends BaseServiceInfo {
 		userName = (String) credentials.get("user");
 	}
 	
+	abstract public String getDriverClassName();
+
 	abstract public String getUrl();
 	
 	public String getUserName() {
