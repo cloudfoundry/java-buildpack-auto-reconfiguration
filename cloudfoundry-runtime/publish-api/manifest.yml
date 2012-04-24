@@ -1,0 +1,13 @@
+---
+applications:
+  .:
+    name: cf-runtime-api
+    framework:
+      name: rack
+      info:
+        mem: 128M
+        description: Rack Application
+        exec:
+    url: ${name}.${target-base}
+    mem: 128M
+    instances: 1
