@@ -89,7 +89,6 @@ There are sub-elements that can be used to configure specific connections and po
 
 ##### \<cloud:connection\> options
 
-<html>
 <table>
 <tr>
 <th>Namespace attribute</th>
@@ -102,11 +101,9 @@ There are sub-elements that can be used to configure specific connections and po
 <td>string</td>
 </tr>
 </table>
-</html>
 
 ##### \<cloud:pool\> options
 
-<html>
 <table>
 <tr>
 <th>Namespace attribute</th>
@@ -127,7 +124,6 @@ There are sub-elements that can be used to configure specific connections and po
 <td>Uses the default setting of the Apache Commons Pool which is unlimited (-1)</td>
 </tr>
 </table>
-</html>
 
 #### \<cloud:mongo-db-factory\>
 The \<cloud:mongo-db-factory\> element provides a convenient way to configure the MongoDB connection factory for your Spring application.
@@ -139,7 +135,6 @@ The \<cloud:mongo-db-factory\> element provides a convenient way to configure th
 
 The values for the write-concern attribute correspond to the values available in the com.mongodb.WriteConcern class.
 
-<html>
 <table>
 <tr>
 <th>Value</th>
@@ -162,7 +157,6 @@ The values for the write-concern attribute correspond to the values available in
 <td>Exceptions are raised for network issues, and server errors and the write operation waits for the server to flush the data to disk</td>
 </tr>
 </table>
-</html>
 
 A simple example MongoDbFactory configuration to be injected into a MongoTemplate would look like this, with the only attribute used specifying the id of the mongoDbFactory bean.
 ```xml
@@ -177,7 +171,6 @@ There are some advanced configuration attributes that are available using the \<
 
 ##### \<cloud:mongo-options\>
 
-<html>
 <table>
 <tr>
 <th>Namespace attribute</th>
@@ -198,7 +191,6 @@ There are some advanced configuration attributes that are available using the \<
 <td>The Mongo driver has a default of 120000</td>
 </tr>
 </table>
-</html>
 
 #### \<cloud:redis-connection-factory\>
 The \<cloud:redis-connection-factory\> element provides a convenient way to configure the Redis connection factory for your Spring application.
@@ -219,7 +211,6 @@ The advanced configuration attributes that are available via the \<cloud:pool\> 
 
 ##### \<cloud:pool\> options
 
-<html>
 <table>
 <tr>
 <th>Namespace attribute</th>
@@ -240,7 +231,6 @@ The advanced configuration attributes that are available via the \<cloud:pool\> 
 <td>Uses the default setting of the Apache Commons Pool which is unlimited (-1)</td>
 </tr>
 </table>
-</html>
 
 #### \<cloud:rabbit-connection-factory\>
 The \<cloud:rabbit-connection-factory\> element provides a convenient way to configure the RabbitMQ connection factory for your Spring application.
@@ -260,7 +250,6 @@ The advanced configuration attributes that are available via the \<cloud:rabbit-
 
 ##### \<cloud:rabbit-options\>
 
-<html>
 <table>
 <tr>
 <th>Namespace attribute</th>
@@ -275,7 +264,6 @@ The advanced configuration attributes that are available via the \<cloud:rabbit-
 <td>The default is 1</td>
 </tr>
 </table>
-</html>
 
 #### \<cloud:service-scan\>
 The \<cloud:service-scan\> element scans all services bound to the application and creates a bean of an appropriate type for each. You can think of this element as a cloud extension of \<context:component-scan\> in core Spring, which scans the classpath for beans with certain annotations and creates a bean for each. The \<cloud:service-scan\> is especially useful during the initial phases of application development, where you want immediate access to service beans without adding a \<cloud\> element for each new service bound.
