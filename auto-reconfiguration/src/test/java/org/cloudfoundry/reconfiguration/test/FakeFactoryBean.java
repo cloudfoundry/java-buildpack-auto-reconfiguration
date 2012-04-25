@@ -1,4 +1,4 @@
-package org.cloudfoundry.reconfiguration;
+package org.cloudfoundry.reconfiguration.test;
 
 import org.springframework.beans.factory.FactoryBean;
 import org.springframework.beans.factory.annotation.Autowired;

@@ -6,7 +6,7 @@
 	<artifactId>auto-reconfiguration</artifactId>
 	<packaging>jar</packaging>
 	<name>auto-reconfiguration</name>
-	<version>0.6.4.BUILD-SNAPSHOT</version>
+	<version>0.6.4</version>
 
 	<properties>
 		<java.version>1.6</java.version>
@@ -83,10 +83,10 @@
 		</dependency>
 
 		<dependency>
-		    <groupId>play</groupId>
-		    <artifactId>play_2.9.1</artifactId>
-		    <version>2.0</version>
-		    <scope>provided</scope>
+			<groupId>play</groupId>
+			<artifactId>play_2.9.1</artifactId>
+			<version>2.0</version>
+			<scope>provided</scope>
 		</dependency>
 
 		<!-- Test -->
@@ -100,6 +100,12 @@
 			<groupId>org.mockito</groupId>
 			<artifactId>mockito-all</artifactId>
 			<version>1.8.5</version>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>cglib</groupId>
+			<artifactId>cglib-nodep</artifactId>
+			<version>2.2</version>
 			<scope>test</scope>
 		</dependency>
 		<dependency>
