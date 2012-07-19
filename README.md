@@ -10,7 +10,7 @@ easily access information about services bound to the app, its environment, as
 well as implementation of various <cloud> namespace elements. Cloud Foundry
 automatically includes the auto-reconfiguration library as needed.
 
-For more informations please see the following blogs for more details:
+For more information, please see the following blogs for more details:
 
 [Cloud Foundry Services With Spring, Part 1 : The Basics](http://blog.springsource.org/2011/10/13/using-cloud-foundry-services-with-spring-part-1-the-basics/)
 
@@ -33,3 +33,8 @@ Complete installation notes are present in the vcap
 # Copyright
 
 Copyright (c) 2009-2012 VMware, Inc.
+
+## File a Bug
+
+To file a bug against Cloud Foundry Open Source and its components, sign up and use our
+bug tracking system: [http://cloudfoundry.atlassian.net](http://cloudfoundry.atlassian.net)
