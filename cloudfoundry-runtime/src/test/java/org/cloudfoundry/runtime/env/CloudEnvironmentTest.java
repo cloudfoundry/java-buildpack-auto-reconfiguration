@@ -59,7 +59,7 @@ public class CloudEnvironmentTest {
 		
 		when(mockEnvironment.getValue("VCAP_SERVICES"))
 			.thenReturn(getServicesPayload(null,
-										   new String[]{getRedisServicePayload(serviceName, hostname, port, password, "r1")},
+										   new String[]{getRedisServicePayload("2.2", serviceName, hostname, port, password, "r1")},
 										   null,
 										   null));
 		RedisServiceInfo info = testRuntime.getServiceInfo("redis-1", RedisServiceInfo.class);
@@ -77,7 +77,7 @@ public class CloudEnvironmentTest {
 		when(mockEnvironment.getValue("VCAP_SERVICES"))
 			.thenReturn(getServicesPayload(null,
 										   null,
-										   new String[]{getMongoServicePayload(serviceName, hostname, port, username, password, database, name)},
+										   new String[]{getMongoServicePayload("1.8", serviceName, hostname, port, username, password, database, name)},
 										   null));
 		MongoServiceInfo info = testRuntime.getServiceInfo(serviceName, MongoServiceInfo.class);
 		assertEquals(serviceName, info.getServiceName());
@@ -91,7 +91,7 @@ public class CloudEnvironmentTest {
 	@Test
 	public void getServiceInfoMysql() {
 		when(mockEnvironment.getValue("VCAP_SERVICES"))
-			.thenReturn(getServicesPayload(new String[]{getMysqlServicePayload("mysql-1", hostname, port, username, password, "database-123")},
+			.thenReturn(getServicesPayload(new String[]{getMysqlServicePayload("5.1", "mysql-1", hostname, port, username, password, "database-123")},
 										   null,
 										   null,
 										   null));
@@ -105,7 +105,7 @@ public class CloudEnvironmentTest {
 	@Test
 	public void getServiceInfoPostgresql() {
 		when(mockEnvironment.getValue("VCAP_SERVICES"))
-		    .thenReturn(getServicesPayload(new String[]{getPostgreSQLServicePayload("postgresql-1", hostname, port, username, password, "db-123")},
+		    .thenReturn(getServicesPayload(new String[]{getPostgreSQLServicePayload("9.0", "postgresql-1", hostname, port, username, password, "db-123")},
 		    		null,
 		    		null,
 		    		null));
@@ -129,7 +129,7 @@ public class CloudEnvironmentTest {
 			.thenReturn(getServicesPayload(null,
 										   null,
 										   null,
-										   new String[]{getRabbitServicePayload(serviceName, hostname, port, username, password, "r1", vHost)}));
+										   new String[]{getRabbitServicePayload("2.4", serviceName, hostname, port, username, password, "r1", vHost)}));
 		RabbitServiceInfo info = testRuntime.getServiceInfo(serviceName, RabbitServiceInfo.class);
 		assertEquals(serviceName, info.getServiceName());
 		assertEquals(hostname, info.getHost());
@@ -149,7 +149,7 @@ public class CloudEnvironmentTest {
 			.thenReturn(getServicesPayload(null,
 										   null,
 										   null,
-										   new String[]{getRabbitSRSServicePayload(serviceName, url)}));
+										   new String[]{getRabbitSRSServicePayload("2.4", serviceName, url)}));
 		RabbitServiceInfo info = testRuntime.getServiceInfo(serviceName, RabbitServiceInfo.class);
 		assertEquals(serviceName, info.getServiceName());
 		assertEquals("username", info.getUserName());
@@ -196,7 +196,7 @@ public class CloudEnvironmentTest {
 	public void getCloudProperties_service() {
 		when(mockEnvironment.getValue("VCAP_APPLICATION")).thenReturn(getApplicationInstanceInfo("foo", "foo.cloudfoundry.com"));
 		when(mockEnvironment.getValue("VCAP_SERVICES")).thenReturn(getServicesPayload(
-			new String[]{ getMysqlServicePayload("mydb", hostname, port, "mydb-user", "mydb-password", "mydb-name")},
+			new String[]{ getMysqlServicePayload("5.1", "mydb", hostname, port, "mydb-user", "mydb-password", "mydb-name")},
 			null,
 			null,
 			null
@@ -228,8 +228,8 @@ public class CloudEnvironmentTest {
 		when(mockEnvironment.getValue("VCAP_APPLICATION")).thenReturn(getApplicationInstanceInfo("foo", "foo.cloudfoundry.com"));
 		when(mockEnvironment.getValue("VCAP_SERVICES")).thenReturn(getServicesPayload(
 			null,
-			new String[]{ getRedisServicePayload("mykey", "2.2.0.0", 2200, "redis-password", "redis-name") },
-			new String[]{ getMongoServicePayload("mydoc", "1.8.0.0", 1800, "mongodb-username", "mongodb-password", "mongodb-db", "mongodb-name") },
+			new String[]{ getRedisServicePayload("2.2", "mykey", "2.2.0.0", 2200, "redis-password", "redis-name") },
+			new String[]{ getMongoServicePayload("1.8", "mydoc", "1.8.0.0", 1800, "mongodb-username", "mongodb-password", "mongodb-db", "mongodb-name") },
 			null
 		));
 
@@ -276,8 +276,8 @@ public class CloudEnvironmentTest {
 		when(mockEnvironment.getValue("VCAP_APPLICATION")).thenReturn(getApplicationInstanceInfo("foo", "foo.cloudfoundry.com"));
 		when(mockEnvironment.getValue("VCAP_SERVICES")).thenReturn(getServicesPayload(
 			new String[]{
-				getMysqlServicePayload("mydb", hostname, port, "mydb-user", "mydb-password", "mydb-name"),
-				getMysqlServicePayload("mydb-alt", hostname, port, "mydbalt-user", "mydbalt-password", "mydbalt-name")
+				getMysqlServicePayload("5.1", "mydb", hostname, port, "mydb-user", "mydb-password", "mydb-name"),
+				getMysqlServicePayload("5.1", "mydb-alt", hostname, port, "mydbalt-user", "mydbalt-password", "mydbalt-name")
 			},
 			null,
 			null,
@@ -306,8 +306,8 @@ public class CloudEnvironmentTest {
 		when(mockEnvironment.getValue("VCAP_APPLICATION")).thenReturn(getApplicationInstanceInfo("foo", "foo.cloudfoundry.com"));
 		when(mockEnvironment.getValue("VCAP_SERVICES")).thenReturn(getServicesPayload(
 				null,
-				new String[]{ getRedisServicePayload("mongodb", hostname, port, "redis-password", "redis-name") },
-				new String[]{ getMongoServicePayload("redis", hostname, port, "mongodb-username", "mongodb-password", "mongodb-db", "mongodb-name") },
+				new String[]{ getRedisServicePayload("2.2", "mongodb", hostname, port, "redis-password", "redis-name") },
+				new String[]{ getMongoServicePayload("1.8", "redis", hostname, port, "mongodb-username", "mongodb-password", "mongodb-db", "mongodb-name") },
 				null
 			));
 

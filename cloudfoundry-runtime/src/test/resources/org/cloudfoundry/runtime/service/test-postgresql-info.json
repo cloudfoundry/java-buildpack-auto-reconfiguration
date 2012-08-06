@@ -1,6 +1,6 @@
 {
         "name": "$serviceName",
-        "label": "postgresql-9.0",
+        "label": "postgresql-$version",
         "plan": "free",
         "credentials": {
             "node_id": "postgresql_node_4",

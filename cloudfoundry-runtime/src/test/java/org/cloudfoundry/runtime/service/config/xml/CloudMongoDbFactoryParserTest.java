@@ -31,7 +31,7 @@ public class CloudMongoDbFactoryParserTest extends AbstractCloudParserTest {
 		envMap.put("VCAP_SERVICES", CloudEnvironmentTestHelper.getServicesPayload(
 				new String[] {},
 				new String[] {},
-				new String[] {CloudEnvironmentTestHelper.getMongoServicePayload("mongodb", "127.0.0.1", 27017,
+				new String[] {CloudEnvironmentTestHelper.getMongoServicePayload("1.8", "mongodb", "127.0.0.1", 27017,
 						"uIKpwGOTgjfaQ", "pu0xEgiy997kQ", "468de494984f94e85255ce5d5", "468de494984f94e85255ce5d5")},
 				new String[] {}));
 		envMap.put("VCAP_APPLICATION", CloudEnvironmentTestHelper.getApplicationInstanceInfo("test", "test.vcap.me"));

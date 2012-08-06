@@ -1,6 +1,6 @@
 {
         "name": "$serviceName",
-        "label": "mysql-5.1",
+        "label": "mysql-$version",
         "plan": "free",
         "credentials": {
             "node_id": "mysql_node_4",

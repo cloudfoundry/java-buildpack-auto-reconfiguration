@@ -30,7 +30,7 @@ public class CloudRabbitConnectionFactoryParserTest extends AbstractCloudParserT
 				new String[]{},
 				new String[]{},
 				new String[]{},
-				new String[]{CloudEnvironmentTestHelper.getRabbitServicePayload("rabbit-test", "127.0.0.1", 5672,
+				new String[]{CloudEnvironmentTestHelper.getRabbitServicePayload("2.4", "rabbit-test", "127.0.0.1", 5672,
 						"uIKpwGOTgjfaQ", "pu0xEgiy997kQ", "d855c4a2468de494984f94e85255ce5d5", "/")}));
 		envMap.put("VCAP_APPLICATION", CloudEnvironmentTestHelper.getApplicationInstanceInfo("test", "test.vcap.me"));
 		replaceCloudEnvironmentAccessor(envMap);

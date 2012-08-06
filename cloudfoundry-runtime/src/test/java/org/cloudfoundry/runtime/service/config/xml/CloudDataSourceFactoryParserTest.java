@@ -28,7 +28,7 @@ public class CloudDataSourceFactoryParserTest extends AbstractCloudParserTest {
 	public void testMySqlDataSourceDefinition() throws Exception {
 		Map<String, String> envMap = new HashMap<String, String>();
 		envMap.put("VCAP_SERVICES", CloudEnvironmentTestHelper.getServicesPayload(
-				new String[] {CloudEnvironmentTestHelper.getMysqlServicePayload("mysql", "127.0.0.1", 3306,
+				new String[] {CloudEnvironmentTestHelper.getMysqlServicePayload("5.1", "mysql", "127.0.0.1", 3306,
 						"uIKpwGOTgjfaQ", "pu0xEgiy997kQ", "d855c4a2468de494984f94e85255ce5d5")},
 				new String[] {},
 				new String[] {},

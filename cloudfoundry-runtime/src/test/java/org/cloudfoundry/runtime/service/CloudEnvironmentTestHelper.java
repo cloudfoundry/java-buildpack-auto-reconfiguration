@@ -8,10 +8,11 @@ import java.io.StringWriter;
 import org.springframework.util.FileCopyUtils;
 
 public class CloudEnvironmentTestHelper {
-	public static String getRedisServicePayload(String serviceName, 
-			String hostname, int port, 
+	public static String getRedisServicePayload(String version, String serviceName,
+			String hostname, int port,
 			String password, String name) {
 		String payload = readTestDataFile("test-redis-info.json");
+		payload = payload.replace("$version", version);
 		payload = payload.replace("$serviceName", serviceName);
 		payload = payload.replace("$hostname", hostname);
 		payload = payload.replace("$port", Integer.toString(port));
@@ -21,10 +22,11 @@ public class CloudEnvironmentTestHelper {
 		return payload;
 	}
 
-	public static String getMongoServicePayload(String serviceName, 
-			String hostname, int port, 
+	public static String getMongoServicePayload(String version, String serviceName,
+			String hostname, int port,
 			String username, String password, String db, String name) {
 		String payload = readTestDataFile("test-mongodb-info.json");
+		payload = payload.replace("$version", version);
 		payload = payload.replace("$serviceName", serviceName);
 		payload = payload.replace("$hostname", hostname);
 		payload = payload.replace("$port", Integer.toString(port));
@@ -36,10 +38,11 @@ public class CloudEnvironmentTestHelper {
 		return payload;
 	}
 
-	public static String getMysqlServicePayload(String serviceName, 
-			String hostname, int port, 
+	public static String getMysqlServicePayload(String version, String serviceName,
+			String hostname, int port,
 			String user, String password, String name) {
 		String payload = readTestDataFile("test-mysql-info.json");
+		payload = payload.replace("$version", version);
 		payload = payload.replace("$serviceName", serviceName);
 		payload = payload.replace("$hostname", hostname);
 		payload = payload.replace("$port", Integer.toString(port));
@@ -50,13 +53,14 @@ public class CloudEnvironmentTestHelper {
 		return payload;
 	}
 	
-	public static String getPostgreSQLServicePayload(String serviceName,
+	public static String getPostgreSQLServicePayload(String version, String serviceName,
 			String hostname,
 			int port,
 			String user,
 			String password,
 			String name) {
 		String payload = readTestDataFile("test-postgresql-info.json");
+		payload = payload.replace("$version", version);
 		payload = payload.replace("$serviceName", serviceName);
 		payload = payload.replace("$hostname", hostname);
 		payload = payload.replace("$port", Integer.toString(port));
@@ -67,11 +71,12 @@ public class CloudEnvironmentTestHelper {
 		return payload;
 	}
 
-	public static String getRabbitServicePayload(String serviceName, 
-			String hostname, int port, 
+	public static String getRabbitServicePayload(String version, String serviceName,
+			String hostname, int port,
 			String user, String password, String name,
 			String vHost) {
 		String payload = readTestDataFile("test-rabbit-info.json");
+		payload = payload.replace("$version", version);
 		payload = payload.replace("$serviceName", serviceName);
 		payload = payload.replace("$hostname", hostname);
 		payload = payload.replace("$port", Integer.toString(port));
@@ -83,8 +88,9 @@ public class CloudEnvironmentTestHelper {
 		return payload;
 	}
 
-	public static String getRabbitSRSServicePayload(String serviceName, String url) {
+	public static String getRabbitSRSServicePayload(String version, String serviceName, String url) {
 		String payload = readTestDataFile("test-rabbit-srs-info.json");
+		payload = payload.replace("$version", version);
 		payload = payload.replace("$serviceName", serviceName);
 		payload = payload.replace("$url", url);
 

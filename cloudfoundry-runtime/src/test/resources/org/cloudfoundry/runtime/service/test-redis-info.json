@@ -1,6 +1,6 @@
 {
         "name": "$serviceName",
-        "label": "redis-2.2",
+        "label": "redis-$version",
         "plan": "free",
         "credentials": {
             "node_id": "redis_node_8",

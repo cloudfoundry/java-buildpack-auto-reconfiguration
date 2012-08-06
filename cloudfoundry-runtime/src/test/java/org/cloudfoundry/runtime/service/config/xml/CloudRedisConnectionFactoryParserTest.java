@@ -28,7 +28,7 @@ public class CloudRedisConnectionFactoryParserTest extends AbstractCloudParserTe
 		Map<String, String> envMap = new HashMap<String, String>();
 		envMap.put("VCAP_SERVICES", CloudEnvironmentTestHelper.getServicesPayload(
 				new String[]{},
-				new String[]{CloudEnvironmentTestHelper.getRedisServicePayload("redis-test", "127.0.0.1", 6379,
+				new String[]{CloudEnvironmentTestHelper.getRedisServicePayload("2.2", "redis-test", "127.0.0.1", 6379,
 						"pu0xEgiy997kQ", "d855c4a2468de494984f94e85255ce5d5")},
 				new String[]{},
 				new String[]{}));
