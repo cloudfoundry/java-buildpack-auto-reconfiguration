@@ -1,0 +1,8 @@
+Code-Review+2: Jennifer Hickey <jhickey@vmware.com>
+Code-Review+1: Thomas Risberg <trisberg@vmware.com>
+Verified+1: CI Master <cf-ci@rbcon.com>
+Submitted-by: Ramnivas Laddad <ramnivas@ramnivas.com>
+Submitted-at: Tue, 07 Aug 2012 17:37:21 +0000
+Reviewed-on: http://reviews.cloudfoundry.org/8079
+Project: vcap-java
+Branch: refs/heads/master
