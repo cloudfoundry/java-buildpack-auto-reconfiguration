@@ -44,11 +44,11 @@ public class CloudEnvironment {
 	}
 
 	static {
-		labelledServiceType(RdbmsServiceInfo.class, "mysql-5.1");
-		labelledServiceType(RdbmsServiceInfo.class, "postgresql-9.0");
-		labelledServiceType(RedisServiceInfo.class, "redis-2.2");
-		labelledServiceType(MongoServiceInfo.class, "mongodb-1.8");
-		labelledServiceType(RabbitServiceInfo.class, "rabbitmq-2.4");
+		labelledServiceType(RdbmsServiceInfo.class, "mysql");
+		labelledServiceType(RdbmsServiceInfo.class, "postgresql");
+		labelledServiceType(RedisServiceInfo.class, "redis");
+		labelledServiceType(MongoServiceInfo.class, "mongodb");
+		labelledServiceType(RabbitServiceInfo.class, "rabbitmq");
 	}
 	
 	/* package for testing purpose */
@@ -135,8 +135,9 @@ public class CloudEnvironment {
 		List<Map<String, Object>> services = getServices();
 		List<Map<String, Object>> matchedServices = new ArrayList<Map<String,Object>>();
 		for (Map<String, Object> service : services) {
-		    if (labels.contains(service.get("label"))) {
-			matchedServices.add(service);
+			String serviceLabelWithoutVersion = labelWithoutVersion(service.get("label").toString());
+			if (labels.contains(serviceLabelWithoutVersion)) {
+				matchedServices.add(service);
 		    }
 		}
 
@@ -147,7 +148,7 @@ public class CloudEnvironment {
 		Map<String,Object> serviceInfoMap = getServiceDataByName(name);
 		Set<String> labels = serviceTypeToLabels.get(serviceInfoType);
 
-		if (labels != null && labels.contains(serviceInfoMap.get("label"))) {
+		if (labels != null && labels.contains(labelWithoutVersion(serviceInfoMap.get("label").toString()))) {
 		    return getServiceInfo(serviceInfoMap, serviceInfoType);
 		} else {
 		    return null;
@@ -161,8 +162,9 @@ public class CloudEnvironment {
 		if (labels != null) {
 			List<Map<String,Object>> serviceInfoMaps = getServiceDataByLabels(labels);
 
-			for (Map<String,Object> serviceInfoMap : serviceInfoMaps)
+			for (Map<String,Object> serviceInfoMap : serviceInfoMaps) {
 				serviceInfos.add(getServiceInfo(serviceInfoMap, serviceInfoType));
+			}
 		}
 
 		return serviceInfos;
@@ -262,6 +264,15 @@ public class CloudEnvironment {
 	private String serviceShortType(Map<String, Object> service) {
 		String type = (String) service.get("label");
 		return type.split("-", 2)[0];
+	}
+
+	private static String labelWithoutVersion(String labelWithVersion) {
+		int hyphenIndex = labelWithVersion.lastIndexOf('-');
+		if (hyphenIndex == -1) {
+			return labelWithVersion;
+		} else {
+			return labelWithVersion.substring(0, hyphenIndex);
+		}
 	}
 
 	/**

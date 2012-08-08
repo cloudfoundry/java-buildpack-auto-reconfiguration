@@ -56,16 +56,19 @@ public class CloudEnvironmentTest {
 	@Test
 	public void getServiceInfoRedis() {
 		String serviceName = "redis-1";
-		
-		when(mockEnvironment.getValue("VCAP_SERVICES"))
-			.thenReturn(getServicesPayload(null,
-										   new String[]{getRedisServicePayload("2.2", serviceName, hostname, port, password, "r1")},
-										   null,
-										   null));
-		RedisServiceInfo info = testRuntime.getServiceInfo("redis-1", RedisServiceInfo.class);
-		assertEquals(serviceName, info.getServiceName());
-		assertEquals(hostname, info.getHost());
-		assertEquals(port, info.getPort());
+
+		String[] versions = {"2.2", "2.4"};
+		for (String version : versions) {
+			when(mockEnvironment.getValue("VCAP_SERVICES"))
+				.thenReturn(getServicesPayload(null,
+											   new String[]{getRedisServicePayload(version, serviceName, hostname, port, password, "r1")},
+											   null,
+											   null));
+			RedisServiceInfo info = testRuntime.getServiceInfo("redis-1", RedisServiceInfo.class);
+			assertEquals(serviceName, info.getServiceName());
+			assertEquals(hostname, info.getHost());
+			assertEquals(port, info.getPort());
+		}
 	}
 
 	@Test
@@ -74,46 +77,55 @@ public class CloudEnvironmentTest {
 		String database = "mongo-db";
 		String name = "mongo-name";
 		
-		when(mockEnvironment.getValue("VCAP_SERVICES"))
-			.thenReturn(getServicesPayload(null,
-										   null,
-										   new String[]{getMongoServicePayload("1.8", serviceName, hostname, port, username, password, database, name)},
-										   null));
-		MongoServiceInfo info = testRuntime.getServiceInfo(serviceName, MongoServiceInfo.class);
-		assertEquals(serviceName, info.getServiceName());
-		assertEquals(hostname, info.getHost());
-		assertEquals(port, info.getPort());
-		assertEquals(hostname, info.getHost());
-		assertEquals(password, info.getPassword());
-		assertEquals(database, info.getDatabase());
+		String[] versions = {"1.8", "2.0"};
+		for (String version : versions) {
+			when(mockEnvironment.getValue("VCAP_SERVICES"))
+				.thenReturn(getServicesPayload(null,
+											   null,
+											   new String[]{getMongoServicePayload(version, serviceName, hostname, port, username, password, database, name)},
+											   null));
+			MongoServiceInfo info = testRuntime.getServiceInfo(serviceName, MongoServiceInfo.class);
+			assertEquals(serviceName, info.getServiceName());
+			assertEquals(hostname, info.getHost());
+			assertEquals(port, info.getPort());
+			assertEquals(hostname, info.getHost());
+			assertEquals(password, info.getPassword());
+			assertEquals(database, info.getDatabase());
+		}
 	}
 
 	@Test
 	public void getServiceInfoMysql() {
-		when(mockEnvironment.getValue("VCAP_SERVICES"))
-			.thenReturn(getServicesPayload(new String[]{getMysqlServicePayload("5.1", "mysql-1", hostname, port, username, password, "database-123")},
-										   null,
-										   null,
-										   null));
-		RdbmsServiceInfo info = testRuntime.getServiceInfo("mysql-1", RdbmsServiceInfo.class);
-		assertEquals("mysql-1", info.getServiceName());
-		assertEquals("jdbc:mysql://"+ hostname + ":" + port + "/database-123", info.getUrl());
-		assertEquals(username, info.getUserName());
-		assertEquals(password, info.getPassword());
+		String[] versions = {"5.1", "5.5"};
+		for (String version : versions) {
+			when(mockEnvironment.getValue("VCAP_SERVICES"))
+				.thenReturn(getServicesPayload(new String[]{getMysqlServicePayload(version, "mysql-1", hostname, port, username, password, "database-123")},
+											   null,
+											   null,
+											   null));
+			RdbmsServiceInfo info = testRuntime.getServiceInfo("mysql-1", RdbmsServiceInfo.class);
+			assertEquals("mysql-1", info.getServiceName());
+			assertEquals("jdbc:mysql://"+ hostname + ":" + port + "/database-123", info.getUrl());
+			assertEquals(username, info.getUserName());
+			assertEquals(password, info.getPassword());
+		}
 	}
 	
 	@Test
 	public void getServiceInfoPostgresql() {
-		when(mockEnvironment.getValue("VCAP_SERVICES"))
-		    .thenReturn(getServicesPayload(new String[]{getPostgreSQLServicePayload("9.0", "postgresql-1", hostname, port, username, password, "db-123")},
-		    		null,
-		    		null,
-		    		null));
-		RdbmsServiceInfo info = testRuntime.getServiceInfo("postgresql-1", RdbmsServiceInfo.class);
-		assertEquals("postgresql-1", info.getServiceName());
-		assertEquals("jdbc:postgresql://" + hostname + ":" + port + "/db-123", info.getUrl());
-		assertEquals(username, info.getUserName());
-		assertEquals(password, info.getPassword());
+		String[] versions = {"9.0", "9.1"};
+		for (String version : versions) {
+			when(mockEnvironment.getValue("VCAP_SERVICES"))
+				.thenReturn(getServicesPayload(new String[]{getPostgreSQLServicePayload(version, "postgresql-1", hostname, port, username, password, "db-123")},
+						null,
+						null,
+						null));
+			RdbmsServiceInfo info = testRuntime.getServiceInfo("postgresql-1", RdbmsServiceInfo.class);
+			assertEquals("postgresql-1", info.getServiceName());
+			assertEquals("jdbc:postgresql://" + hostname + ":" + port + "/db-123", info.getUrl());
+			assertEquals(username, info.getUserName());
+			assertEquals(password, info.getPassword());
+		}
 	}
 
 	/**
@@ -125,16 +137,19 @@ public class CloudEnvironmentTest {
 		String serviceName = "rabbit-1";
 		String vHost = "vhost-1";
 		
-		when(mockEnvironment.getValue("VCAP_SERVICES"))
-			.thenReturn(getServicesPayload(null,
-										   null,
-										   null,
-										   new String[]{getRabbitServicePayload("2.4", serviceName, hostname, port, username, password, "r1", vHost)}));
-		RabbitServiceInfo info = testRuntime.getServiceInfo(serviceName, RabbitServiceInfo.class);
-		assertEquals(serviceName, info.getServiceName());
-		assertEquals(hostname, info.getHost());
-		assertEquals(vHost, info.getVirtualHost());
-		assertEquals(port, info.getPort());
+		String[] versions = {"2.4", "2.6"};
+		for (String version : versions) {
+			when(mockEnvironment.getValue("VCAP_SERVICES"))
+				.thenReturn(getServicesPayload(null,
+											   null,
+											   null,
+											   new String[]{getRabbitServicePayload(version, serviceName, hostname, port, username, password, "r1", vHost)}));
+			RabbitServiceInfo info = testRuntime.getServiceInfo(serviceName, RabbitServiceInfo.class);
+			assertEquals(serviceName, info.getServiceName());
+			assertEquals(hostname, info.getHost());
+			assertEquals(vHost, info.getVirtualHost());
+			assertEquals(port, info.getPort());
+		}
 	}
 
 	/**
@@ -145,18 +160,21 @@ public class CloudEnvironmentTest {
 		String serviceName = "rabbit-1";
 		String url = "amqp://username:password@127.0.0.1:12345/virtualHost";
 
-		when(mockEnvironment.getValue("VCAP_SERVICES"))
-			.thenReturn(getServicesPayload(null,
-										   null,
-										   null,
-										   new String[]{getRabbitSRSServicePayload("2.4", serviceName, url)}));
-		RabbitServiceInfo info = testRuntime.getServiceInfo(serviceName, RabbitServiceInfo.class);
-		assertEquals(serviceName, info.getServiceName());
-		assertEquals("username", info.getUserName());
-		assertEquals("password", info.getPassword());
-		assertEquals("127.0.0.1", info.getHost());
-		assertEquals(12345, info.getPort());
-		assertEquals("virtualHost", info.getVirtualHost());
+		String[] versions = {"2.4", "2.6"};
+		for (String version : versions) {
+			when(mockEnvironment.getValue("VCAP_SERVICES"))
+				.thenReturn(getServicesPayload(null,
+											   null,
+											   null,
+											   new String[]{getRabbitSRSServicePayload(version, serviceName, url)}));
+			RabbitServiceInfo info = testRuntime.getServiceInfo(serviceName, RabbitServiceInfo.class);
+			assertEquals(serviceName, info.getServiceName());
+			assertEquals("username", info.getUserName());
+			assertEquals("password", info.getPassword());
+			assertEquals("127.0.0.1", info.getHost());
+			assertEquals(12345, info.getPort());
+			assertEquals("virtualHost", info.getVirtualHost());
+		}
 	}
 
 	@Test
@@ -291,6 +309,37 @@ public class CloudEnvironmentTest {
 		assertEquals("mysql-5.1", cloudProperties.getProperty("cloud.services.mydb-alt.type"));
 
 		// service properties by type
+		assertNull(cloudProperties.getProperty("cloud.services.mysql.plan"));
+		assertNull(cloudProperties.getProperty("cloud.services.mysql.type"));
+		assertNull(cloudProperties.getProperty("cloud.services.mysql.connection.node_id"));
+		assertNull(cloudProperties.getProperty("cloud.services.mysql.connection.hostname"));
+		assertNull(cloudProperties.getProperty("cloud.services.mysql.connection.port"));
+		assertNull(cloudProperties.getProperty("cloud.services.mysql.connection.password"));
+		assertNull(cloudProperties.getProperty("cloud.services.mysql.connection.name"));
+		assertNull(cloudProperties.getProperty("cloud.services.mysql.connection.user"));
+	}
+
+	@Test
+	public void getCloudProperties_service_multipleForVersion() {
+		when(mockEnvironment.getValue("VCAP_APPLICATION")).thenReturn(getApplicationInstanceInfo("foo", "foo.cloudfoundry.com"));
+		when(mockEnvironment.getValue("VCAP_SERVICES")).thenReturn(getServicesPayload(
+			new String[]{
+				getMysqlServicePayload("5.1", "mydb", hostname, port, "mydb-user", "mydb-password", "mydb-name"),
+				getMysqlServicePayload("5.5", "mydb-alt", hostname, port, "mydbalt-user", "mydbalt-password", "mydbalt-name")
+			},
+			null,
+			null,
+			null
+		));
+
+		Properties cloudProperties = testRuntime.getCloudProperties();
+
+		// service properties by name
+		assertEquals("mysql-5.1", cloudProperties.getProperty("cloud.services.mydb.type"));
+		assertEquals("mysql-5.5", cloudProperties.getProperty("cloud.services.mydb-alt.type"));
+
+		// service properties by type
+		// since we have multiple service differing only in version, type-based props shouldn't exist
 		assertNull(cloudProperties.getProperty("cloud.services.mysql.plan"));
 		assertNull(cloudProperties.getProperty("cloud.services.mysql.type"));
 		assertNull(cloudProperties.getProperty("cloud.services.mysql.connection.node_id"));
