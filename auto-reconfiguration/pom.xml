@@ -6,11 +6,11 @@
 	<artifactId>auto-reconfiguration</artifactId>
 	<packaging>jar</packaging>
 	<name>auto-reconfiguration</name>
-	<version>0.6.4</version>
+	<version>0.6.5</version>
 
 	<properties>
 		<java.version>1.6</java.version>
-		<cloudfoundry.runtime.version>0.8.1</cloudfoundry.runtime.version>
+		<cloudfoundry.runtime.version>0.8.2</cloudfoundry.runtime.version>
 		<spring.amqp.version>1.0.0.RELEASE</spring.amqp.version>
 		<spring-data-mongo.version>1.0.1.RELEASE</spring-data-mongo.version>
 		<spring.version>3.1.0.RELEASE</spring.version>
