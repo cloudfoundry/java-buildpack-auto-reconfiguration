@@ -12,6 +12,7 @@
 		<junit.version>4.8.2</junit.version>
 		<spring.version>3.0.5.RELEASE</spring.version>
 		<commons-logging.version>1.1.1</commons-logging.version>
+		<cloudfoundry.runtime.version>0.8.2</cloudfoundry.runtime.version>
 	</properties>
 	<dependencies>
 		<dependency>
@@ -35,7 +36,7 @@
 		<dependency>
 			<groupId>org.cloudfoundry</groupId>
 			<artifactId>cloudfoundry-runtime</artifactId>
-			<version>0.8.2.BUILD-SNAPSHOT</version>
+			<version>${cloudfoundry.runtime.version}</version>
 			<scope>test</scope>
 		</dependency>
 		<dependency>
