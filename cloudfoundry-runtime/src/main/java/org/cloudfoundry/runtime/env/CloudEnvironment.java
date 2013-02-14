@@ -15,275 +15,316 @@ import org.codehaus.jackson.map.ObjectMapper;
 /**
  * Simpler access to Cloud Foundry environment.
  * <p>
- * This class interprets environment variables and provide a simple
- * access without needing JSON parsing.
+ * This class interprets environment variables and provide a simple access
+ * without needing JSON parsing.
  * </p>
  * 
  * @author Ramnivas Laddad
  * @author Scott Andrews
  * @author Thomas Risberg
- *
+ * @author Chris Hedley
+ * 
  */
 public class CloudEnvironment {
 
-	private ObjectMapper objectMapper = new ObjectMapper();
-	private EnvironmentAccessor environment = new EnvironmentAccessor();
+    private ObjectMapper objectMapper = new ObjectMapper();
+    private EnvironmentAccessor environment = new EnvironmentAccessor();
 
-	private static Map<Class<? extends AbstractServiceInfo>, Set<String>> serviceTypeToLabels = new HashMap<Class<? extends AbstractServiceInfo>, Set<String>>();
+    private static Map<Class<? extends AbstractServiceInfo>, Set<String>> serviceTypeToLabels = new HashMap<Class<? extends AbstractServiceInfo>, Set<String>>();
 
-	private static void labelledServiceType(Class<? extends AbstractServiceInfo> serviceType,
-				      String label)
-	{
-		Set<String> labels = serviceTypeToLabels.get(serviceType);
-		if (labels == null) {
-			labels = new HashSet<String>();
-			serviceTypeToLabels.put(serviceType, labels);
-		}
+    private static void labelledServiceType(
+            Class<? extends AbstractServiceInfo> serviceType, String label) {
+        Set<String> labels = serviceTypeToLabels.get(serviceType);
+        if (labels == null) {
+            labels = new HashSet<String>();
+            serviceTypeToLabels.put(serviceType, labels);
+        }
 
-		labels.add(label);
-	}
+        labels.add(label);
+    }
 
-	static {
-		labelledServiceType(RdbmsServiceInfo.class, "mysql");
-		labelledServiceType(RdbmsServiceInfo.class, "postgresql");
-		labelledServiceType(RedisServiceInfo.class, "redis");
-		labelledServiceType(MongoServiceInfo.class, "mongodb");
-		labelledServiceType(RabbitServiceInfo.class, "rabbitmq");
-	}
-	
-	/* package for testing purpose */
-	void setCloudEnvironment(EnvironmentAccessor environment) {
-		this.environment = environment;
-	}
-	
-	public String getValue(String key) {
-		return environment.getValue(key);
-	}
-	
-	public boolean isCloudFoundry() {
-		return getValue("VCAP_APPLICATION") != null;
-	}
+    static {
+        labelledServiceType(RdbmsServiceInfo.class, "mysql");
+        labelledServiceType(RdbmsServiceInfo.class, "postgresql");
+        labelledServiceType(RedisServiceInfo.class, "redis");
+        labelledServiceType(MongoServiceInfo.class, "mongodb");
+        labelledServiceType(RabbitServiceInfo.class, "rabbitmq");
+    }
 
-	@SuppressWarnings("unchecked")
-	public ApplicationInstanceInfo getInstanceInfo() {
-		String instanceInfoString = getValue("VCAP_APPLICATION");
-		if (instanceInfoString == null || instanceInfoString.trim().isEmpty()) {
-			return null;
-		}
-		try {
-			Map<String,Object> infoMap = objectMapper.readValue(instanceInfoString, Map.class);
-			return new ApplicationInstanceInfo(infoMap);
-		} catch (Exception e) {
-			throw new RuntimeException(e);
-		} 
-	}
-	
-	public String getCloudApiUri() {
-		ApplicationInstanceInfo instanceInfo = getInstanceInfo();
-		if (instanceInfo == null) {
-			throw new IllegalArgumentException("There is no cloud API urls in a non-cloud deployment");
-		}
-		List<String> uris = instanceInfo.getUris();
-		String defaultUri = uris.get(0);
-		return "api" + defaultUri.substring(defaultUri.indexOf("."));
-	}
-	
-	/**
-	 * Return object representation of the VCAP_SERIVCES environment variable
-	 * <p>
-	 * Returns a map whose key is the label (for example "redis-2.2") of the 
-	 * service and value is a list of services for that label. Each list element
-	 * is a map with service attributes. 
-	 * </p>
-	 * @return
-	 */
-	@SuppressWarnings("unchecked")
-	private Map<String, List<Map<String,Object>>> getRawServices() {
-		String servicesString = getValue("VCAP_SERVICES");
-		if (servicesString == null || servicesString.length() == 0) {
-			return new HashMap<String, List<Map<String,Object>>>();
-		}
-		try {
-			return objectMapper.readValue(servicesString, Map.class);
-		} catch (Exception e) {
-			throw new RuntimeException(e);
-		} 
-	}
-	
-	public List<Map<String,Object>> getServices() {
-		Map<String, List<Map<String,Object>>> rawServices = getRawServices();
-		
-		List<Map<String,Object>> flatServices = new ArrayList<Map<String,Object>>();
-		for (Map.Entry<String, List<Map<String,Object>>> entry : rawServices.entrySet()) {
-			flatServices.addAll(entry.getValue());
-		}
-		return flatServices;
-	}
-	
-	private Map<String, Object> getServiceDataByName(String name) {
-		List<Map<String, Object>> services = getServices();
-		
-		for (Map<String, Object> service : services) {
-			if (service.get("name").equals(name)) {
-				return service;
-			}
-		}
-		return null;
-	}
+    /* package for testing purpose */
+    void setCloudEnvironment(EnvironmentAccessor environment) {
+        this.environment = environment;
+    }
 
-	private List<Map<String, Object>> getServiceDataByLabels(Set<String> labels) {
-		List<Map<String, Object>> services = getServices();
-		List<Map<String, Object>> matchedServices = new ArrayList<Map<String,Object>>();
-		for (Map<String, Object> service : services) {
-			String serviceLabelWithoutVersion = labelWithoutVersion(service.get("label").toString());
-			if (labels.contains(serviceLabelWithoutVersion)) {
-				matchedServices.add(service);
-		    }
-		}
+    public String getValue(String key) {
+        return environment.getValue(key);
+    }
 
-		return matchedServices;
-	}
+    public boolean isCloudFoundry() {
+        return getValue("VCAP_APPLICATION") != null;
+    }
 
-	public <T extends AbstractServiceInfo> T getServiceInfo(String name, Class<T> serviceInfoType) {
-		Map<String,Object> serviceInfoMap = getServiceDataByName(name);
-		Set<String> labels = serviceTypeToLabels.get(serviceInfoType);
+    @SuppressWarnings("unchecked")
+    public ApplicationInstanceInfo getInstanceInfo() {
+        String instanceInfoString = getValue("VCAP_APPLICATION");
+        if (instanceInfoString == null || instanceInfoString.trim().isEmpty()) {
+            return null;
+        }
+        try {
+            Map<String, Object> infoMap = objectMapper.readValue(
+                    instanceInfoString, Map.class);
+            return new ApplicationInstanceInfo(infoMap);
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
 
-		if (labels != null && labels.contains(labelWithoutVersion(serviceInfoMap.get("label").toString()))) {
-		    return getServiceInfo(serviceInfoMap, serviceInfoType);
-		} else {
-		    return null;
-		}
-	}
+    public String getCloudApiUri() {
+        ApplicationInstanceInfo instanceInfo = getInstanceInfo();
+        if (instanceInfo == null) {
+            throw new IllegalArgumentException(
+                    "There is no cloud API urls in a non-cloud deployment");
+        }
+        List<String> uris = instanceInfo.getUris();
+        String defaultUri = uris.get(0);
+        return "api" + defaultUri.substring(defaultUri.indexOf("."));
+    }
 
-	public <T extends AbstractServiceInfo> List<T> getServiceInfos(Class<T> serviceInfoType) {
-		Set<String> labels = serviceTypeToLabels.get(serviceInfoType);
-		List<T> serviceInfos = new ArrayList<T>();
+    /**
+     * Return object representation of the VCAP_SERIVCES environment variable
+     * <p>
+     * Returns a map whose key is the label (for example "redis-2.2") of the
+     * service and value is a list of services for that label. Each list element
+     * is a map with service attributes.
+     * </p>
+     * 
+     * @return
+     */
+    @SuppressWarnings("unchecked")
+    private Map<String, List<Map<String, Object>>> getRawServices() {
+        String servicesString = getValue("VCAP_SERVICES");
+        if (servicesString == null || servicesString.length() == 0) {
+            return new HashMap<String, List<Map<String, Object>>>();
+        }
+        try {
+            return objectMapper.readValue(servicesString, Map.class);
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
 
-		if (labels != null) {
-			List<Map<String,Object>> serviceInfoMaps = getServiceDataByLabels(labels);
+    public List<Map<String, Object>> getServices() {
+        Map<String, List<Map<String, Object>>> rawServices = getRawServices();
 
-			for (Map<String,Object> serviceInfoMap : serviceInfoMaps) {
-				serviceInfos.add(getServiceInfo(serviceInfoMap, serviceInfoType));
-			}
-		}
+        List<Map<String, Object>> flatServices = new ArrayList<Map<String, Object>>();
+        for (Map.Entry<String, List<Map<String, Object>>> entry : rawServices
+                .entrySet()) {
+            flatServices.addAll(entry.getValue());
+        }
+        return flatServices;
+    }
 
-		return serviceInfos;
-	}
+    private Map<String, Object> getServiceDataByName(String name) {
+        List<Map<String, Object>> services = getServices();
 
-	private <T extends AbstractServiceInfo> T getServiceInfo(Map<String,Object> serviceInfoMap, Class<T> serviceInfoType) {
-		try {
-			Constructor<T> ctor = serviceInfoType.getConstructor(Map.class);
-			return ctor.newInstance(serviceInfoMap);
-		} catch (Exception e) {
-			throw new CloudServiceException("Failed to create service information for " + serviceInfoMap.get("name"), e);
-		}
-	}
+        for (Map<String, Object> service : services) {
+            if (service.get("name").equals(name)) {
+                return service;
+            }
+        }
+        throw new IllegalArgumentException(String.format(
+                "Unable to find service by name %s.", name));
+    }
 
-	/**
-	 * <p>General properties take the form:
-	 * <code><pre>
-	 * cloud.application.name = helloworld
-	 * cloud.provider.url = cloudfoundry.com
-	 * </pre></code>
-	 *
-	 * <p>Service specific properties are also exposed for each bound service:
-	 * <code><pre>
-	 * cloud.services.customerDb.type = mysql-5.1
-	 * cloud.services.customerDb.plan = free
-	 * cloud.services.customerDb.connection.hostname = ...
-	 * cloud.services.customerDb.connection.port = ...
-	 * etc...
-	 * </pre></code>
-	 *
-	 * <p>If a there is only a single service of a given type, that service is
-	 * aliased to the service type.  For example, if there is only a single MySQL
-	 * service bound to the application, the service properties will also be
-	 * exposed under the '<code>mysql</code>' key:
-	 * <code><pre>
-	 * cloud.services.mysql.type = mysql-5.1
-	 * cloud.services.mysql.plan = free
-	 * cloud.services.mysql.connection.hostname = ...
-	 * cloud.services.mysql.connection.port = ...
-	 * etc...
-	 * </pre></code>
-	 * @return
-	 */
-	public Properties getCloudProperties() {
-		Properties properties = new Properties();
-		properties.putAll(providerProperties());
-		properties.putAll(applicationProperties());
-		properties.putAll(serviceProperties());
-		return properties;
-	}
+    private List<Map<String, Object>> getServiceDataByLabels(Set<String> labels) {
+        List<Map<String, Object>> services = getServices();
+        List<Map<String, Object>> matchedServices = new ArrayList<Map<String, Object>>();
+        for (Map<String, Object> service : services) {
+            String serviceLabelWithoutVersion = labelWithoutVersion(service
+                    .get("label").toString());
+            if (labels.contains(serviceLabelWithoutVersion)) {
+                matchedServices.add(service);
+            }
+        }
 
-	private Properties providerProperties() {
-		Properties properties = new Properties();
-		properties.put("cloud.provider.url", getCloudApiUri().split("\\.", 2)[1]);
-		return properties;
-	}
+        return matchedServices;
+    }
 
-	private Properties applicationProperties() {
-		Properties properties = new Properties();
-		properties.put("cloud.application.name", getInstanceInfo().getName());
-		return properties;
-	}
+    /**
+     * @param name
+     *            to return ServiceInfo for. This is typically the assigned name
+     *            of the CoudFoundry service.
+     * @param serviceInfoType
+     *            . The {@link AbstractServiceInfo} implementation to return
+     * @return an implementation of {@link AbstractServiceInfo} that represents
+     *         name and serviceInfoType
+     * @throws IllegalArgumentException
+     *             if the {@link AbstractServiceInfo} cannot be located with the
+     *             provided name and {@link AbstractServiceInfo}.
+     */
+    public <T extends AbstractServiceInfo> T getServiceInfo(String name,
+            Class<T> serviceInfoType) {
+        Map<String, Object> serviceInfoMap = getServiceDataByName(name);
+        Set<String> labels = serviceTypeToLabels.get(serviceInfoType);
 
-	private Properties serviceProperties() {
-		Properties properties = new Properties();
-		Map<String, Integer> serviceCounts = new HashMap<String, Integer>();
-		List<Map<String, Object>> services = getServices();
-		for (Map<String, Object> service : services) {
-			String shortType = serviceShortType(service);
-			// index services properties by name
-			properties.putAll(servicePropertiesHelper("cloud.services." + service.get("name"), service));
-			// count services by type (needed in next iteration)
-			int count = serviceCounts.containsKey(shortType) ? serviceCounts.get(shortType) : 0;
-			serviceCounts.put(shortType, count + 1);
-		}
-		for (Map<String, Object> service : services) {
-			// alias service properties by type, if unique and available
-			String shortType = serviceShortType(service);
-			if (serviceCounts.get(shortType) == 1 && !properties.containsKey("cloud.services." + shortType + ".type")) {
-				properties.putAll(servicePropertiesHelper("cloud.services." + shortType, service));
-			}
-		}
-		return properties;
-	}
+        if (labels != null
+                && labels.contains(labelWithoutVersion(serviceInfoMap.get(
+                        "label").toString()))) {
+            return getServiceInfo(serviceInfoMap, serviceInfoType);
+        } else {
+            throw new IllegalArgumentException(String.format(
+                    "Cannot find ServiceInfo with name: %s and type %s.", name,
+                    serviceInfoType));
+        }
+    }
 
-	@SuppressWarnings("unchecked")
-	private Properties servicePropertiesHelper(String propertyBase, Map<String, Object> service) {
-		Properties source = new Properties();
-		source.put(propertyBase + ".plan" , service.get("plan").toString());
-		source.put(propertyBase + ".type" , service.get("label").toString());
-		for (Entry<String, Object> connectionProperty : ((Map<String, Object>) service.get("credentials")).entrySet()) {
-			source.put(propertyBase + ".connection." + connectionProperty.getKey(), connectionProperty.getValue().toString());
-		}
-		return source;
-	}
+    public <T extends AbstractServiceInfo> List<T> getServiceInfos(
+            Class<T> serviceInfoType) {
+        Set<String> labels = serviceTypeToLabels.get(serviceInfoType);
+        List<T> serviceInfos = new ArrayList<T>();
 
-	private String serviceShortType(Map<String, Object> service) {
-		String type = (String) service.get("label");
-		return type.split("-", 2)[0];
-	}
+        if (labels != null) {
+            List<Map<String, Object>> serviceInfoMaps = getServiceDataByLabels(labels);
 
-	private static String labelWithoutVersion(String labelWithVersion) {
-		int hyphenIndex = labelWithVersion.lastIndexOf('-');
-		if (hyphenIndex == -1) {
-			return labelWithVersion;
-		} else {
-			return labelWithVersion.substring(0, hyphenIndex);
-		}
-	}
+            for (Map<String, Object> serviceInfoMap : serviceInfoMaps) {
+                serviceInfos
+                        .add(getServiceInfo(serviceInfoMap, serviceInfoType));
+            }
+        }
 
-	/**
-	 * Environment available to the deployed app.
-	 * 
-	 * The main purpose of this class is to allow unit-testing of {@link CloudEnvironment}
-	 *
-	 */
-	public static class EnvironmentAccessor {
-		public String getValue(String key) {
-			return System.getenv(key);
-		}
-	}
+        return serviceInfos;
+    }
+
+    private <T extends AbstractServiceInfo> T getServiceInfo(
+            Map<String, Object> serviceInfoMap, Class<T> serviceInfoType) {
+        try {
+            Constructor<T> ctor = serviceInfoType.getConstructor(Map.class);
+            return ctor.newInstance(serviceInfoMap);
+        } catch (Exception e) {
+            throw new CloudServiceException(
+                    "Failed to create service information for "
+                            + serviceInfoMap.get("name"), e);
+        }
+    }
+
+    /**
+     * <p>
+     * General properties take the form: <code><pre>
+     * cloud.application.name = helloworld
+     * cloud.provider.url = cloudfoundry.com
+     * </pre></code>
+     * 
+     * <p>
+     * Service specific properties are also exposed for each bound service:
+     * <code><pre>
+     * cloud.services.customerDb.type = mysql-5.1
+     * cloud.services.customerDb.plan = free
+     * cloud.services.customerDb.connection.hostname = ...
+     * cloud.services.customerDb.connection.port = ...
+     * etc...
+     * </pre></code>
+     * 
+     * <p>
+     * If a there is only a single service of a given type, that service is
+     * aliased to the service type. For example, if there is only a single MySQL
+     * service bound to the application, the service properties will also be
+     * exposed under the '<code>mysql</code>' key: <code><pre>
+     * cloud.services.mysql.type = mysql-5.1
+     * cloud.services.mysql.plan = free
+     * cloud.services.mysql.connection.hostname = ...
+     * cloud.services.mysql.connection.port = ...
+     * etc...
+     * </pre></code>
+     * 
+     * @return
+     */
+    public Properties getCloudProperties() {
+        Properties properties = new Properties();
+        properties.putAll(providerProperties());
+        properties.putAll(applicationProperties());
+        properties.putAll(serviceProperties());
+        return properties;
+    }
+
+    private Properties providerProperties() {
+        Properties properties = new Properties();
+        properties.put("cloud.provider.url",
+                getCloudApiUri().split("\\.", 2)[1]);
+        return properties;
+    }
+
+    private Properties applicationProperties() {
+        Properties properties = new Properties();
+        properties.put("cloud.application.name", getInstanceInfo().getName());
+        return properties;
+    }
+
+    private Properties serviceProperties() {
+        Properties properties = new Properties();
+        Map<String, Integer> serviceCounts = new HashMap<String, Integer>();
+        List<Map<String, Object>> services = getServices();
+        for (Map<String, Object> service : services) {
+            String shortType = serviceShortType(service);
+            // index services properties by name
+            properties.putAll(servicePropertiesHelper("cloud.services."
+                    + service.get("name"), service));
+            // count services by type (needed in next iteration)
+            int count = serviceCounts.containsKey(shortType) ? serviceCounts
+                    .get(shortType) : 0;
+            serviceCounts.put(shortType, count + 1);
+        }
+        for (Map<String, Object> service : services) {
+            // alias service properties by type, if unique and available
+            String shortType = serviceShortType(service);
+            if (serviceCounts.get(shortType) == 1
+                    && !properties.containsKey("cloud.services." + shortType
+                            + ".type")) {
+                properties.putAll(servicePropertiesHelper("cloud.services."
+                        + shortType, service));
+            }
+        }
+        return properties;
+    }
+
+    @SuppressWarnings("unchecked")
+    private Properties servicePropertiesHelper(String propertyBase,
+            Map<String, Object> service) {
+        Properties source = new Properties();
+        source.put(propertyBase + ".plan", service.get("plan").toString());
+        source.put(propertyBase + ".type", service.get("label").toString());
+        for (Entry<String, Object> connectionProperty : ((Map<String, Object>) service
+                .get("credentials")).entrySet()) {
+            source.put(
+                    propertyBase + ".connection." + connectionProperty.getKey(),
+                    connectionProperty.getValue().toString());
+        }
+        return source;
+    }
+
+    private String serviceShortType(Map<String, Object> service) {
+        String type = (String) service.get("label");
+        return type.split("-", 2)[0];
+    }
+
+    private static String labelWithoutVersion(String labelWithVersion) {
+        int hyphenIndex = labelWithVersion.lastIndexOf('-');
+        if (hyphenIndex == -1) {
+            return labelWithVersion;
+        } else {
+            return labelWithVersion.substring(0, hyphenIndex);
+        }
+    }
+
+    /**
+     * Environment available to the deployed app.
+     * 
+     * The main purpose of this class is to allow unit-testing of
+     * {@link CloudEnvironment}
+     * 
+     */
+    public static class EnvironmentAccessor {
+        public String getValue(String key) {
+            return System.getenv(key);
+        }
+    }
 }
