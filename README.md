@@ -33,8 +33,3 @@ Complete installation notes are present in the vcap
 # Copyright
 
 Copyright (c) 2009-2012 VMware, Inc.
-
-## File a Bug
-
-To file a bug against Cloud Foundry Open Source and its components, sign up and use our
-bug tracking system: [http://cloudfoundry.atlassian.net](http://cloudfoundry.atlassian.net)
