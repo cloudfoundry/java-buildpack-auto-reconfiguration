@@ -8,7 +8,6 @@ import static org.mockito.Mockito.when;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.cloudfoundry.runtime.env.RdbmsServiceInfo;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mock;
@@ -44,9 +43,7 @@ public class JPAPluginTest {
 
 	@Test
 	public void getPropertiesPostgresService() {
-		RdbmsServiceInfo serviceInfo = ServiceHelper.createServiceInfo("myservice", "localhost", 5678, "foo",
-				"bar", "testdb", "postgresql-9.0");
-		when(appConfiguration.getDatabaseBinding()).thenReturn(serviceInfo);
+		when(appConfiguration.getDatabaseLabel()).thenReturn("postgresql-9.0");
 		Map<String, String> expectedProps = new HashMap<String, String>();
 		expectedProps.put("hibernate.dialect", JPAPlugin.POSTGRES_DIALECT);
 		assertEquals(expectedProps, plugin.getProperties());
@@ -54,9 +51,7 @@ public class JPAPluginTest {
 
 	@Test
 	public void getPropertiesMySQLService() {
-		RdbmsServiceInfo serviceInfo = ServiceHelper.createServiceInfo("myservice", "localhost", 5678, "foo",
-				"bar", "testdb", "mysql-5.1");
-		when(appConfiguration.getDatabaseBinding()).thenReturn(serviceInfo);
+		when(appConfiguration.getDatabaseLabel()).thenReturn("mysql-5.1");
 		Map<String, String> expectedProps = new HashMap<String, String>();
 		expectedProps.put("hibernate.dialect", JPAPlugin.MYSQL_DIALECT);
 		assertEquals(expectedProps, plugin.getProperties());

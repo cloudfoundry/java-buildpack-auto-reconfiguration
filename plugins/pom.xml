@@ -10,6 +10,7 @@
 
 	<modules>
 		<module>tomcat_startup_listener</module>
+		<module>play-jpa-plugin</module>
 	</modules>
 
 	<build>

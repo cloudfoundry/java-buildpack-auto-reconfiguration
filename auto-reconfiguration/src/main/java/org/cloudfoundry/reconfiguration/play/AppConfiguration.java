@@ -29,6 +29,11 @@ public class AppConfiguration {
 	public AppConfiguration(CloudEnvironment cloudEnvironment) {
 		this.cloudEnvironment = cloudEnvironment;
 	}
+	
+	public AppConfiguration() {
+		this.cloudEnvironment = new CloudEnvironment();
+	}
+	
 
 	/**
 	 *
@@ -142,6 +147,11 @@ public class AppConfiguration {
 			System.out.println("No database services found.");
 		}
 		return serviceInfo;
+	}
+	
+	public String getDatabaseLabel() {
+		RdbmsServiceInfo database = getDatabaseBinding();
+		return (database != null) ? database.getLabel() : null;
 	}
 
 	private Properties getPropertiesFromFile(String propFileName, boolean loadFromClasspath)

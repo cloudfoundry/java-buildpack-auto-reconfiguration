@@ -7,9 +7,6 @@ import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.Persistence;
 
-import org.cloudfoundry.runtime.env.CloudEnvironment;
-import org.cloudfoundry.runtime.env.RdbmsServiceInfo;
-
 import play.Application;
 import play.Configuration;
 
@@ -33,7 +30,7 @@ public class JPAPlugin extends play.db.jpa.JPAPlugin {
 	private Application application;
 
 	public JPAPlugin(Application application) {
-		this(application, new AppConfiguration(new CloudEnvironment()));
+		this(application, new AppConfiguration());
 	}
 
 	public JPAPlugin(Application application, AppConfiguration appConfiguration) {
@@ -60,11 +57,11 @@ public class JPAPlugin extends play.db.jpa.JPAPlugin {
 
 	Map<String, String> getProperties() {
 		Map<String, String> properties = new HashMap<String, String>();
-		RdbmsServiceInfo dbservice = appConfiguration.getDatabaseBinding();
+		String dbservice = appConfiguration.getDatabaseLabel();
 		if (dbservice != null) {
-			if (dbservice.getLabel().startsWith("postgres")) {
+			if (dbservice.startsWith("postgres")) {
 				properties.put("hibernate.dialect", POSTGRES_DIALECT);
-			} else if (dbservice.getLabel().startsWith("mysql")) {
+			} else if (dbservice.startsWith("mysql")) {
 				properties.put("hibernate.dialect", MYSQL_DIALECT);
 			}
 		}
