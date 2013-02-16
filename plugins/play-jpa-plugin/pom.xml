@@ -8,8 +8,8 @@
 	<dependencies>
 		<dependency>
 			<groupId>play</groupId>
-			<artifactId>play_2.9.1</artifactId>
-			<version>2.0</version>
+			<artifactId>play-java-jpa_2.10</artifactId>
+			<version>2.1.0</version>
 			<scope>provided</scope>
 		</dependency>
 		<dependency>
