@@ -59,7 +59,7 @@ public class JPAPluginTest {
 
 	@Test
 	public void getPropertiesNoService() {
-		when(appConfiguration.getDatabaseBinding()).thenReturn(null);
+		when(appConfiguration.getDatabaseLabel()).thenReturn(null);
 		Map<String, String> expectedProps = new HashMap<String, String>();
 		assertEquals(expectedProps, plugin.getProperties());
 	}
