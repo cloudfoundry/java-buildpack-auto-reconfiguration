@@ -20,7 +20,7 @@ public abstract class BaseServiceInfo extends AbstractServiceInfo {
 		@SuppressWarnings("unchecked")
 		Map<String,Object> credentials = (Map<String, Object>) serviceInfo.get("credentials");
 		host = (String) credentials.get("hostname");
-		port = (Integer) credentials.get("port");
+		port = Integer.parseInt(credentials.get("port").toString()); // allows the port attribute to be quoted or plain
 
 		password = (String) credentials.get("password");
 	}
