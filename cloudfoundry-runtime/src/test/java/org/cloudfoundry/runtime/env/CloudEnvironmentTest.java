@@ -6,6 +6,7 @@ import static org.cloudfoundry.runtime.service.CloudEnvironmentTestHelper.getMys
 import static org.cloudfoundry.runtime.service.CloudEnvironmentTestHelper.getPostgreSQLServicePayload;
 import static org.cloudfoundry.runtime.service.CloudEnvironmentTestHelper.getRabbitSRSServicePayload;
 import static org.cloudfoundry.runtime.service.CloudEnvironmentTestHelper.getRabbitServicePayload;
+import static org.cloudfoundry.runtime.service.CloudEnvironmentTestHelper.getRdsServicePayload;
 import static org.cloudfoundry.runtime.service.CloudEnvironmentTestHelper.getRedisServicePayload;
 import static org.cloudfoundry.runtime.service.CloudEnvironmentTestHelper.getServicesPayload;
 import static org.junit.Assert.assertEquals;
@@ -126,6 +127,40 @@ public class CloudEnvironmentTest {
 			assertEquals(username, info.getUserName());
 			assertEquals(password, info.getPassword());
 		}
+	}
+
+	@Test
+	public void getServiceInfoRds() {
+		// values as close to real data as possible
+		String rdsHostName = "mysql-service-public.xyz.us-east-1.rds.amazonaws.com";
+		int rdsPort = 3306;
+		when(mockEnvironment.getValue("VCAP_SERVICES"))
+			.thenReturn(getServicesPayload(new String[]{getRdsServicePayload("n/a", "mysql-1", rdsHostName, rdsPort, username, password, "database-123")},
+										   null,
+										   null,
+										   null));
+		RdbmsServiceInfo info = testRuntime.getServiceInfo("mysql-1", RdbmsServiceInfo.class);
+		assertEquals("mysql-1", info.getServiceName());
+		assertEquals("jdbc:mysql://"+ rdsHostName + ":" + rdsPort + "/database-123", info.getUrl());
+		assertEquals(username, info.getUserName());
+		assertEquals(password, info.getPassword());
+	}
+
+	@Test
+	public void getServiceInfoCleardb() {
+		// values as close to real data as possible
+		String cleardbHostName = "us-cdbr-east-00.cleardb.com";
+		int cleardbPort = 3306;
+		when(mockEnvironment.getValue("VCAP_SERVICES"))
+			.thenReturn(getServicesPayload(new String[]{getRdsServicePayload("n/a", "mysql-1", cleardbHostName, cleardbPort, username, password, "database-123")},
+										   null,
+										   null,
+										   null));
+		RdbmsServiceInfo info = testRuntime.getServiceInfo("mysql-1", RdbmsServiceInfo.class);
+		assertEquals("mysql-1", info.getServiceName());
+		assertEquals("jdbc:mysql://"+ cleardbHostName + ":" + cleardbPort + "/database-123", info.getUrl());
+		assertEquals(username, info.getUserName());
+		assertEquals(password, info.getPassword());
 	}
 
 	/**

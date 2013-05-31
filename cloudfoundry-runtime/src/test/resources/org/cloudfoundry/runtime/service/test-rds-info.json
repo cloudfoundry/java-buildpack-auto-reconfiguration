@@ -1,0 +1,14 @@
+{
+	"name":"$serviceName",
+	"label":"rds-mysql-$version",
+	"plan":"10mb",
+	"credentials":{
+		"name":"$name",
+		"hostname":"$hostname",
+		"host":"$hostname",
+		"port":$port,
+		"user":"$user",
+		"username":"$user",
+		"password":"$password"
+	}
+}

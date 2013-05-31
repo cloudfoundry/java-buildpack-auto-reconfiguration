@@ -38,10 +38,10 @@ public class CloudEnvironmentTestHelper {
 		return payload;
 	}
 
-	public static String getMysqlServicePayload(String version, String serviceName,
+	private static String getRelationalServicePayload(String templateFileName, String version, String serviceName,
 			String hostname, int port,
 			String user, String password, String name) {
-		String payload = readTestDataFile("test-mysql-info.json");
+		String payload = readTestDataFile(templateFileName);
 		payload = payload.replace("$version", version);
 		payload = payload.replace("$serviceName", serviceName);
 		payload = payload.replace("$hostname", hostname);
@@ -53,23 +53,30 @@ public class CloudEnvironmentTestHelper {
 		return payload;
 	}
 	
-	public static String getPostgreSQLServicePayload(String version, String serviceName,
-			String hostname,
-			int port,
-			String user,
-			String password,
-			String name) {
-		String payload = readTestDataFile("test-postgresql-info.json");
-		payload = payload.replace("$version", version);
-		payload = payload.replace("$serviceName", serviceName);
-		payload = payload.replace("$hostname", hostname);
-		payload = payload.replace("$port", Integer.toString(port));
-		payload = payload.replace("$user", user);
-		payload = payload.replace("$password", password);
-		payload = payload.replace("$name", name);
-		
-		return payload;
+	public static String getMysqlServicePayload(String version, String serviceName,
+			String hostname, int port,
+			String user, String password, String name) {
+		return getRelationalServicePayload("test-mysql-info.json", version, serviceName, hostname, port, user, password, name);
 	}
+
+	public static String getPostgreSQLServicePayload(String version, String serviceName,
+			String hostname, int port,
+			String user, String password, String name) {
+		return getRelationalServicePayload("test-postgresql-info.json", version, serviceName, hostname, port, user, password, name);
+	}
+
+	public static String getRdsServicePayload(String version, String serviceName,
+			String hostname, int port,
+			String user, String password, String name) {
+		return getRelationalServicePayload("test-rds-info.json", version, serviceName, hostname, port, user, password, name);
+	}
+
+	public static String getCleardbServicePayload(String version, String serviceName,
+			String hostname, int port,
+			String user, String password, String name) {
+		return getRelationalServicePayload("test-cleardb-info.json", version, serviceName, hostname, port, user, password, name);
+	}
+
 
 	public static String getRabbitServicePayload(String version, String serviceName,
 			String hostname, int port,
