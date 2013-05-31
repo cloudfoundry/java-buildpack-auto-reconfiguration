@@ -59,7 +59,7 @@ public abstract class AbstractCloudServiceFactory<S, SI extends AbstractServiceI
 		} else {
 			List<SI> serviceInfos = cloudEnvironment.getServiceInfos(serviceInfoClass);
 			if (serviceInfos.size() != 1) {
-				throw new CloudServiceException("Expected 1 service of " + serviceInfoClass + " type, but found"
+				throw new CloudServiceException("Expected 1 service of " + serviceInfoClass + " type, but found "
 						+ serviceInfos.size());
 			}
 			return getServiceCreator().createSingletonService(serviceInfos.get(0)).service;
