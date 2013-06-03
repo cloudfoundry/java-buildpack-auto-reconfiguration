@@ -4,12 +4,10 @@
 	"plan":"amp",
 	"credentials":{
 		"jdbcUrl":"jdbc:mysql://$user:$password@$hostname:$port/$name",
-		"mysqlUrl":"mysql://$user:$password@$hostname:$port/$name",
+		"uri":"mysql://$user:$password@$hostname:$port/$name",
 		"name":"$name",
 		"hostname":"$hostname",
-		"host":"$hostname",
 		"port":"$port",
-		"user":"$user",
 		"username":"$user",
 		"password":"$password"
 	}
