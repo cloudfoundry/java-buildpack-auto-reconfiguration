@@ -20,7 +20,12 @@ abstract public class AbstractDataSourceServiceInfo extends BaseServiceInfo {
 		@SuppressWarnings("unchecked")
 		Map<String, Object> credentials = (Map<String, Object>) serviceInfo.get("credentials");
 		database = (String) credentials.get("name");
-		userName = (String) credentials.get("user");
+
+		if (credentials.containsKey("user")) {
+			userName = (String) credentials.get("user");
+		} else if (credentials.containsKey("username")) {
+			userName = (String) credentials.get("username");
+		}
 	}
 	
 	abstract public String getUrl();
