@@ -7,6 +7,7 @@ import static org.cloudfoundry.runtime.service.CloudEnvironmentTestHelper.getPos
 import static org.cloudfoundry.runtime.service.CloudEnvironmentTestHelper.getRabbitSRSServicePayload;
 import static org.cloudfoundry.runtime.service.CloudEnvironmentTestHelper.getRabbitServicePayload;
 import static org.cloudfoundry.runtime.service.CloudEnvironmentTestHelper.getRdsServicePayload;
+import static org.cloudfoundry.runtime.service.CloudEnvironmentTestHelper.getRedisCloudServicePayload;
 import static org.cloudfoundry.runtime.service.CloudEnvironmentTestHelper.getRedisServicePayload;
 import static org.cloudfoundry.runtime.service.CloudEnvironmentTestHelper.getServicesPayload;
 import static org.junit.Assert.assertEquals;
@@ -70,6 +71,22 @@ public class CloudEnvironmentTest {
 			assertEquals(hostname, info.getHost());
 			assertEquals(port, info.getPort());
 		}
+	}
+
+	@Test
+	public void getServiceInfoRedisCloud() {
+		String serviceName = "redis-1";
+
+
+		when(mockEnvironment.getValue("VCAP_SERVICES"))
+			.thenReturn(getServicesPayload(null,
+										   new String[]{getRedisCloudServicePayload(serviceName, hostname, port, password)},
+										   null,
+										   null));
+		RedisServiceInfo info = testRuntime.getServiceInfo("redis-1", RedisServiceInfo.class);
+		assertEquals(serviceName, info.getServiceName());
+		assertEquals(hostname, info.getHost());
+		assertEquals(port, info.getPort());
 	}
 
 	@Test

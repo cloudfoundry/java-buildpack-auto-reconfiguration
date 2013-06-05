@@ -22,6 +22,19 @@ public class CloudEnvironmentTestHelper {
 		return payload;
 	}
 
+	public static String getRedisCloudServicePayload(String serviceName,
+			String hostname, int port, String password) {
+		String payload = readTestDataFile("test-rediscloud-info.json");
+		payload = payload.replace("$version", "n/a");
+		payload = payload.replace("$serviceName", serviceName);
+		payload = payload.replace("$hostname", hostname);
+		payload = payload.replace("$port", Integer.toString(port));
+		payload = payload.replace("$password", password);
+
+		return payload;
+	}
+
+
 	public static String getMongoServicePayload(String version, String serviceName,
 			String hostname, int port,
 			String username, String password, String db, String name) {
