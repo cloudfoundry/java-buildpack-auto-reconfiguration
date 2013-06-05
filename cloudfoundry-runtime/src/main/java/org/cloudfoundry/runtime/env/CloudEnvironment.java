@@ -50,8 +50,12 @@ public class CloudEnvironment {
 		labelledServiceType(MongoServiceInfo.class, "mongodb");
 		labelledServiceType(RabbitServiceInfo.class, "rabbitmq");
 
+		// v2 services
 		labelledServiceType(RdbmsServiceInfo.class, "rds-mysql");
+		labelledServiceType(RdbmsServiceInfo.class, "cleardb");
 		labelledServiceType(RdbmsServiceInfo.class, "cleardb-dev");
+		labelledServiceType(RedisServiceInfo.class, "rediscloud");
+		labelledServiceType(RedisServiceInfo.class, "rediscloud-dev");
 	}
 	
 	/* package for testing purpose */
