@@ -78,6 +78,12 @@ public class CloudEnvironmentTestHelper {
 		return getRelationalServicePayload("test-postgresql-info.json", version, serviceName, hostname, port, user, password, name);
 	}
 
+	public static String getElephantSQLServicePayload(String version, String serviceName,
+			String hostname, int port,
+			String user, String password, String name) {
+		return getRelationalServicePayload("test-elephantsql-info.json", version, serviceName, hostname, port, user, password, name);
+	}
+
 	public static String getRdsServicePayload(String version, String serviceName,
 			String hostname, int port,
 			String user, String password, String name) {

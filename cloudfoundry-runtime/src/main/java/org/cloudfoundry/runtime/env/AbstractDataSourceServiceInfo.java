@@ -1,5 +1,7 @@
 package org.cloudfoundry.runtime.env;
 
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.util.Map;
 
 /**
@@ -26,6 +28,7 @@ abstract public class AbstractDataSourceServiceInfo extends BaseServiceInfo {
 		} else if (credentials.containsKey("username")) {
 			userName = (String) credentials.get("username");
 		}
+		extractInfoFromUri(credentials);
 	}
 	
 	abstract public String getUrl();
@@ -36,5 +39,23 @@ abstract public class AbstractDataSourceServiceInfo extends BaseServiceInfo {
 
 	public String getDatabase() {
 		return database;
+	}
+
+	private void extractInfoFromUri(Map<String, Object> serviceInfo) {
+		if (serviceInfo.containsKey("uri")) {
+			String uriString = serviceInfo.get("uri").toString();
+			try {
+				URI uri = new URI(uriString);
+				String userInfo = uri.getUserInfo();
+				int userNamePasswordSeparatorIndex = userInfo.indexOf(":");
+				userName = userInfo.substring(0, userNamePasswordSeparatorIndex);
+				password = userInfo.substring(userNamePasswordSeparatorIndex+1);
+				host = uri.getHost();
+				port = uri.getPort();
+				database = uri.getPath().substring(1); // remove the leading "/"
+			} catch (URISyntaxException e) {
+				throw new CloudServiceException("Invalid format for postgres URI " + uriString);
+			}
+		}
 	}
 }
