@@ -10,19 +10,26 @@ import java.util.Map;
  */
 
 public abstract class BaseServiceInfo extends AbstractServiceInfo {
-	private String host;
-	private int port;
-	private String password;
+	protected String host;
+	protected int port;
+	protected String password;
 
 	public BaseServiceInfo(Map<String, Object> serviceInfo) {
 		super(serviceInfo);
 
 		@SuppressWarnings("unchecked")
 		Map<String,Object> credentials = (Map<String, Object>) serviceInfo.get("credentials");
-		host = (String) credentials.get("hostname");
-		port = Integer.parseInt(credentials.get("port").toString()); // allows the port attribute to be quoted or plain
 
-		password = (String) credentials.get("password");
+		if (credentials.containsKey("hostname")) {
+			host = (String) credentials.get("hostname");
+		}
+		if (credentials.containsKey("port")) {
+			port = Integer.parseInt(credentials.get("port").toString()); // allows the port attribute to be quoted or plain
+		}
+
+		if (credentials.containsKey("password")) {
+			password = (String) credentials.get("password");
+		}
 	}
 
 	public String getHost() {

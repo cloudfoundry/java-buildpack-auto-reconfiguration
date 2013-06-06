@@ -1,6 +1,7 @@
 package org.cloudfoundry.runtime.env;
 
 import static org.cloudfoundry.runtime.service.CloudEnvironmentTestHelper.getApplicationInstanceInfo;
+import static org.cloudfoundry.runtime.service.CloudEnvironmentTestHelper.getElephantSQLServicePayload;
 import static org.cloudfoundry.runtime.service.CloudEnvironmentTestHelper.getMongoServicePayload;
 import static org.cloudfoundry.runtime.service.CloudEnvironmentTestHelper.getMysqlServicePayload;
 import static org.cloudfoundry.runtime.service.CloudEnvironmentTestHelper.getPostgreSQLServicePayload;
@@ -144,6 +145,20 @@ public class CloudEnvironmentTest {
 			assertEquals(username, info.getUserName());
 			assertEquals(password, info.getPassword());
 		}
+	}
+
+	@Test
+	public void getServiceInfoElephantsql() {
+		when(mockEnvironment.getValue("VCAP_SERVICES"))
+			.thenReturn(getServicesPayload(new String[]{getElephantSQLServicePayload("n/a", "postgresql-1", hostname, port, username, password, "db-123")},
+					null,
+					null,
+					null));
+		RdbmsServiceInfo info = testRuntime.getServiceInfo("postgresql-1", RdbmsServiceInfo.class);
+		assertEquals("postgresql-1", info.getServiceName());
+		assertEquals("jdbc:postgresql://" + hostname + ":" + port + "/db-123", info.getUrl());
+		assertEquals(username, info.getUserName());
+		assertEquals(password, info.getPassword());
 	}
 
 	@Test
