@@ -54,6 +54,8 @@ public class CloudEnvironment {
 		labelledServiceType(RdbmsServiceInfo.class, "rds-mysql");
 		labelledServiceType(RdbmsServiceInfo.class, "cleardb");
 		labelledServiceType(RdbmsServiceInfo.class, "cleardb-dev");
+		labelledServiceType(RdbmsServiceInfo.class, "elephantsql");
+		labelledServiceType(RdbmsServiceInfo.class, "elephantsql-dev");
 		labelledServiceType(RedisServiceInfo.class, "rediscloud");
 		labelledServiceType(RedisServiceInfo.class, "rediscloud-dev");
 	}
