@@ -1,0 +1,10 @@
+{
+	"name":"$serviceName",
+	"label":"rediscloud-dev-$version",
+	"plan":"20mb",
+	"credentials":{
+		"port":"$port",
+		"hostname":"$hostname",
+		"password":"$password"
+	}
+}
