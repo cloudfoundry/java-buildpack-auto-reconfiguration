@@ -16,7 +16,7 @@ public class RdbmsServiceInfo extends AbstractDataSourceServiceInfo {
 
 	public RdbmsServiceInfo(Map<String, Object> serviceInfo) {
 		super(serviceInfo);
-		if (getLabel() != null && getLabel().startsWith("postgres")) {
+		if (getLabel() != null && (getLabel().startsWith("postgres") || getLabel().startsWith("elephantsql"))) {
 			this.delegate = new PostgresqlServiceInfo(serviceInfo);
 		}
 		else {
