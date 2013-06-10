@@ -3,6 +3,7 @@ package org.cloudfoundry.runtime.env;
 import static org.cloudfoundry.runtime.service.CloudEnvironmentTestHelper.getApplicationInstanceInfo;
 import static org.cloudfoundry.runtime.service.CloudEnvironmentTestHelper.getElephantSQLServicePayload;
 import static org.cloudfoundry.runtime.service.CloudEnvironmentTestHelper.getMongoServicePayload;
+import static org.cloudfoundry.runtime.service.CloudEnvironmentTestHelper.getMongoLabServicePayload;
 import static org.cloudfoundry.runtime.service.CloudEnvironmentTestHelper.getMysqlServicePayload;
 import static org.cloudfoundry.runtime.service.CloudEnvironmentTestHelper.getPostgreSQLServicePayload;
 import static org.cloudfoundry.runtime.service.CloudEnvironmentTestHelper.getRabbitSRSServicePayload;
@@ -78,7 +79,6 @@ public class CloudEnvironmentTest {
 	public void getServiceInfoRedisCloud() {
 		String serviceName = "redis-1";
 
-
 		when(mockEnvironment.getValue("VCAP_SERVICES"))
 			.thenReturn(getServicesPayload(null,
 										   new String[]{getRedisCloudServicePayload(serviceName, hostname, port, password)},
@@ -111,6 +111,22 @@ public class CloudEnvironmentTest {
 			assertEquals(password, info.getPassword());
 			assertEquals(database, info.getDatabase());
 		}
+	}
+
+	@Test
+	public void getServiceInfoMongoLab() {
+		String serviceName = "mongo-1";
+		String database = "mongo-db";
+		String uri = "mongodb://" + username + ":" + password + "@" + hostname + ":" + port + "/" + database;
+
+		when(mockEnvironment.getValue("VCAP_SERVICES"))
+			.thenReturn(getServicesPayload(null,
+										   null,
+										   new String[]{getMongoLabServicePayload(serviceName, hostname, port, username, password, database)},
+										   null));
+		MongoServiceInfo info = testRuntime.getServiceInfo(serviceName, MongoServiceInfo.class);
+		assertEquals(serviceName, info.getServiceName());
+		assertEquals(uri, info.getUri());
 	}
 
 	@Test

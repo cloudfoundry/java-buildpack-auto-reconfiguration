@@ -58,6 +58,8 @@ public class CloudEnvironment {
 		labelledServiceType(RdbmsServiceInfo.class, "elephantsql-dev");
 		labelledServiceType(RedisServiceInfo.class, "rediscloud");
 		labelledServiceType(RedisServiceInfo.class, "rediscloud-dev");
+		labelledServiceType(MongoServiceInfo.class, "mongolab");
+		labelledServiceType(MongoServiceInfo.class, "mongolab-dev");
 	}
 	
 	/* package for testing purpose */
