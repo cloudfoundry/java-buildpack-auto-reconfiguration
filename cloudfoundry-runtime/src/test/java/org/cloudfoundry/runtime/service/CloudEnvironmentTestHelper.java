@@ -51,6 +51,20 @@ public class CloudEnvironmentTestHelper {
 		return payload;
 	}
 
+	public static String getMongoLabServicePayload(String serviceName,
+			String hostname, int port,
+			String username, String password, String db) {
+		String payload = readTestDataFile("test-mongolab-info.json");
+		payload = payload.replace("$serviceName", serviceName);
+		payload = payload.replace("$hostname", hostname);
+		payload = payload.replace("$port", Integer.toString(port));
+		payload = payload.replace("$username", username);
+		payload = payload.replace("$password", password);
+		payload = payload.replace("$db", db);
+
+		return payload;
+	}
+
 	private static String getRelationalServicePayload(String templateFileName, String version, String serviceName,
 			String hostname, int port,
 			String user, String password, String name) {

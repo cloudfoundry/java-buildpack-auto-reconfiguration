@@ -5,6 +5,7 @@ import java.lang.reflect.Field;
 import java.net.UnknownHostException;
 
 import com.mongodb.MongoOptions;
+import com.mongodb.MongoURI;
 import com.mongodb.ServerAddress;
 import com.mongodb.WriteConcern;
 import org.cloudfoundry.runtime.env.CloudServiceException;
@@ -37,18 +38,25 @@ public class MongoServiceCreator extends AbstractServiceCreator<MongoDbFactory, 
 
 	public MongoDbFactory createService(MongoServiceInfo serviceInfo) {
 		try {
-			UserCredentials credentials = new UserCredentials(serviceInfo.getUserName(), serviceInfo.getPassword());
-			Mongo mongo = null;
-			MongoOptions mongoOptionsToUse = getMongoOptions();
-			if (mongoOptionsToUse != null) {
+			SimpleMongoDbFactory mongoDbFactory;
+
+			if (serviceInfo.getUri() != null) {
+				mongoDbFactory = new SimpleMongoDbFactory(new MongoURI(serviceInfo.getUri()));
+			} else {
+				UserCredentials credentials = new UserCredentials(serviceInfo.getUserName(), serviceInfo.getPassword());
 				ServerAddress serverAddress = new ServerAddress(serviceInfo.getHost(), serviceInfo.getPort());
-				mongo = new Mongo(serverAddress, mongoOptionsToUse);
+				MongoOptions mongoOptionsToUse = getMongoOptions();
+
+				Mongo mongo;
+				if (mongoOptionsToUse != null) {
+					mongo = new Mongo(serverAddress, mongoOptionsToUse);
+				} else {
+					mongo = new Mongo(serverAddress);
+				}
+
+				mongoDbFactory = new SimpleMongoDbFactory(mongo, serviceInfo.getDatabase(), credentials);
 			}
-			else {
-				mongo = new Mongo(serviceInfo.getHost(), serviceInfo.getPort());
-			}
-			SimpleMongoDbFactory mongoDbFactory =
-					new SimpleMongoDbFactory(mongo, serviceInfo.getDatabase(), credentials);
+
 			if (cloudMongoConfiguration != null && cloudMongoConfiguration.getWriteConcern() != null) {
 				WriteConcern writeConcern = WriteConcern.valueOf(cloudMongoConfiguration.getWriteConcern());
 				if (writeConcern != null) {
