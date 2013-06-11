@@ -2,6 +2,7 @@ package org.cloudfoundry.runtime.env;
 
 import java.lang.reflect.Constructor;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -133,7 +134,7 @@ public class CloudEnvironment {
 		return flatServices;
 	}
 	
-	private Map<String, Object> getServiceDataByName(String name) {
+	public Map<String, Object> getServiceDataByName(String name) {
 		List<Map<String, Object>> services = getServices();
 		
 		for (Map<String, Object> service : services) {
@@ -142,6 +143,10 @@ public class CloudEnvironment {
 			}
 		}
 		return null;
+	}
+
+	public List<Map<String, Object>> getServiceDataByLabels(String... labels) {
+		return getServiceDataByLabels(new HashSet<String>(Arrays.asList(labels)));
 	}
 
 	private List<Map<String, Object>> getServiceDataByLabels(Set<String> labels) {
