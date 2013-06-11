@@ -24,11 +24,10 @@ public class RabbitServiceCreator
 
 	public ConnectionFactory createService(RabbitServiceInfo serviceInfo) {
 		CachingConnectionFactory connectionFactory
-		    = new CachingConnectionFactory(serviceInfo.getHost());
+		    = new CachingConnectionFactory(serviceInfo.getHost(), serviceInfo.getPort());
 		connectionFactory.setVirtualHost(serviceInfo.getVirtualHost());
 		connectionFactory.setUsername(serviceInfo.getUserName());
 		connectionFactory.setPassword(serviceInfo.getPassword());
-		connectionFactory.setPort(serviceInfo.getPort());
 		if (cloudRabbitConfiguration != null) {
 			connectionFactory.setChannelCacheSize(cloudRabbitConfiguration.getChannelCacheSize());
 		}

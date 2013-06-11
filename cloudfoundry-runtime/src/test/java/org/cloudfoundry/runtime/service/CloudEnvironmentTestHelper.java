@@ -137,6 +137,14 @@ public class CloudEnvironmentTestHelper {
 		return payload;
 	}
 
+	public static String getCloudAmqpServicePayload(String serviceName, String uri) {
+		String payload = readTestDataFile("test-cloudamqp-info.json");
+		payload = payload.replace("$serviceName", serviceName);
+		payload = payload.replace("$uri", uri);
+
+		return payload;
+	}
+
 	public static String getServicesPayload(String[] mysqlServicePayloads, 
 			String[] redisServicePayloads, 
 			String[] mongodbServicePayloads,

@@ -1,0 +1,8 @@
+{
+	"name":"$serviceName",
+	"label":"rabbitmq-$version",
+	"plan":"free",
+	"credentials":{
+		"uri":"$uri"
+	}
+}

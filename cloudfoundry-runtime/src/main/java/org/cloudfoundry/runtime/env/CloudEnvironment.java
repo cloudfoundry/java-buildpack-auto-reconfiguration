@@ -60,6 +60,8 @@ public class CloudEnvironment {
 		labelledServiceType(RedisServiceInfo.class, "rediscloud-dev");
 		labelledServiceType(MongoServiceInfo.class, "mongolab");
 		labelledServiceType(MongoServiceInfo.class, "mongolab-dev");
+		labelledServiceType(RabbitServiceInfo.class, "cloudamqp");
+		labelledServiceType(RabbitServiceInfo.class, "cloudamqp-dev");
 	}
 	
 	/* package for testing purpose */
