@@ -145,7 +145,14 @@ public class CloudEnvironmentTestHelper {
 		return payload;
 	}
 
-	public static String getServicesPayload(String[] mysqlServicePayloads, 
+	public static String getFullServicesPayload() {
+		return getServicesPayload(new String[]{getMysqlServicePayload("1.1", "mysql-1", "mysql-host", 1111, "mysql-user", "mysql-pass", "database-123")},
+				new String[]{getRedisServicePayload("2.2", "redis-2", "redis-host", 2222, "redis-pass", "r1")},
+				new String[]{getMongoServicePayload("3.3", "mongo-3", "mongo-host", 3333, "mongo-user", "mongo-pass", "db", "name")},
+				new String[]{getRabbitServicePayload("4.4", "rabbit-4", "rabbit-host", 4444, "rabbit-user", "rabbit-pass", "r1", "vhost")});
+	}
+
+	public static String getServicesPayload(String[] mysqlServicePayloads,
 			String[] redisServicePayloads, 
 			String[] mongodbServicePayloads,
 			String[] rabbitServicePayloads) {

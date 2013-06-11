@@ -12,6 +12,7 @@ import static org.cloudfoundry.runtime.service.CloudEnvironmentTestHelper.getRab
 import static org.cloudfoundry.runtime.service.CloudEnvironmentTestHelper.getRdsServicePayload;
 import static org.cloudfoundry.runtime.service.CloudEnvironmentTestHelper.getRedisCloudServicePayload;
 import static org.cloudfoundry.runtime.service.CloudEnvironmentTestHelper.getRedisServicePayload;
+import static org.cloudfoundry.runtime.service.CloudEnvironmentTestHelper.getFullServicesPayload;
 import static org.cloudfoundry.runtime.service.CloudEnvironmentTestHelper.getServicesPayload;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
@@ -19,6 +20,8 @@ import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.when;
 
+import java.util.List;
+import java.util.Map;
 import java.util.Properties;
 
 import org.cloudfoundry.runtime.env.CloudEnvironment.EnvironmentAccessor;
@@ -56,6 +59,47 @@ public class CloudEnvironmentTest {
 
 		when(mockEnvironment.getValue("VCAP_APPLICATION")).thenReturn(getApplicationInstanceInfo("foobar", "foo.cloudfoundry.com"));
 		assertTrue(testRuntime.isCloudFoundry());
+	}
+
+	@Test
+	public void getServiceDataByName_noneFound() {
+		when(mockEnvironment.getValue("VCAP_SERVICES")).thenReturn(getFullServicesPayload());
+
+		Map<String,Object> serviceData = testRuntime.getServiceDataByName("notfound");
+		assertNull(serviceData);
+	}
+
+	@Test
+	public void getServiceDataByName_oneFound() {
+		when(mockEnvironment.getValue("VCAP_SERVICES")).thenReturn(getFullServicesPayload());
+
+		Map<String,Object> serviceData = testRuntime.getServiceDataByName("mongo-3");
+		assertEquals("mongo-3", serviceData.get("name"));
+	}
+
+	@Test
+	public void getServiceDataByLabels_noneFound() {
+		when(mockEnvironment.getValue("VCAP_SERVICES")).thenReturn(getFullServicesPayload());
+
+		List<Map<String, Object>> serviceData = testRuntime.getServiceDataByLabels("notfound");
+		assertEquals(0, serviceData.size());
+	}
+
+	@Test
+	public void getServiceDataByLabels_oneFound() {
+		when(mockEnvironment.getValue("VCAP_SERVICES")).thenReturn(getFullServicesPayload());
+
+		List<Map<String, Object>> serviceData = testRuntime.getServiceDataByLabels("mongodb");
+		assertEquals(1, serviceData.size());
+		assertEquals("mongodb-3.3", serviceData.get(0).get("label"));
+	}
+
+	@Test
+	public void getServiceDataByLabels_multipleFound() {
+		when(mockEnvironment.getValue("VCAP_SERVICES")).thenReturn(getFullServicesPayload());
+
+		List<Map<String, Object>> serviceData = testRuntime.getServiceDataByLabels("mongodb", "redis");
+		assertEquals(2, serviceData.size());
 	}
 
 	@Test
