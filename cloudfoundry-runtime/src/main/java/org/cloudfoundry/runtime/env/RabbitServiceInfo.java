@@ -19,9 +19,7 @@ public class RabbitServiceInfo extends AbstractServiceInfo {
 	private String virtualHost;
 	private String userName;
 
-	public RabbitServiceInfo(Map<String, Object> serviceInfo)
-		throws URISyntaxException
-	{
+	public RabbitServiceInfo(Map<String, Object> serviceInfo) throws URISyntaxException {
 		super(serviceInfo);
 
 		@SuppressWarnings("unchecked")
@@ -29,8 +27,11 @@ public class RabbitServiceInfo extends AbstractServiceInfo {
 		    = (Map<String, Object>) serviceInfo.get("credentials");
 
 		// Use the amqp URI in the url property if present.
-		// Otherwise, try the broken-ou credentials.
+		// Otherwise, try the broken-out credentials.
 		String uri = (String) credentials.get("url");
+		if (uri == null) {
+			uri = (String) credentials.get("uri");
+		}
 		if (uri != null) {
 			parseAmqpUri(uri);
 		}
@@ -43,9 +44,7 @@ public class RabbitServiceInfo extends AbstractServiceInfo {
 		}
 	}
 
-	private void parseAmqpUri(String uristr)
-		throws URISyntaxException
-	{
+	private void parseAmqpUri(String uristr) throws URISyntaxException {
 		URI uri = new URI(uristr);
 
 		if (!"amqp".equals(uri.getScheme()))

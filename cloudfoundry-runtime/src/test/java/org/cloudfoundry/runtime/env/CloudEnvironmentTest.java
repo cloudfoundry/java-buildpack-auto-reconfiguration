@@ -1,6 +1,7 @@
 package org.cloudfoundry.runtime.env;
 
 import static org.cloudfoundry.runtime.service.CloudEnvironmentTestHelper.getApplicationInstanceInfo;
+import static org.cloudfoundry.runtime.service.CloudEnvironmentTestHelper.getCloudAmqpServicePayload;
 import static org.cloudfoundry.runtime.service.CloudEnvironmentTestHelper.getElephantSQLServicePayload;
 import static org.cloudfoundry.runtime.service.CloudEnvironmentTestHelper.getMongoServicePayload;
 import static org.cloudfoundry.runtime.service.CloudEnvironmentTestHelper.getMongoLabServicePayload;
@@ -258,6 +259,26 @@ public class CloudEnvironmentTest {
 			assertEquals(12345, info.getPort());
 			assertEquals("virtualHost", info.getVirtualHost());
 		}
+	}
+
+	@Test
+	public void getServiceInfoCloudAmqp() {
+		String serviceName = "rabbit-1";
+		String virtualHost = "myqueue";
+		String uri = "amqp://" + username + ":" + password + "@" + hostname + ":" + port + "/" + virtualHost;
+
+		when(mockEnvironment.getValue("VCAP_SERVICES"))
+			.thenReturn(getServicesPayload(null,
+										   null,
+										   null,
+										   new String[]{getCloudAmqpServicePayload(serviceName, uri)}));
+		RabbitServiceInfo info = testRuntime.getServiceInfo(serviceName, RabbitServiceInfo.class);
+		assertEquals(serviceName, info.getServiceName());
+		assertEquals(username, info.getUserName());
+		assertEquals(password, info.getPassword());
+		assertEquals(hostname, info.getHost());
+		assertEquals(port, info.getPort());
+		assertEquals(virtualHost, info.getVirtualHost());
 	}
 
 	@Test
