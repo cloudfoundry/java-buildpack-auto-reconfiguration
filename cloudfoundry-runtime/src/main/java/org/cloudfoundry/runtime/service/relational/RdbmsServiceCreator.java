@@ -17,7 +17,7 @@ public class RdbmsServiceCreator extends AbstractDataSourceCreator<RdbmsServiceI
 	private AbstractDataSourceCreator delegate;
 
 	@Override
-	public DataSource createService(AbstractDataSourceServiceInfo serviceInfo) {
+	public DataSource createService(RdbmsServiceInfo serviceInfo) {
 		if (serviceInfo.getLabel() != null && (serviceInfo.getLabel().startsWith("postgres") || serviceInfo.getLabel().startsWith("elephantsql"))) {
 			this.delegate = new PostgresqlServiceCreator();
 		}

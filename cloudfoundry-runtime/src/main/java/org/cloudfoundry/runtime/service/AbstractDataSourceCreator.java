@@ -48,7 +48,7 @@ extends AbstractServiceCreator<DataSource, SI> {
 	 * connection is returned by the pool.  testOnBorrow is the best option
 	 * provided by DBCP.
 	 */
-	public DataSource createService(AbstractDataSourceServiceInfo serviceInfo) {
+	public DataSource createService(SI serviceInfo) {
 		try {
 			Class.forName(getDriverClassName());
 			// Give first preference to user's DBCP datasource
