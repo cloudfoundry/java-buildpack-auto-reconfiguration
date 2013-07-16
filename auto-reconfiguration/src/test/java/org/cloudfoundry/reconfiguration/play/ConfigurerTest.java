@@ -62,7 +62,7 @@ public class ConfigurerTest {
 	@Test
 	public void configurePlayDBSinglePostgresService() throws IOException {
 		RdbmsServiceInfo serviceInfo = ServiceHelper.createServiceInfo("myservice", "localhost", 5678, "foo",
-				"bar", "testdb", "postgresql-9.0");
+				"bar", "testdb", "elephantsql-9.0");
 		when(appConfiguration.getPlayConfiguration()).thenReturn(appProps);
 		when(appConfiguration.getPlayDatabaseNames()).thenReturn(Collections.singleton("default"));
 		when(appConfiguration.getCFConfiguration()).thenReturn(new Properties());
@@ -81,7 +81,7 @@ public class ConfigurerTest {
 	@Test
 	public void configurePlayDBSingleMySQLService() throws IOException {
 		RdbmsServiceInfo serviceInfo = ServiceHelper.createServiceInfo("myservice", "localhost", 5678, "foo",
-				"bar", "testdb", "mysql-5.1");
+				"bar", "testdb", "cleardb-5.1");
 		when(appConfiguration.getPlayConfiguration()).thenReturn(appProps);
 		when(appConfiguration.getPlayDatabaseNames()).thenReturn(Collections.singleton("default"));
 		when(appConfiguration.getCFConfiguration()).thenReturn(new Properties());

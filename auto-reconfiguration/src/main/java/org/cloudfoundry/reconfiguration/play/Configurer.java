@@ -149,7 +149,7 @@ public class Configurer {
 		System.setProperty("db." + dbName + ".url", dbServiceInfo.getUrl());
 		System.setProperty("db." + dbName + ".user", dbServiceInfo.getUserName());
 		System.setProperty("db." + dbName + ".password", dbServiceInfo.getPassword());
-		if (dbServiceInfo.getLabel().startsWith("postgres")) {
+		if (dbServiceInfo.getLabel().startsWith("elephantsql")) {
 			System.setProperty("db." + dbName + ".driver", PropertySetter.POSTGRES_DRIVER_CLASS);
 		} else {
 			// Assume MySQL
