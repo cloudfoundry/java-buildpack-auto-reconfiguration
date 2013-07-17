@@ -39,7 +39,7 @@ public class JpaConfigurerTest extends CloudEnvironmentMockingTest {
 		List<RdbmsServiceInfo> serviceInfos = new ArrayList<RdbmsServiceInfo>();
 		serviceInfos.add(mockRdbmsServiceInfo);
 		when(mockRdbmsServiceInfo.getUrl()).thenReturn(serviceJdbcUrl);
-		when(mockRdbmsServiceInfo.getLabel()).thenReturn("mysql-5.1");
+		when(mockRdbmsServiceInfo.getLabel()).thenReturn("cleardb-n/a");
 		when(mockEnvironment.getServiceInfos(RdbmsServiceInfo.class)).thenReturn(serviceInfos);
 
 		ApplicationContext context = getTestApplicationContext("test-jpa-good-context.xml");
@@ -57,7 +57,7 @@ public class JpaConfigurerTest extends CloudEnvironmentMockingTest {
 		List<RdbmsServiceInfo> serviceInfos = new ArrayList<RdbmsServiceInfo>();
 		serviceInfos.add(mockRdbmsServiceInfo);
 		when(mockRdbmsServiceInfo.getUrl()).thenReturn(serviceJdbcUrl);
-		when(mockRdbmsServiceInfo.getLabel()).thenReturn("postgresql-9.0");
+		when(mockRdbmsServiceInfo.getLabel()).thenReturn("elephantsql-n/a");
 		when(mockEnvironment.getServiceInfos(RdbmsServiceInfo.class)).thenReturn(serviceInfos);
 
 		ApplicationContext context = getTestApplicationContext("test-jpa-good-context.xml");

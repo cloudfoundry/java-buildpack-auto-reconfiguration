@@ -43,7 +43,7 @@ public class JPAPluginTest {
 
 	@Test
 	public void getPropertiesPostgresService() {
-		when(appConfiguration.getDatabaseLabel()).thenReturn("postgresql-9.0");
+		when(appConfiguration.getDatabaseLabel()).thenReturn("elephantsql-n/a");
 		Map<String, String> expectedProps = new HashMap<String, String>();
 		expectedProps.put("hibernate.dialect", JPAPlugin.POSTGRES_DIALECT);
 		assertEquals(expectedProps, plugin.getProperties());
@@ -51,7 +51,7 @@ public class JPAPluginTest {
 
 	@Test
 	public void getPropertiesMySQLService() {
-		when(appConfiguration.getDatabaseLabel()).thenReturn("mysql-5.1");
+		when(appConfiguration.getDatabaseLabel()).thenReturn("cleardb-n/a");
 		Map<String, String> expectedProps = new HashMap<String, String>();
 		expectedProps.put("hibernate.dialect", JPAPlugin.MYSQL_DIALECT);
 		assertEquals(expectedProps, plugin.getProperties());
