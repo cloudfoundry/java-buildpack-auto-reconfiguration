@@ -5,6 +5,8 @@ import java.util.Properties;
 import java.util.Map.Entry;
 import java.util.Set;
 
+import org.cloudfoundry.reconfiguration.CloudAutoStagingRuntimeException;
+import org.cloudfoundry.reconfiguration.Constants;
 import org.cloudfoundry.runtime.env.CloudEnvironment;
 import org.cloudfoundry.runtime.env.RdbmsServiceInfo;
 
@@ -44,14 +46,14 @@ public class PropertySetter {
 		for (RdbmsServiceInfo service : dbservices) {
 			System.setProperty("cloud.services." + service.getServiceName() + ".connection.url",
 					service.getUrl());
-			if (service.getLabel().startsWith("postgresql")) {
+			if (service.getLabel().startsWith(Constants.POSTGRES_LABEL_START)) {
 				System.setProperty("cloud.services." + service.getServiceName() + ".connection.driver",
 						POSTGRES_DRIVER_CLASS);
 				if (cloudProperties.containsKey("cloud.services.postgresql.connection.name")) {
 					System.setProperty("cloud.services.postgresql.connection.driver", POSTGRES_DRIVER_CLASS);
 					System.setProperty("cloud.services.postgresql.connection.url", service.getUrl());
 				}
-			} else {
+			} else if (service.getLabel().startsWith(Constants.MYSQL_LABEL_START)) {
 				// Assume MYSQL
 				System.setProperty("cloud.services." + service.getServiceName() + ".connection.driver",
 						MYSQL_DRIVER_CLASS);
@@ -59,6 +61,9 @@ public class PropertySetter {
 					System.setProperty("cloud.services.mysql.connection.driver", MYSQL_DRIVER_CLASS);
 					System.setProperty("cloud.services.mysql.connection.url", service.getUrl());
 				}
+			} else {
+				throw new CloudAutoStagingRuntimeException("Failed to auto-reconfigure application. Unrecognized database service with label "
+						+ service.getLabel() + " found.");
 			}
 		}
 	}

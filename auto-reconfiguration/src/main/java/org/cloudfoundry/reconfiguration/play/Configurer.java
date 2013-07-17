@@ -8,6 +8,8 @@ import java.util.Properties;
 import java.util.Set;
 import java.util.regex.Pattern;
 
+import org.cloudfoundry.reconfiguration.CloudAutoStagingRuntimeException;
+import org.cloudfoundry.reconfiguration.Constants;
 import org.cloudfoundry.runtime.env.RdbmsServiceInfo;
 
 /**
@@ -149,11 +151,13 @@ public class Configurer {
 		System.setProperty("db." + dbName + ".url", dbServiceInfo.getUrl());
 		System.setProperty("db." + dbName + ".user", dbServiceInfo.getUserName());
 		System.setProperty("db." + dbName + ".password", dbServiceInfo.getPassword());
-		if (dbServiceInfo.getLabel().startsWith("elephantsql")) {
+		if (dbServiceInfo.getLabel().startsWith(Constants.POSTGRES_LABEL_START)) {
 			System.setProperty("db." + dbName + ".driver", PropertySetter.POSTGRES_DRIVER_CLASS);
-		} else {
-			// Assume MySQL
+		} else if (dbServiceInfo.getLabel().startsWith(Constants.MYSQL_LABEL_START)){
 			System.setProperty("db." + dbName + ".driver", PropertySetter.MYSQL_DRIVER_CLASS);
+		} else {
+			throw new CloudAutoStagingRuntimeException("Failed to auto-reconfigure application. Unrecognized database service with label "
+					+ dbServiceInfo.getLabel() + " found.");
 		}
 	}
 

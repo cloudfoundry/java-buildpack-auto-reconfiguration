@@ -23,6 +23,9 @@ public class JPAPlugin extends play.db.jpa.JPAPlugin {
 
 	static final String POSTGRES_DIALECT = "org.hibernate.dialect.PostgreSQLDialect";
 
+	static final String POSTGRES_LABEL_START = "elephantsql";
+	static final String MYSQL_LABEL_START = "cleardb";
+
 	private final Map<String, EntityManagerFactory> emfs = new HashMap<String, EntityManagerFactory>();
 
 	private AppConfiguration appConfiguration;
@@ -59,9 +62,9 @@ public class JPAPlugin extends play.db.jpa.JPAPlugin {
 		Map<String, String> properties = new HashMap<String, String>();
 		String dbservice = appConfiguration.getDatabaseLabel();
 		if (dbservice != null) {
-			if (dbservice.startsWith("postgres")) {
+			if (dbservice.startsWith(POSTGRES_LABEL_START)) {
 				properties.put("hibernate.dialect", POSTGRES_DIALECT);
-			} else if (dbservice.startsWith("mysql")) {
+			} else if (dbservice.startsWith(MYSQL_LABEL_START)) {
 				properties.put("hibernate.dialect", MYSQL_DIALECT);
 			}
 		}
