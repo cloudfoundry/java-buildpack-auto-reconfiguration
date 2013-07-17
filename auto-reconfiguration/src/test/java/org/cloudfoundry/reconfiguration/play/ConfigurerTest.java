@@ -149,7 +149,7 @@ public class ConfigurerTest {
 	public void configureSinglePlayDBJpaDisabled() throws IOException {
 		appProps.put("jpaplugin", "disabled");
 		RdbmsServiceInfo serviceInfo = ServiceHelper.createServiceInfo("myservice", "localhost", 5678, "foo",
-				"bar", "testdb", "mysql-5.1");
+				"bar", "testdb", "cleardb-n/a");
 		when(appConfiguration.getPlayConfiguration()).thenReturn(appProps);
 		when(appConfiguration.getPlayDatabaseNames()).thenReturn(Collections.singleton("default"));
 		when(appConfiguration.getCFConfiguration()).thenReturn(new Properties());

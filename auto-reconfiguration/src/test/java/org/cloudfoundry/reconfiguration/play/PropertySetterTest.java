@@ -65,11 +65,11 @@ public class PropertySetterTest {
 		cloudProps.put("cloud.services.mysql.connection.name", "testmysqldb");
 		when(cloudEnvironment.getCloudProperties()).thenReturn(cloudProps);
 		RdbmsServiceInfo pgInfo1 = ServiceHelper.createServiceInfo("service1", "localhost", 5678, "foo",
-				"bar", "testdb", "postgresql-9.0");
+				"bar", "testdb", "elephantsql-n/a");
 		RdbmsServiceInfo pgInfo2 = ServiceHelper.createServiceInfo("service2", "localhost", 3306, "testuser",
-				"testpwd", "testdb2", "postgresql-9.0");
+				"testpwd", "testdb2", "elephantsql-n/a");
 		RdbmsServiceInfo mysqlInfo = ServiceHelper.createServiceInfo("service3", "localhost", 1234, "bob",
-				"bobspwd", "testmysqldb", "mysql-5.1");
+				"bobspwd", "testmysqldb", "cleardb-n/a");
 		List<RdbmsServiceInfo> services = Arrays
 				.asList(new RdbmsServiceInfo[] { pgInfo1, pgInfo2, mysqlInfo });
 		when(cloudEnvironment.getServiceInfos(RdbmsServiceInfo.class)).thenReturn(services);
@@ -105,11 +105,11 @@ public class PropertySetterTest {
 		cloudProps.put("cloud.services.postgresql.connection.name", "testdb");
 		when(cloudEnvironment.getCloudProperties()).thenReturn(cloudProps);
 		RdbmsServiceInfo pgInfo = ServiceHelper.createServiceInfo("service1", "localhost", 5678, "foo",
-				"bar", "testdb", "postgresql-9.0");
+				"bar", "testdb", "elephantsql-n/a");
 		RdbmsServiceInfo mysqlInfo1 = ServiceHelper.createServiceInfo("service2", "localhost", 1234, "bob",
-				"bobspwd", "testmysqldb", "mysql-5.1");
+				"bobspwd", "testmysqldb", "cleardb-n/a");
 		RdbmsServiceInfo mysqlInfo2 = ServiceHelper.createServiceInfo("service3", "localhost", 4566, "joe",
-				"joespwd", "testmysqldb2", "mysql-5.1");
+				"joespwd", "testmysqldb2", "cleardb-n/a");
 		List<RdbmsServiceInfo> services = Arrays.asList(new RdbmsServiceInfo[] { pgInfo, mysqlInfo1,
 				mysqlInfo2 });
 		when(cloudEnvironment.getServiceInfos(RdbmsServiceInfo.class)).thenReturn(services);

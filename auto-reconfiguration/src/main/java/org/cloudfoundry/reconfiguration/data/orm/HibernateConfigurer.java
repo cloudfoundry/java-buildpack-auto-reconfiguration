@@ -4,6 +4,7 @@
 package org.cloudfoundry.reconfiguration.data.orm;
 
 import org.cloudfoundry.reconfiguration.Configurer;
+import org.cloudfoundry.reconfiguration.Constants;
 import org.cloudfoundry.reconfiguration.PropertyReplacer;
 import org.cloudfoundry.runtime.env.CloudEnvironment;
 import org.cloudfoundry.runtime.env.RdbmsServiceInfo;
@@ -36,10 +37,10 @@ public class HibernateConfigurer implements Configurer {
 	public boolean configure(DefaultListableBeanFactory beanFactory) {
 		boolean configured = false;
 		for (RdbmsServiceInfo service : cloudEnvironment.getServiceInfos(RdbmsServiceInfo.class)) {
-			if (service.getLabel().startsWith("postgresql")) {
+			if (service.getLabel().startsWith(Constants.POSTGRES_LABEL_START)) {
 				replaceHibernateProperties(APP_CLOUD_HIBERNATE_POSTGRESQL_REPLACEMENT_PROPERTIES, beanFactory);
 				configured = true;
-			} else if (service.getLabel().startsWith("mysql")) {
+			} else if (service.getLabel().startsWith(Constants.MYSQL_LABEL_START)) {
 				replaceHibernateProperties(APP_CLOUD_HIBERNATE_MYSQL_REPLACEMENT_PROPERTIES, beanFactory);
 				configured = true;
 			}
