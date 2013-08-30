@@ -160,6 +160,10 @@
 					<groupId>commons-logging</groupId>
 					<artifactId>commons-logging</artifactId>
 				</exclusion>
+				<exclusion>
+				    <groupId>org.hibernate</groupId>
+				    <artifactId>ejb3-persistence</artifactId>
+				</exclusion>
 			</exclusions>
 			<scope>provided</scope>
 		</dependency>
@@ -171,6 +175,10 @@
 				<exclusion>
 					<groupId>commons-logging</groupId>
 					<artifactId>commons-logging</artifactId>
+				</exclusion>
+				<exclusion>
+				    <groupId>org.hibernate</groupId>
+				    <artifactId>ejb3-persistence</artifactId>
 				</exclusion>
 			</exclusions>
 			<scope>provided</scope>
