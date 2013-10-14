@@ -12,6 +12,7 @@ import static org.cloudfoundry.runtime.service.CloudEnvironmentTestHelper.getRab
 import static org.cloudfoundry.runtime.service.CloudEnvironmentTestHelper.getRdsServicePayload;
 import static org.cloudfoundry.runtime.service.CloudEnvironmentTestHelper.getRedisCloudServicePayload;
 import static org.cloudfoundry.runtime.service.CloudEnvironmentTestHelper.getRedisServicePayload;
+import static org.cloudfoundry.runtime.service.CloudEnvironmentTestHelper.getUserProvidedServicePayload;
 import static org.cloudfoundry.runtime.service.CloudEnvironmentTestHelper.getFullServicesPayload;
 import static org.cloudfoundry.runtime.service.CloudEnvironmentTestHelper.getServicesPayload;
 import static org.junit.Assert.assertEquals;
@@ -387,6 +388,21 @@ public class CloudEnvironmentTest {
 		assertEquals(cloudProperties.getProperty("cloud.services.mydb.connection.password"), cloudProperties.getProperty("cloud.services.mysql.connection.password"));
 		assertEquals(cloudProperties.getProperty("cloud.services.mydb.connection.name"), cloudProperties.getProperty("cloud.services.mysql.connection.name"));
 		assertEquals(cloudProperties.getProperty("cloud.services.mydb.connection.user"), cloudProperties.getProperty("cloud.services.mysql.connection.user"));
+	}
+
+	@Test
+	public void getCloudProperties_userProvided() {
+		when(mockEnvironment.getValue("VCAP_APPLICATION")).thenReturn(getApplicationInstanceInfo("foo", "foo.cloudfoundry.com"));
+		when(mockEnvironment.getValue("VCAP_SERVICES")).thenReturn(getServicesPayload(
+			new String[]{ getUserProvidedServicePayload("myservice") }
+		));
+
+		Properties cloudProperties = testRuntime.getCloudProperties();
+
+		// service properties by name
+		assertEquals(null, cloudProperties.getProperty("cloud.services.myservice.plan"));
+		assertEquals("user-provided", cloudProperties.getProperty("cloud.services.myservice.type"));
+		assertEquals("userValue", cloudProperties.getProperty("cloud.services.myservice.connection.userKey"));
 	}
 
 	@Test
