@@ -271,7 +271,9 @@ public class CloudEnvironment {
 	@SuppressWarnings("unchecked")
 	private Properties servicePropertiesHelper(String propertyBase, Map<String, Object> service) {
 		Properties source = new Properties();
-		source.put(propertyBase + ".plan" , service.get("plan").toString());
+		if (service.containsKey("plan")) {
+			source.put(propertyBase + ".plan" , service.get("plan").toString());
+		}
 		source.put(propertyBase + ".type" , service.get("label").toString());
 		for (Entry<String, Object> connectionProperty : ((Map<String, Object>) service.get("credentials")).entrySet()) {
 			source.put(propertyBase + ".connection." + connectionProperty.getKey(), connectionProperty.getValue().toString());

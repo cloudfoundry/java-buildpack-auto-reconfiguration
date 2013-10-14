@@ -76,10 +76,10 @@ public class CloudEnvironmentTestHelper {
 		payload = payload.replace("$user", user);
 		payload = payload.replace("$password", password);
 		payload = payload.replace("$name", name);
-		
+
 		return payload;
 	}
-	
+
 	public static String getMysqlServicePayload(String version, String serviceName,
 			String hostname, int port,
 			String user, String password, String name) {
@@ -145,7 +145,13 @@ public class CloudEnvironmentTestHelper {
 		return payload;
 	}
 
-	public static String getFullServicesPayload() {
+	public static String getUserProvidedServicePayload(String serviceName) {
+		String payload = readTestDataFile("test-user-provided-info.json");
+		payload = payload.replace("$serviceName", serviceName);
+		return payload;
+	}
+
+    public static String getFullServicesPayload() {
 		return getServicesPayload(new String[]{getMysqlServicePayload("1.1", "mysql-1", "mysql-host", 1111, "mysql-user", "mysql-pass", "database-123")},
 				new String[]{getRedisServicePayload("2.2", "redis-2", "redis-host", 2222, "redis-pass", "r1")},
 				new String[]{getMongoServicePayload("3.3", "mongo-3", "mongo-host", 3333, "mongo-user", "mongo-pass", "db", "name")},
@@ -187,6 +193,20 @@ public class CloudEnvironmentTestHelper {
 		}
 		payload.append("}");
 		
+		return payload.toString();
+	}
+
+    public static String getServicesPayload(String[] userProvidedServicePayloads) {
+		StringBuilder payload = new StringBuilder("{");
+		if (userProvidedServicePayloads != null) {
+			if (payload.length() > 1) {
+				payload.append(",");
+			}
+			payload.append("\"user-provided\":");
+			payload.append(getServicePayload(userProvidedServicePayloads));
+		}
+		payload.append("}");
+
 		return payload.toString();
 	}
 	
