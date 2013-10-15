@@ -7,7 +7,9 @@ import java.util.Set;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.cloudfoundry.runtime.env.CloudEnvironment;
+import org.springframework.cloud.Cloud;
+import org.springframework.cloud.CloudException;
+import org.springframework.cloud.CloudFactory;
 import org.springframework.context.ApplicationContextInitializer;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.core.Ordered;
@@ -48,16 +50,19 @@ public final class CloudApplicationContextInitializer implements ApplicationCont
 	private static final int DEFAULT_ORDER = 0;
 
 	private ConfigurableEnvironment springEnvironment;
-	private CloudEnvironment cloudFoundryEnvironment;
+	private Cloud cloud;
 
 	public CloudApplicationContextInitializer() {
-		cloudFoundryEnvironment = new CloudEnvironment();
+		try {
+			cloud = new CloudFactory().getCloud();
+		} catch (CloudException ex) {
+			logger.info("Not running on Cloud Foundry, skipping initialization");
+		}
 	}
 
 	@Override
 	public final void initialize(ConfigurableApplicationContext applicationContext) {
-		if (!cloudFoundryEnvironment.isCloudFoundry()) {
-			logger.info("Not running on Cloud Foundry, skipping initialization");
+		if (cloud == null) {
 			return;
 		}
 		try {
@@ -77,7 +82,7 @@ public final class CloudApplicationContextInitializer implements ApplicationCont
 	}
 
 	private EnumerablePropertySource<?> buildPropertySource() {
-		Properties properties = cloudFoundryEnvironment.getCloudProperties();
+		Properties properties = cloud.getCloudProperties();
 		EnumerablePropertySource<?> source = new PropertiesPropertySource("cloud", properties);
 		return source;
 	}
@@ -103,8 +108,8 @@ public final class CloudApplicationContextInitializer implements ApplicationCont
 		springEnvironment.getPropertySources().addLast(source);
 	}
 
-	void setCloudFoundryEnvironment(CloudEnvironment cloudFoundryEnvironment) {
-		this.cloudFoundryEnvironment = cloudFoundryEnvironment;
+	void setCloud(Cloud cloud) {
+		this.cloud = cloud;
 	}
 
 }

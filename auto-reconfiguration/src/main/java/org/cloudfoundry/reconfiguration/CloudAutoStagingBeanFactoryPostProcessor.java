@@ -14,11 +14,12 @@ import org.cloudfoundry.reconfiguration.data.document.MongoConfigurer;
 import org.cloudfoundry.reconfiguration.data.keyvalue.RedisConfigurer;
 import org.cloudfoundry.reconfiguration.data.relational.DataSourceConfigurer;
 import org.cloudfoundry.reconfiguration.messaging.RabbitConfigurer;
-import org.cloudfoundry.runtime.env.CloudEnvironment;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.config.BeanFactoryPostProcessor;
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
 import org.springframework.beans.factory.support.DefaultListableBeanFactory;
+import org.springframework.cloud.Cloud;
+import org.springframework.cloud.CloudFactory;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 import org.springframework.core.Ordered;
@@ -53,22 +54,23 @@ public class CloudAutoStagingBeanFactoryPostProcessor implements BeanFactoryPost
 
 		// defaultListableBeanFactory.getBean(CloudEnvironment.class) will do,
 		// but we go through a mechanism that will work for spring-2.5.x as well
-		Map<String, CloudEnvironment> cloudEnvironmentBeans = defaultListableBeanFactory
-				.getBeansOfType(CloudEnvironment.class,true,false);
-		CloudEnvironment cloudEnvironment;
-		if (cloudEnvironmentBeans.size() > 1) {
-			logger.log(Level.INFO, "Multiple (" + cloudEnvironmentBeans.size()
-					+ ") CloudEnvironmentBeans found; zero or 1 expected");
+		Map<String, CloudFactory> cloudFactoryBeans = defaultListableBeanFactory.getBeansOfType(CloudFactory.class, true, false);
+		CloudFactory cloudFactory;
+		if (cloudFactoryBeans.size() > 1) {
+			logger.log(Level.INFO, "Multiple (" + cloudFactoryBeans.size() + ") CloudFactory beans found; zero or 1 expected");
 			return;
-		} else if (cloudEnvironmentBeans.size() == 1) {
-			cloudEnvironment = cloudEnvironmentBeans.entrySet().iterator().next().getValue();
+		} else if (cloudFactoryBeans.size() == 1) {
+		    cloudFactory = cloudFactoryBeans.entrySet().iterator().next().getValue();
 		} else {
-			cloudEnvironment = new CloudEnvironment();
+		    cloudFactory = new CloudFactory();
 		}
-		new DataSourceConfigurer(cloudEnvironment).configure(defaultListableBeanFactory);
-		new MongoConfigurer(cloudEnvironment).configure(defaultListableBeanFactory);
-		new RedisConfigurer(cloudEnvironment).configure(defaultListableBeanFactory);
-		new RabbitConfigurer(cloudEnvironment).configure(defaultListableBeanFactory);
+		
+		Cloud cloud = cloudFactory.getCloud();
+		
+		new DataSourceConfigurer(cloud).configure(defaultListableBeanFactory);
+		new MongoConfigurer(cloud).configure(defaultListableBeanFactory);
+		new RedisConfigurer(cloud).configure(defaultListableBeanFactory);
+		new RabbitConfigurer(cloud).configure(defaultListableBeanFactory);
 	}
 
 	/**

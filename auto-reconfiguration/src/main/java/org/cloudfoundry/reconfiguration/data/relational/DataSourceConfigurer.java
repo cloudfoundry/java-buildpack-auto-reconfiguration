@@ -12,15 +12,13 @@ import org.cloudfoundry.reconfiguration.AbstractServiceConfigurer;
 import org.cloudfoundry.reconfiguration.Configurer;
 import org.cloudfoundry.reconfiguration.data.orm.HibernateConfigurer;
 import org.cloudfoundry.reconfiguration.data.orm.JpaConfigurer;
-import org.cloudfoundry.runtime.env.CloudEnvironment;
-import org.cloudfoundry.runtime.env.RdbmsServiceInfo;
-import org.cloudfoundry.runtime.service.AbstractServiceCreator;
-import org.cloudfoundry.runtime.service.relational.RdbmsServiceCreator;
 import org.springframework.beans.factory.BeanFactory;
 import org.springframework.beans.factory.NoSuchBeanDefinitionException;
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
 import org.springframework.beans.factory.support.DefaultListableBeanFactory;
+import org.springframework.cloud.Cloud;
+import org.springframework.cloud.service.common.RelationalServiceInfo;
 
 /**
  * Implementation of {@link Configurer} that replaces a single
@@ -32,7 +30,7 @@ import org.springframework.beans.factory.support.DefaultListableBeanFactory;
  * @author Jennifer Hickey
  *
  */
-public class DataSourceConfigurer extends AbstractServiceConfigurer<RdbmsServiceInfo> {
+public class DataSourceConfigurer extends AbstractServiceConfigurer<RelationalServiceInfo> {
 
 	private static final String APP_CLOUD_DATA_SOURCE_NAME = "__appCloudDataSource";
 
@@ -42,10 +40,10 @@ public class DataSourceConfigurer extends AbstractServiceConfigurer<RdbmsService
 
 	private Configurer jpaConfigurer;
 
-	public DataSourceConfigurer(CloudEnvironment cloudEnvironment) {
-		super(cloudEnvironment, RdbmsServiceInfo.class);
-		this.hibernateConfigurer = new HibernateConfigurer(cloudEnvironment);
-		this.jpaConfigurer = new JpaConfigurer(cloudEnvironment);
+	public DataSourceConfigurer(Cloud cloud) {
+		super(cloud, RelationalServiceInfo.class);
+		this.hibernateConfigurer = new HibernateConfigurer(cloud);
+		this.jpaConfigurer = new JpaConfigurer(cloud);
 	}
 
 	@Override
@@ -66,11 +64,6 @@ public class DataSourceConfigurer extends AbstractServiceConfigurer<RdbmsService
 	@Override
 	public String getServiceBeanName() {
 		return APP_CLOUD_DATA_SOURCE_NAME;
-	}
-
-	@Override
-	public AbstractServiceCreator<?, RdbmsServiceInfo> getServiceCreator() {
-		return new RdbmsServiceCreator();
 	}
 
 	@Override

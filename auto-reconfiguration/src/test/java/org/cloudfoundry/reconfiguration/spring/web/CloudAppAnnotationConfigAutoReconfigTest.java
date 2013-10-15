@@ -1,9 +1,9 @@
 package org.cloudfoundry.reconfiguration.spring.web;
 
+import org.cloudfoundry.reconfiguration.AbstractCloudConfigurerTest;
 import org.cloudfoundry.reconfiguration.CloudAutoStagingBeanFactoryPostProcessor;
 import org.junit.Assert;
 import org.junit.Test;
-import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.support.GenericApplicationContext;
 
 /**
@@ -12,7 +12,7 @@ import org.springframework.context.support.GenericApplicationContext;
  * @author Thomas Risberg
  *
  */
-public class CloudAppAnnotationConfigAutoReconfigTest {
+public class CloudAppAnnotationConfigAutoReconfigTest extends AbstractCloudConfigurerTest {
 
 	@Test
 	public void cloudApplicationAutoReconfig() {
@@ -26,8 +26,6 @@ public class CloudAppAnnotationConfigAutoReconfigTest {
 		Assert.assertTrue(ctx.getBean(CloudAutoStagingBeanFactoryPostProcessor.class) != null);
 	}
 
-	protected GenericApplicationContext getTestAnnotationConfigApplicationContext(String packageName) {
-		return new AnnotationConfigApplicationContext(packageName);
-	}
+
 
 }

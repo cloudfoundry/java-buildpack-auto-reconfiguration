@@ -1,17 +1,13 @@
 package org.cloudfoundry.reconfiguration.data.orm;
 
-import static org.mockito.Mockito.when;
-
-import java.util.ArrayList;
-import java.util.List;
-
-import org.cloudfoundry.reconfiguration.CloudEnvironmentMockingTest;
-import org.cloudfoundry.runtime.env.RdbmsServiceInfo;
+import org.cloudfoundry.reconfiguration.AbstractCloudConfigurerTest;
 import org.hibernate.SessionFactory;
 import org.hibernate.impl.SessionFactoryImpl;
 import org.junit.Assert;
 import org.junit.Test;
-import org.mockito.Mock;
+import org.springframework.cloud.service.common.MysqlServiceInfo;
+import org.springframework.cloud.service.common.PostgresqlServiceInfo;
+import org.springframework.cloud.service.common.RelationalServiceInfo;
 import org.springframework.context.ApplicationContext;
 
 /**
@@ -25,10 +21,7 @@ import org.springframework.context.ApplicationContext;
  * @author Jennifer Hickey
  *
  */
-public class HibernateConfigurerTest extends CloudEnvironmentMockingTest {
-
-	@Mock
-	private RdbmsServiceInfo mockRdbmsServiceInfo;
+public class HibernateConfigurerTest extends AbstractCloudConfigurerTest {
 
 	@Test
 	public void hibernateSessionFactoryDialectUpdated() {
@@ -72,14 +65,8 @@ public class HibernateConfigurerTest extends CloudEnvironmentMockingTest {
 	}
 
 	private void assertApplicationContextProcessingForMysql(String appContextFile) {
-		String serviceJdbcUrl = "jdbc:mysql://10.20.20.40:1234/mysql-1";
-		List<RdbmsServiceInfo> serviceInfos = new ArrayList<RdbmsServiceInfo>();
-		serviceInfos.add(mockRdbmsServiceInfo);
-		when(mockRdbmsServiceInfo.getUrl()).thenReturn(serviceJdbcUrl);
-		when(mockRdbmsServiceInfo.getLabel()).thenReturn("cleardb-n/a");
-		when(mockEnvironment.getServiceInfos(RdbmsServiceInfo.class)).thenReturn(serviceInfos);
-
-		ApplicationContext context = getTestApplicationContext(appContextFile);
+		RelationalServiceInfo serviceInfo = new MysqlServiceInfo("my-mysql", "mysql://myuser:mypass@10.20.20.40:1234/mysql-1");
+		ApplicationContext context = getTestApplicationContext(appContextFile, serviceInfo);
 		SessionFactoryImpl sessionFactory = (SessionFactoryImpl) context
 				.getBean("sessionFactory", SessionFactory.class);
 
@@ -87,14 +74,8 @@ public class HibernateConfigurerTest extends CloudEnvironmentMockingTest {
 	}
 
 	private void assertApplicationContextProcessingForPostgresql(String appContextFile) {
-		String serviceJdbcUrl = "jdbc:postgresql://10.20.20.40:5432/pg-1";
-		List<RdbmsServiceInfo> serviceInfos = new ArrayList<RdbmsServiceInfo>();
-		serviceInfos.add(mockRdbmsServiceInfo);
-		when(mockRdbmsServiceInfo.getUrl()).thenReturn(serviceJdbcUrl);
-		when(mockRdbmsServiceInfo.getLabel()).thenReturn("elephantsql-n/a");
-		when(mockEnvironment.getServiceInfos(RdbmsServiceInfo.class)).thenReturn(serviceInfos);
-
-		ApplicationContext context = getTestApplicationContext(appContextFile);
+        RelationalServiceInfo serviceInfo = new PostgresqlServiceInfo("my-post", "mysql://myuser:mypass@postgresql://10.20.20.40:5432/pg-1");
+		ApplicationContext context = getTestApplicationContext(appContextFile, serviceInfo);
 		SessionFactoryImpl sessionFactory = (SessionFactoryImpl) context
 				.getBean("sessionFactory", SessionFactory.class);
 

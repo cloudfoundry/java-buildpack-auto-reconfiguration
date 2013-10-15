@@ -4,13 +4,14 @@ import static org.mockito.Mockito.when;
 
 import java.io.IOException;
 
-import org.cloudfoundry.runtime.service.AbstractCloudServiceFactory;
+import org.cloudfoundry.reconfiguration.test.FakeFactoryBean;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
+import org.springframework.cloud.service.AbstractCloudServiceConnectorFactory;
 import org.springframework.context.ApplicationContext;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.Resource;
@@ -21,7 +22,7 @@ import org.springframework.core.io.Resource;
  * @author Jennifer Hickey
  *
  */
-public class CloudAutoStagingBeanFactoryPostProcessorTest extends CloudEnvironmentMockingTest {
+public class CloudAutoStagingBeanFactoryPostProcessorTest extends AbstractCloudConfigurerTest {
 
 	@Mock
 	private ConfigurableListableBeanFactory beanFactory;
@@ -44,7 +45,7 @@ public class CloudAutoStagingBeanFactoryPostProcessorTest extends CloudEnvironme
 		when(applicationContext.getResources(cloudServicesFileLocation)).thenReturn(
 				new Resource[] { new ClassPathResource("/org/cloudfoundry/reconfiguration/test-cloud-services-1") });
 		String[] beans = new String[] { "intBean" };
-		when(beanFactory.getBeanNamesForType(AbstractCloudServiceFactory.class,true,false)).thenReturn(new String[0]);
+		when(beanFactory.getBeanNamesForType(AbstractCloudServiceConnectorFactory.class,true,false)).thenReturn(new String[0]);
 		when(beanFactory.getBeanNamesForType(Integer.class,true,false)).thenReturn(beans);
 		testBFPP.setApplicationContext(applicationContext);
 		Assert.assertTrue(testBFPP.autoStagingOff(cloudServicesFileLocation, beanFactory));
@@ -57,7 +58,7 @@ public class CloudAutoStagingBeanFactoryPostProcessorTest extends CloudEnvironme
 				new Resource[] { new ClassPathResource("/org/cloudfoundry/reconfiguration/test-cloud-services-1"),
 						new ClassPathResource("/org/cloudfoundry/reconfiguration/test-cloud-services-2") });
 		String[] beans = new String[] { "stringBean" };
-		when(beanFactory.getBeanNamesForType(AbstractCloudServiceFactory.class,true,false)).thenReturn(new String[0]);
+		when(beanFactory.getBeanNamesForType(AbstractCloudServiceConnectorFactory.class,true,false)).thenReturn(new String[0]);
 		when(beanFactory.getBeanNamesForType(Integer.class,true,false)).thenReturn(new String[0]);
 		when(beanFactory.getBeanNamesForType(String.class,true,false)).thenReturn(beans);
 		testBFPP.setApplicationContext(applicationContext);
@@ -69,7 +70,7 @@ public class CloudAutoStagingBeanFactoryPostProcessorTest extends CloudEnvironme
 		String cloudServicesFileLocation = "classpath:/org/cloudfoundry/reconfiguration/test-cloud-services-1";
 		when(applicationContext.getResources(cloudServicesFileLocation)).thenReturn(
 				new Resource[] { new ClassPathResource("/org/cloudfoundry/reconfiguration/test-cloud-services-1") });
-		when(beanFactory.getBeanNamesForType(AbstractCloudServiceFactory.class,true,false)).thenReturn(new String[0]);
+		when(beanFactory.getBeanNamesForType(AbstractCloudServiceConnectorFactory.class,true,false)).thenReturn(new String[0]);
 		when(beanFactory.getBeanNamesForType(Integer.class,true,false)).thenReturn(new String[0]);
 		testBFPP.setApplicationContext(applicationContext);
 		Assert.assertFalse(testBFPP.autoStagingOff(cloudServicesFileLocation, beanFactory));

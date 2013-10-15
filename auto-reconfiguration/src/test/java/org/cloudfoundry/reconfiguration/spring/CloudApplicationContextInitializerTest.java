@@ -10,9 +10,9 @@ import static org.mockito.Mockito.when;
 
 import java.util.Properties;
 
-import org.cloudfoundry.runtime.env.CloudEnvironment;
 import org.junit.Before;
 import org.junit.Test;
+import org.springframework.cloud.Cloud;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.support.GenericApplicationContext;
 import org.springframework.core.Ordered;
@@ -24,7 +24,7 @@ public class CloudApplicationContextInitializerTest {
 	private CloudApplicationContextInitializer initializer;
 	private ConfigurableApplicationContext applicationContext;
 	private ConfigurableEnvironment environment;
-	private CloudEnvironment cloudEnvironment;
+	private Cloud cloud;
 	private Properties cloudProperties;
 
 	@Before
@@ -33,14 +33,15 @@ public class CloudApplicationContextInitializerTest {
 		applicationContext = new GenericApplicationContext();
 		environment = new StandardEnvironment();
 		applicationContext.setEnvironment(environment);
-		cloudEnvironment = mock(CloudEnvironment.class);
+		cloud = mock(Cloud.class);
 		cloudProperties = new Properties();
-		when(cloudEnvironment.getCloudProperties()).thenReturn(cloudProperties);
-		initializer.setCloudFoundryEnvironment(cloudEnvironment);
+		when(cloud.getCloudProperties()).thenReturn(cloudProperties);
+		initializer.setCloud(cloud);
 	}
 
 	@Test
 	public void notCloudFoundry() {
+	    initializer.setCloud(null);
 		assertTrue(environment.acceptsProfiles("default"));
 
 		initializer.initialize(applicationContext);
@@ -52,7 +53,6 @@ public class CloudApplicationContextInitializerTest {
 	@Test
 	public void cloudProfile() {
 		assertTrue(environment.acceptsProfiles("default"));
-		when(cloudEnvironment.isCloudFoundry()).thenReturn(true);
 
 		initializer.initialize(applicationContext);
 
@@ -63,7 +63,6 @@ public class CloudApplicationContextInitializerTest {
 	@Test
 	public void propertySource() {
 		cloudProperties.setProperty("foo", "bar");
-		when(cloudEnvironment.isCloudFoundry()).thenReturn(true);
 
 		initializer.initialize(applicationContext);
 
@@ -82,7 +81,6 @@ public class CloudApplicationContextInitializerTest {
 		environment = mock(ConfigurableEnvironment.class);
 		applicationContext.setEnvironment(environment);
 		try {
-			when(cloudEnvironment.isCloudFoundry()).thenReturn(true);
 			when(environment.getPropertySources()).thenThrow(new IllegalAccessError("API breakage"));
 			initializer.initialize(applicationContext);
 		}
@@ -93,5 +91,4 @@ public class CloudApplicationContextInitializerTest {
 			verify(environment).getPropertySources();
 		}
 	}
-
 }

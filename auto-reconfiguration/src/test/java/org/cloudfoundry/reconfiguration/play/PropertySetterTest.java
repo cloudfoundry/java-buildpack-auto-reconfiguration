@@ -10,49 +10,56 @@ import java.util.List;
 import java.util.Properties;
 import java.util.Set;
 
-import org.cloudfoundry.runtime.env.CloudEnvironment;
-import org.cloudfoundry.runtime.env.RdbmsServiceInfo;
+import javax.sql.DataSource;
+
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
+import org.springframework.cloud.Cloud;
+import org.springframework.cloud.service.ServiceInfo;
+import org.springframework.cloud.service.common.MysqlServiceInfo;
+import org.springframework.cloud.service.common.PostgresqlServiceInfo;
+import org.springframework.cloud.service.common.RelationalServiceInfo;
+import org.springframework.cloud.util.UriInfo;
 
 /**
  * Unit test of {@link PropertySetter}
  *
  * @author Jennifer Hickey
+ * @author Ramnivas Laddad
  *
  */
 public class PropertySetterTest {
 
 	@Mock
-	private CloudEnvironment cloudEnvironment;
+	private Cloud cloud;
 
 	private PropertySetter propertySetter;
 
 	@Before
 	public void setup() {
 		MockitoAnnotations.initMocks(this);
-		propertySetter = new PropertySetter(cloudEnvironment);
+		propertySetter = new PropertySetter(cloud);
 	}
 
 	@After
 	public void tearDown() {
 		System.clearProperty("cloud.services.mysql.connection.name");
 		System.clearProperty("cloud.services.mysql.connection.driver");
-		System.clearProperty("cloud.services.mysql.connection.url");
+		System.clearProperty("cloud.services.mysql.connection.jdbcUrl");
 		System.clearProperty("cloud.services.postgresql.connection.driver");
-		System.clearProperty("cloud.services.postgresql.connection.url");
+		System.clearProperty("cloud.services.postgresql.connection.jdbcUrl");
 		System.clearProperty("cloud.services.postgresql.connection.name");
 		System.clearProperty("cloud.services.service1.connection.username");
 		System.clearProperty("cloud.services.service1.connection.name");
 		System.clearProperty("cloud.services.service1.connection.driver");
-		System.clearProperty("cloud.services.service1.connection.url");
+		System.clearProperty("cloud.services.service1.connection.jdbcUrl");
 		System.clearProperty("cloud.services.service2.connection.driver");
-		System.clearProperty("cloud.services.service2.connection.url");
+		System.clearProperty("cloud.services.service2.connection.jdbcUrl");
 		System.clearProperty("cloud.services.service3.connection.driver");
-		System.clearProperty("cloud.services.service3.connection.url");
+		System.clearProperty("cloud.services.service3.connection.jdbcUrl");
 		System.clearProperty("applyEvolutions.default");
 		System.clearProperty("applyEvolutions.other");
 	}
@@ -63,16 +70,16 @@ public class PropertySetterTest {
 		cloudProps.put("cloud.services.service1.connection.username", "foo");
 		cloudProps.put("cloud.services.service1.connection.name", "testdb");
 		cloudProps.put("cloud.services.mysql.connection.name", "testmysqldb");
-		when(cloudEnvironment.getCloudProperties()).thenReturn(cloudProps);
-		RdbmsServiceInfo pgInfo1 = ServiceHelper.createServiceInfo("service1", "localhost", 5678, "foo",
-				"bar", "testdb", "elephantsql-n/a");
-		RdbmsServiceInfo pgInfo2 = ServiceHelper.createServiceInfo("service2", "localhost", 3306, "testuser",
-				"testpwd", "testdb2", "elephantsql-n/a");
-		RdbmsServiceInfo mysqlInfo = ServiceHelper.createServiceInfo("service3", "localhost", 1234, "bob",
-				"bobspwd", "testmysqldb", "cleardb-n/a");
-		List<RdbmsServiceInfo> services = Arrays
-				.asList(new RdbmsServiceInfo[] { pgInfo1, pgInfo2, mysqlInfo });
-		when(cloudEnvironment.getServiceInfos(RdbmsServiceInfo.class)).thenReturn(services);
+		when(cloud.getCloudProperties()).thenReturn(cloudProps);
+        RelationalServiceInfo pgInfo1 = new PostgresqlServiceInfo("service1", 
+                new UriInfo("mysql", "localhost", 5678, "foo", "bar", "testdb").toString());
+		RelationalServiceInfo pgInfo2 = new PostgresqlServiceInfo("service2", 
+                new UriInfo("mysql", "localhost", 3306, "testuser", "testpwd", "testdb2").toString());
+        RelationalServiceInfo mysqlInfo = new MysqlServiceInfo("service3", 
+                new UriInfo("mysql", "localhost", 1234, "bob", "bobspwd", "testmysqldb").toString());
+		List<ServiceInfo> services = Arrays
+				.asList(new ServiceInfo[] { pgInfo1, pgInfo2, mysqlInfo });
+		when(cloud.getServiceInfos(DataSource.class)).thenReturn(services);
 		propertySetter.setCloudProperties();
 		assertEquals("foo", System.getProperty("cloud.services.service1.connection.username"));
 		assertEquals("testdb", System.getProperty("cloud.services.service1.connection.name"));
@@ -86,15 +93,15 @@ public class PropertySetterTest {
 				System.getProperty("cloud.services.service3.connection.driver"));
 		assertEquals(PropertySetter.MYSQL_DRIVER_CLASS,
 				System.getProperty("cloud.services.mysql.connection.driver"));
-		assertEquals("jdbc:postgresql://localhost:5678/testdb",
-				System.getProperty("cloud.services.service1.connection.url"));
-		assertEquals("jdbc:postgresql://localhost:3306/testdb2",
-				System.getProperty("cloud.services.service2.connection.url"));
-		assertNull(System.getProperty("cloud.services.postgresql.connection.url"));
-		assertEquals("jdbc:mysql://localhost:1234/testmysqldb",
-				System.getProperty("cloud.services.service3.connection.url"));
-		assertEquals("jdbc:mysql://localhost:1234/testmysqldb",
-				System.getProperty("cloud.services.mysql.connection.url"));
+		assertEquals("jdbc:postgresql://localhost:5678/testdb?user=foo&password=bar",
+				System.getProperty("cloud.services.service1.connection.jdbcUrl"));
+		assertEquals("jdbc:postgresql://localhost:3306/testdb2?user=testuser&password=testpwd",
+				System.getProperty("cloud.services.service2.connection.jdbcUrl"));
+		assertNull(System.getProperty("cloud.services.postgresql.connection.jdbcUrl"));
+		assertEquals("jdbc:mysql://localhost:1234/testmysqldb?user=bob&password=bobspwd",
+				System.getProperty("cloud.services.service3.connection.jdbcUrl"));
+		assertEquals("jdbc:mysql://localhost:1234/testmysqldb?user=bob&password=bobspwd",
+				System.getProperty("cloud.services.mysql.connection.jdbcUrl"));
 	}
 
 	@Test
@@ -103,16 +110,16 @@ public class PropertySetterTest {
 		cloudProps.put("cloud.services.service1.connection.username", "foo");
 		cloudProps.put("cloud.services.service1.connection.name", "testdb");
 		cloudProps.put("cloud.services.postgresql.connection.name", "testdb");
-		when(cloudEnvironment.getCloudProperties()).thenReturn(cloudProps);
-		RdbmsServiceInfo pgInfo = ServiceHelper.createServiceInfo("service1", "localhost", 5678, "foo",
-				"bar", "testdb", "elephantsql-n/a");
-		RdbmsServiceInfo mysqlInfo1 = ServiceHelper.createServiceInfo("service2", "localhost", 1234, "bob",
-				"bobspwd", "testmysqldb", "cleardb-n/a");
-		RdbmsServiceInfo mysqlInfo2 = ServiceHelper.createServiceInfo("service3", "localhost", 4566, "joe",
-				"joespwd", "testmysqldb2", "cleardb-n/a");
-		List<RdbmsServiceInfo> services = Arrays.asList(new RdbmsServiceInfo[] { pgInfo, mysqlInfo1,
+		when(cloud.getCloudProperties()).thenReturn(cloudProps);
+        RelationalServiceInfo pgInfo = new PostgresqlServiceInfo("service1", 
+                new UriInfo("postgres", "localhost", 5678, "foo", "bar", "testdb").toString());
+        RelationalServiceInfo mysqlInfo1 = new MysqlServiceInfo("service2", 
+                new UriInfo("mysql", "localhost", 1234, "bob", "bobspwd", "testmysqldb").toString());
+        RelationalServiceInfo mysqlInfo2 = new MysqlServiceInfo("service3", 
+                new UriInfo("mysql", "localhost", 4566, "joe", "joespwd", "testmysqldb2").toString());
+		List<ServiceInfo> services = Arrays.asList(new ServiceInfo[] { pgInfo, mysqlInfo1,
 				mysqlInfo2 });
-		when(cloudEnvironment.getServiceInfos(RdbmsServiceInfo.class)).thenReturn(services);
+		when(cloud.getServiceInfos(DataSource.class)).thenReturn(services);
 		propertySetter.setCloudProperties();
 		assertEquals("foo", System.getProperty("cloud.services.service1.connection.username"));
 		assertEquals("testdb", System.getProperty("cloud.services.service1.connection.name"));
@@ -121,19 +128,19 @@ public class PropertySetterTest {
 				System.getProperty("cloud.services.service1.connection.driver"));
 		assertEquals(PropertySetter.POSTGRES_DRIVER_CLASS,
 				System.getProperty("cloud.services.postgresql.connection.driver"));
-		assertEquals("jdbc:postgresql://localhost:5678/testdb",
-				System.getProperty("cloud.services.postgresql.connection.url"));
-		assertEquals("jdbc:postgresql://localhost:5678/testdb",
-				System.getProperty("cloud.services.service1.connection.url"));
+		assertEquals("jdbc:postgresql://localhost:5678/testdb?user=foo&password=bar",
+				System.getProperty("cloud.services.postgresql.connection.jdbcUrl"));
+		assertEquals("jdbc:postgresql://localhost:5678/testdb?user=foo&password=bar",
+				System.getProperty("cloud.services.service1.connection.jdbcUrl"));
 		assertEquals(PropertySetter.MYSQL_DRIVER_CLASS,
 				System.getProperty("cloud.services.service2.connection.driver"));
 		assertEquals(PropertySetter.MYSQL_DRIVER_CLASS,
 				System.getProperty("cloud.services.service3.connection.driver"));
-		assertNull(System.getProperty("cloud.services.mysql.connection.url"));
-		assertEquals("jdbc:mysql://localhost:1234/testmysqldb",
-				System.getProperty("cloud.services.service2.connection.url"));
-		assertEquals("jdbc:mysql://localhost:4566/testmysqldb2",
-				System.getProperty("cloud.services.service3.connection.url"));
+		assertNull(System.getProperty("cloud.services.mysql.connection.jdbcUrl"));
+		assertEquals("jdbc:mysql://localhost:1234/testmysqldb?user=bob&password=bobspwd",
+				System.getProperty("cloud.services.service2.connection.jdbcUrl"));
+		assertEquals("jdbc:mysql://localhost:4566/testmysqldb2?user=joe&password=joespwd",
+				System.getProperty("cloud.services.service3.connection.jdbcUrl"));
 	}
 
 	@Test

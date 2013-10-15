@@ -14,12 +14,16 @@ import java.util.HashSet;
 import java.util.Properties;
 import java.util.Set;
 
-import org.cloudfoundry.runtime.env.RdbmsServiceInfo;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
+import org.springframework.cloud.service.ServiceInfo;
+import org.springframework.cloud.service.common.MysqlServiceInfo;
+import org.springframework.cloud.service.common.PostgresqlServiceInfo;
+import org.springframework.cloud.service.common.RelationalServiceInfo;
+import org.springframework.cloud.util.UriInfo;
 
 /**
  * Unit test of the {@link Configurer}
@@ -61,8 +65,9 @@ public class ConfigurerTest {
 
 	@Test
 	public void configurePlayDBSinglePostgresService() throws IOException {
-		RdbmsServiceInfo serviceInfo = ServiceHelper.createServiceInfo("myservice", "localhost", 5678, "foo",
-				"bar", "testdb", "elephantsql-9.0");
+        RelationalServiceInfo serviceInfo = new PostgresqlServiceInfo("myservice", 
+                new UriInfo("mysql", "localhost", 5678, "foo", "bar", "testdb").toString());
+
 		when(appConfiguration.getPlayConfiguration()).thenReturn(appProps);
 		when(appConfiguration.getPlayDatabaseNames()).thenReturn(Collections.singleton("default"));
 		when(appConfiguration.getCFConfiguration()).thenReturn(new Properties());
@@ -70,7 +75,7 @@ public class ConfigurerTest {
 		configurer.configure();
 		verify(propertySetter).setCloudProperties();
 		verify(propertySetter).setDatabaseProperties(Collections.singleton("default"));
-		assertEquals(serviceInfo.getUrl(), System.getProperty("db.default.url"));
+		assertEquals(serviceInfo.getJdbcUrl(), System.getProperty("db.default.url"));
 		assertEquals(serviceInfo.getUserName(), System.getProperty("db.default.user"));
 		assertEquals(serviceInfo.getPassword(), System.getProperty("db.default.password"));
 		assertEquals(PropertySetter.POSTGRES_DRIVER_CLASS, System.getProperty("db.default.driver"));
@@ -80,8 +85,9 @@ public class ConfigurerTest {
 
 	@Test
 	public void configurePlayDBSingleMySQLService() throws IOException {
-		RdbmsServiceInfo serviceInfo = ServiceHelper.createServiceInfo("myservice", "localhost", 5678, "foo",
-				"bar", "testdb", "cleardb-5.1");
+	    RelationalServiceInfo serviceInfo = new MysqlServiceInfo("myservice", 
+	            new UriInfo("mysql", "localhost", 5678, "myuser", "mypass", "testdb").toString());
+
 		when(appConfiguration.getPlayConfiguration()).thenReturn(appProps);
 		when(appConfiguration.getPlayDatabaseNames()).thenReturn(Collections.singleton("default"));
 		when(appConfiguration.getCFConfiguration()).thenReturn(new Properties());
@@ -89,7 +95,7 @@ public class ConfigurerTest {
 		configurer.configure();
 		verify(propertySetter).setCloudProperties();
 		verify(propertySetter).setDatabaseProperties(Collections.singleton("default"));
-		assertEquals(serviceInfo.getUrl(), System.getProperty("db.default.url"));
+		assertEquals(serviceInfo.getJdbcUrl(), System.getProperty("db.default.url"));
 		assertEquals(serviceInfo.getUserName(), System.getProperty("db.default.user"));
 		assertEquals(serviceInfo.getPassword(), System.getProperty("db.default.password"));
 		assertEquals(PropertySetter.MYSQL_DRIVER_CLASS, System.getProperty("db.default.driver"));
@@ -148,8 +154,8 @@ public class ConfigurerTest {
 	@Test
 	public void configureSinglePlayDBJpaDisabled() throws IOException {
 		appProps.put("jpaplugin", "disabled");
-		RdbmsServiceInfo serviceInfo = ServiceHelper.createServiceInfo("myservice", "localhost", 5678, "foo",
-				"bar", "testdb", "cleardb-n/a");
+        RelationalServiceInfo serviceInfo = new MysqlServiceInfo("myservice", 
+                new UriInfo("mysql", "localhost", 5678, "foo", "bar", "testdb").toString());
 		when(appConfiguration.getPlayConfiguration()).thenReturn(appProps);
 		when(appConfiguration.getPlayDatabaseNames()).thenReturn(Collections.singleton("default"));
 		when(appConfiguration.getCFConfiguration()).thenReturn(new Properties());
@@ -157,7 +163,7 @@ public class ConfigurerTest {
 		configurer.configure();
 		verify(propertySetter).setCloudProperties();
 		verify(propertySetter).setDatabaseProperties(Collections.singleton("default"));
-		assertEquals(serviceInfo.getUrl(), System.getProperty("db.default.url"));
+		assertEquals(serviceInfo.getJdbcUrl(), System.getProperty("db.default.url"));
 		assertEquals(serviceInfo.getUserName(), System.getProperty("db.default.user"));
 		assertEquals(serviceInfo.getPassword(), System.getProperty("db.default.password"));
 		assertEquals(PropertySetter.MYSQL_DRIVER_CLASS, System.getProperty("db.default.driver"));

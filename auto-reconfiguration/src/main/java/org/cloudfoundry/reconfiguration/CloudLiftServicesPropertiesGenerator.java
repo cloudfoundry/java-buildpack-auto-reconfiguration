@@ -13,9 +13,13 @@ import java.util.Properties;
 
 import javax.servlet.ServletContextEvent;
 import javax.servlet.ServletContextListener;
+import javax.sql.DataSource;
 
-import org.cloudfoundry.runtime.env.CloudEnvironment;
-import org.cloudfoundry.runtime.env.RdbmsServiceInfo;
+import org.springframework.cloud.Cloud;
+import org.springframework.cloud.CloudFactory;
+import org.springframework.cloud.service.ServiceInfo;
+import org.springframework.cloud.service.common.MysqlServiceInfo;
+import org.springframework.cloud.service.common.RelationalServiceInfo;
 
 /**
  * A ServletContextListener implementation that generates a properties file when a Lift web
@@ -35,9 +39,9 @@ public class CloudLiftServicesPropertiesGenerator implements
 
     @Override
     public void contextInitialized(ServletContextEvent sce) {
-        CloudEnvironment cloudEnvironment = new CloudEnvironment();
+        Cloud cloud = new CloudFactory().getCloud();
         try {
-            generatePropertiesFile(getPropertiesFileName(), cloudEnvironment);
+            generatePropertiesFile(getPropertiesFileName(), cloud);
         } catch (IOException ioe) {
             throw new CloudAutoStagingRuntimeException("Lift services properties file " +
                 "generation failed: ", ioe.getCause());
@@ -48,10 +52,9 @@ public class CloudLiftServicesPropertiesGenerator implements
     public void contextDestroyed(ServletContextEvent sce) {
     }
 
-    void generatePropertiesFile(String propertiesFile,
-            CloudEnvironment cloudEnvironment)
+    void generatePropertiesFile(String propertiesFile, Cloud cloud)
     throws IOException {
-        Properties props = generateDBServiceProperties(cloudEnvironment);
+        Properties props = generateDBServiceProperties(cloud);
         if (!props.isEmpty()) {
             createPropertiesFile(propertiesFile);
             props.store(new FileOutputStream(propertiesFile), null);
@@ -86,9 +89,8 @@ public class CloudLiftServicesPropertiesGenerator implements
         }
     }
 
-    Properties generateDBServiceProperties(CloudEnvironment cloudEnvironment) {
-        List<RdbmsServiceInfo> dbServiceInfos =
-            cloudEnvironment.getServiceInfos(RdbmsServiceInfo.class);
+    Properties generateDBServiceProperties(Cloud cloud) {
+        List<ServiceInfo> dbServiceInfos = cloud.getServiceInfos(DataSource.class);
         Properties props = new Properties();
         if (dbServiceInfos.size() == 0) {
             return props;
@@ -97,10 +99,10 @@ public class CloudLiftServicesPropertiesGenerator implements
         // MySql service and works only if there is one DB instance
         // associated with the application.
         if (dbServiceInfos.size() == 1) {
-			RdbmsServiceInfo serviceInfo = dbServiceInfos.get(0);
-            if (serviceInfo.getLabel().startsWith("mysql")) {
+			RelationalServiceInfo serviceInfo = (RelationalServiceInfo) dbServiceInfos.get(0);
+            if (serviceInfo instanceof MysqlServiceInfo) {
 				props.setProperty("db.class", MYSQL_DRIVER_CLASS_NAME);
-                props.setProperty("db.url", serviceInfo.getUrl());
+                props.setProperty("db.url", serviceInfo.getJdbcUrl());
                 props.setProperty("db.user", serviceInfo.getUserName());
                 props.setProperty("db.pass", serviceInfo.getPassword());
                 return props;

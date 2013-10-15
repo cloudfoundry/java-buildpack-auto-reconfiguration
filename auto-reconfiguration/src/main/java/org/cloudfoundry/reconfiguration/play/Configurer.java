@@ -9,8 +9,9 @@ import java.util.Set;
 import java.util.regex.Pattern;
 
 import org.cloudfoundry.reconfiguration.CloudAutoStagingRuntimeException;
-import org.cloudfoundry.reconfiguration.Constants;
-import org.cloudfoundry.runtime.env.RdbmsServiceInfo;
+import org.springframework.cloud.service.common.MysqlServiceInfo;
+import org.springframework.cloud.service.common.PostgresqlServiceInfo;
+import org.springframework.cloud.service.common.RelationalServiceInfo;
 
 /**
  * Configures Play apps by setting service-related system properties for use by
@@ -57,7 +58,7 @@ public class Configurer {
 		if (autoconfigDisabled(props)) {
 			return;
 		}
-		RdbmsServiceInfo dbServiceInfo = appConfiguration.getDatabaseBinding();
+		RelationalServiceInfo dbServiceInfo = appConfiguration.getDatabaseBinding();
 		if (dbServiceInfo == null) {
 			System.out
 					.println("Found 0 or multiple database services bound to app.  Skipping auto-reconfiguration.");
@@ -146,18 +147,18 @@ public class Configurer {
 	 * @param dbServiceInfo
 	 *            The relational DB service bound to app
 	 */
-	private void configureDatabase(String dbName, Properties props, RdbmsServiceInfo dbServiceInfo) {
+	private void configureDatabase(String dbName, Properties props, RelationalServiceInfo dbServiceInfo) {
 		System.out.println("Auto-reconfiguring " + dbName);
-		System.setProperty("db." + dbName + ".url", dbServiceInfo.getUrl());
+		System.setProperty("db." + dbName + ".url", dbServiceInfo.getJdbcUrl());
 		System.setProperty("db." + dbName + ".user", dbServiceInfo.getUserName());
 		System.setProperty("db." + dbName + ".password", dbServiceInfo.getPassword());
-		if (dbServiceInfo.getLabel().startsWith(Constants.POSTGRES_LABEL_START)) {
+		if (dbServiceInfo instanceof PostgresqlServiceInfo) {
 			System.setProperty("db." + dbName + ".driver", PropertySetter.POSTGRES_DRIVER_CLASS);
-		} else if (dbServiceInfo.getLabel().startsWith(Constants.MYSQL_LABEL_START)){
+		} else if (dbServiceInfo instanceof MysqlServiceInfo){
 			System.setProperty("db." + dbName + ".driver", PropertySetter.MYSQL_DRIVER_CLASS);
 		} else {
-			throw new CloudAutoStagingRuntimeException("Failed to auto-reconfigure application. Unrecognized database service with label "
-					+ dbServiceInfo.getLabel() + " found.");
+			throw new CloudAutoStagingRuntimeException("Failed to auto-reconfigure application. Unrecognized database service "
+					+ dbServiceInfo.getClass().getName() + " found.");
 		}
 	}
 

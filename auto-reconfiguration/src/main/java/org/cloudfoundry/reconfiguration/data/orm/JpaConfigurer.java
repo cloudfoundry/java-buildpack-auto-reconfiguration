@@ -3,12 +3,15 @@
  */
 package org.cloudfoundry.reconfiguration.data.orm;
 
+import javax.sql.DataSource;
+
 import org.cloudfoundry.reconfiguration.Configurer;
-import org.cloudfoundry.reconfiguration.Constants;
 import org.cloudfoundry.reconfiguration.PropertyReplacer;
-import org.cloudfoundry.runtime.env.CloudEnvironment;
-import org.cloudfoundry.runtime.env.RdbmsServiceInfo;
 import org.springframework.beans.factory.support.DefaultListableBeanFactory;
+import org.springframework.cloud.Cloud;
+import org.springframework.cloud.service.ServiceInfo;
+import org.springframework.cloud.service.common.MysqlServiceInfo;
+import org.springframework.cloud.service.common.PostgresqlServiceInfo;
 
 /**
  * Implementation of {@link Configurer} that replaces the jpaProperties of
@@ -28,21 +31,21 @@ public class JpaConfigurer implements Configurer {
 
 	private PropertyReplacer propertyReplacer = new PropertyReplacer();
 
-	private CloudEnvironment cloudEnvironment;
+	private Cloud cloud;
 
-	public JpaConfigurer(CloudEnvironment cloudEnvironment) {
-		this.cloudEnvironment = cloudEnvironment;
+	public JpaConfigurer(Cloud cloud) {
+		this.cloud = cloud;
 	}
 
 	public boolean configure(DefaultListableBeanFactory beanFactory) {
 		boolean configured = false;
-		for (RdbmsServiceInfo service : cloudEnvironment.getServiceInfos(RdbmsServiceInfo.class)) {
-			if (service.getLabel().startsWith(Constants.POSTGRES_LABEL_START)) {
+		for (ServiceInfo serviceInfo : cloud.getServiceInfos(DataSource.class)) {
+			if (serviceInfo instanceof PostgresqlServiceInfo) {
 				propertyReplacer.replaceProperty(beanFactory,
 						"org.springframework.orm.jpa.AbstractEntityManagerFactoryBean",
 						APP_CLOUD_JPA_POSTGRESQL_REPLACEMENT_PROPERTIES, "jpaProperties");
 				configured = true;
-			} else if (service.getLabel().startsWith(Constants.MYSQL_LABEL_START)) {
+			} else if (serviceInfo instanceof MysqlServiceInfo) {
 				propertyReplacer.replaceProperty(beanFactory,
 						"org.springframework.orm.jpa.AbstractEntityManagerFactoryBean",
 						APP_CLOUD_JPA_MYSQL_REPLACEMENT_PROPERTIES, "jpaProperties");

@@ -1,18 +1,15 @@
 package org.cloudfoundry.reconfiguration.data.keyvalue;
 
 import static org.junit.Assert.assertFalse;
-import static org.mockito.Mockito.when;
 
-import java.util.ArrayList;
-import java.util.List;
-
-import org.cloudfoundry.reconfiguration.CloudEnvironmentMockingTest;
-import org.cloudfoundry.runtime.env.CloudEnvironment;
-import org.cloudfoundry.runtime.env.RedisServiceInfo;
+import org.apache.commons.lang3.tuple.Pair;
+import org.cloudfoundry.reconfiguration.AbstractCloudConfigurerTest;
 import org.junit.Assert;
 import org.junit.Test;
-import org.mockito.Mock;
 import org.springframework.beans.factory.support.DefaultListableBeanFactory;
+import org.springframework.cloud.Cloud;
+import org.springframework.cloud.CloudFactory;
+import org.springframework.cloud.service.common.RedisServiceInfo;
 import org.springframework.context.ApplicationContext;
 import org.springframework.data.redis.connection.RedisConnectionFactory;
 import org.springframework.data.redis.connection.jedis.JedisConnectionFactory;
@@ -29,28 +26,17 @@ import org.springframework.data.redis.connection.jedis.JedisConnectionFactory;
  *
  *
  * @author Jennifer Hickey
+ * @author Ramnivas Laddad
  *
  */
-public class RedisConfigurerTest extends CloudEnvironmentMockingTest {
-	@Mock
-	private RedisServiceInfo mockRedisServiceInfo;
-	@Mock
-	private RedisServiceInfo mockRedisServiceInfo2;
-
-	@Mock
-	private DefaultListableBeanFactory beanFactory;
-
+public class RedisConfigurerTest extends AbstractCloudConfigurerTest {
 	@Test
 	public void cloudRedisConnFactoryReplacesUserConnFactory() {
-		List<RedisServiceInfo> serviceInfos = new ArrayList<RedisServiceInfo>();
-		serviceInfos.add(mockRedisServiceInfo);
-		when(mockRedisServiceInfo.getHost()).thenReturn("cloudhost");
-		when(mockRedisServiceInfo.getPassword()).thenReturn("mypass");
-		when(mockRedisServiceInfo.getPort()).thenReturn(1234);
-		when(mockEnvironment.getServiceInfos(RedisServiceInfo.class)).thenReturn(serviceInfos);
-		ApplicationContext context = getTestApplicationContext("test-redis-context.xml");
-		JedisConnectionFactory replacedConnFactory = (JedisConnectionFactory) context.getBean("redisConnection",
-				RedisConnectionFactory.class);
+        RedisServiceInfo redisServiceInfo = new RedisServiceInfo("my-redis", "cloudhost", 1234, "mypass");
+		ApplicationContext context = getTestApplicationContext("test-redis-context.xml", redisServiceInfo);
+		JedisConnectionFactory replacedConnFactory = 
+		        (JedisConnectionFactory) context.getBean("redisConnection",RedisConnectionFactory.class);
+
 		Assert.assertEquals("cloudhost", replacedConnFactory.getHostName());
 		Assert.assertEquals("mypass", replacedConnFactory.getPassword());
 		Assert.assertEquals(1234, replacedConnFactory.getPort());
@@ -58,10 +44,10 @@ public class RedisConfigurerTest extends CloudEnvironmentMockingTest {
 
 	@Test
 	public void cloudRedisConnFactoryLeavesOriginalInPlaceIfMultipleBeansDetected() {
-		List<RedisServiceInfo> serviceInfos = new ArrayList<RedisServiceInfo>();
-		serviceInfos.add(mockRedisServiceInfo);
-		when(mockEnvironment.getServiceInfos(RedisServiceInfo.class)).thenReturn(serviceInfos);
-		ApplicationContext context = getTestApplicationContext("test-multiple-redis-context.xml");
+        RedisServiceInfo redisServiceInfo = new RedisServiceInfo("my-redis", "cloudhost", 1234, "mypass");
+
+		ApplicationContext context = getTestApplicationContext("test-multiple-redis-context.xml", redisServiceInfo);
+		
 		JedisConnectionFactory replacedConnFactory = (JedisConnectionFactory) context.getBean("redisConnection",
 				RedisConnectionFactory.class);
 		Assert.assertEquals("localhost", replacedConnFactory.getHostName());
@@ -71,13 +57,12 @@ public class RedisConfigurerTest extends CloudEnvironmentMockingTest {
 
 	@Test
 	public void cloudRedisConnFactoryLeavesOriginalInPlaceIfMultipleServicesDetected() {
-		List<RedisServiceInfo> serviceInfos = new ArrayList<RedisServiceInfo>();
-		serviceInfos.add(mockRedisServiceInfo);
-		serviceInfos.add(mockRedisServiceInfo2);
-		when(mockEnvironment.getServiceInfos(RedisServiceInfo.class)).thenReturn(serviceInfos);
-		ApplicationContext context = getTestApplicationContext("test-redis-context.xml");
-		JedisConnectionFactory replacedConnFactory = (JedisConnectionFactory) context.getBean("redisConnection",
-				RedisConnectionFactory.class);
+        RedisServiceInfo redisServiceInfo1 = new RedisServiceInfo("my-redis1", "cloudhost", 1234, "mypass");
+        RedisServiceInfo redisServiceInfo2 = new RedisServiceInfo("my-redis2", "cloudhost", 1234, "mypass");
+
+        ApplicationContext context = getTestApplicationContext("test-redis-context.xml", redisServiceInfo1, redisServiceInfo2);
+		JedisConnectionFactory replacedConnFactory = 
+		        (JedisConnectionFactory) context.getBean("redisConnection", RedisConnectionFactory.class);
 		Assert.assertEquals("localhost", replacedConnFactory.getHostName());
 		Assert.assertEquals("localpass", replacedConnFactory.getPassword());
 		Assert.assertEquals(6789, replacedConnFactory.getPort());
@@ -85,25 +70,27 @@ public class RedisConfigurerTest extends CloudEnvironmentMockingTest {
 
 	@Test
 	public void cloudRedisConnFactoryLeavesOriginalInPlaceIfNoServicesDetected() {
-		List<RedisServiceInfo> serviceInfos = new ArrayList<RedisServiceInfo>();
-		when(mockEnvironment.getServiceInfos(RedisServiceInfo.class)).thenReturn(serviceInfos);
 		ApplicationContext context = getTestApplicationContext("test-redis-context.xml");
-		JedisConnectionFactory replacedConnFactory = (JedisConnectionFactory) context.getBean("redisConnection",
-				RedisConnectionFactory.class);
+		JedisConnectionFactory replacedConnFactory = 
+		        (JedisConnectionFactory) context.getBean("redisConnection", RedisConnectionFactory.class);
 		Assert.assertEquals("localhost", replacedConnFactory.getHostName());
 		Assert.assertEquals("localpass", replacedConnFactory.getPassword());
 		Assert.assertEquals(6789, replacedConnFactory.getPort());
 	}
 
 	@Test
-	public void doesNothingIfRedisConnFactoryClassNotFound() {
-		RedisConfigurer configurer = new StubRedisConfigurer(mockEnvironment);
-		assertFalse(configurer.configure(beanFactory));
+	public void doesNothingIfRedisConnectionFactoryClassNotFound() {
+	    // Set up such that conditions match auto-reconfig requirements (except for what subclasses configuer does)
+        RedisServiceInfo redisServiceInfo = new RedisServiceInfo("my-redis", "cloudhost", 1234, "mypass");
+        Pair<Cloud, DefaultListableBeanFactory> cloudAndBeanFactory = getCloudAndBeanFactory("test-redis-context.xml", redisServiceInfo);
+	    
+		RedisConfigurer configurer = new RedisConnectionFactoryNotFoundRedisConfigurer(cloudAndBeanFactory.getLeft());
+		assertFalse(configurer.configure(cloudAndBeanFactory.getRight()));
 	}
 
-	private class StubRedisConfigurer extends RedisConfigurer {
-		public StubRedisConfigurer(CloudEnvironment cloudEnvironment) {
-			super(cloudEnvironment);
+	private class RedisConnectionFactoryNotFoundRedisConfigurer extends RedisConfigurer {
+		public RedisConnectionFactoryNotFoundRedisConfigurer(Cloud cloud) {
+			super(cloud);
 		}
 
 		@Override
@@ -111,5 +98,4 @@ public class RedisConfigurerTest extends CloudEnvironmentMockingTest {
 			return null;
 		}
 	}
-
 }
