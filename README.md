@@ -13,13 +13,13 @@ automatically includes the auto-reconfiguration library as needed.
 
 For more information, please see the following blogs for more details:
 
-[Cloud Foundry Services With Spring, Part 1 : The Basics](http://blog.springsource.org/2011/10/13/using-cloud-foundry-services-with-spring-part-1-the-basics/)
+[Cloud Foundry Services With Spring, Part 1 : The Basics](http://spring.io/blog/2011/10/13/using-cloud-foundry-services-with-spring-part-1-the-basics)
 
-[Cloud Foundry Services With Spring, Part 2 : Autoreconfiguration](http://blog.springsource.com/2011/11/04/using-cloud-foundry-services-with-spring-part-2-auto-reconfiguration/)
+[Cloud Foundry Services With Spring, Part 2 : Autoreconfiguration](http://spring.io/blog/2011/11/04/using-cloud-foundry-services-with-spring-part-2-auto-reconfiguration)
 
-[Cloud Foundry Services With Spring, Part 3 : The Cloud Namespace](http://blog.springsource.org/2011/11/09/using-cloud-foundry-services-with-spring-applications-part-3-the-cloud-namespace/)
+[Cloud Foundry Services With Spring, Part 3 : The Cloud Namespace](http://spring.io/blog/2011/11/09/using-cloud-foundry-services-with-spring-part-3-the-cloud-namespace)
 
-[Cloud Foundry Services With Spring, Part 4 : Spring Profiles](http://blog.springsource.org/2011/11/10/using-cloud-foundry-services-with-spring-part-4-%E2%80%93-spring-profiles/)
+[Cloud Foundry Services With Spring, Part 4 : Spring Profiles](http://spring.io/blog/2011/11/10/using-cloud-foundry-services-with-spring-part-4-spring-profiles)
 
 # License
 
