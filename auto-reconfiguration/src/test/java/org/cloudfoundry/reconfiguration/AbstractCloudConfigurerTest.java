@@ -23,15 +23,21 @@ import org.springframework.context.support.GenericApplicationContext;
  *
  */
 abstract public class AbstractCloudConfigurerTest {
-    private static final String MOCK_CLOUD_BEAN_NAME = "mockCloud";
+    protected static final String MOCK_CLOUD_BEAN_NAME = "mockCloud";
     
     protected ApplicationContext getTestApplicationContext(String fileName, ServiceInfo... serviceInfos) {
         final CloudConnector stubCloudConnector = CloudTestUtil.getTestCloudConnector(serviceInfos);
         
-        String expandedFileName = getClass().getPackage().getName().replaceAll("\\.", "/") + "/" + fileName;
-        return new ClassPathXmlApplicationContext(new String[]{
-                expandedFileName, 
-                "META-INF/cloud/cloudfoundry-auto-reconfiguration-context.xml"}) {
+        String[] appContextFiles = null;
+        if (fileName == null) {
+            appContextFiles = new String[]{"META-INF/cloud/cloudfoundry-auto-reconfiguration-context.xml"};
+        } else {
+            String expandedFileName = getClass().getPackage().getName().replaceAll("\\.", "/") + "/" + fileName;
+            appContextFiles = new String[]{expandedFileName, 
+                    "META-INF/cloud/cloudfoundry-auto-reconfiguration-context.xml"};
+        }
+        
+        return new ClassPathXmlApplicationContext(appContextFiles) {
             @Override
             protected void prepareBeanFactory(ConfigurableListableBeanFactory beanFactory) {
                 CloudFactory cloudFactory = new CloudFactory();
@@ -42,23 +48,10 @@ abstract public class AbstractCloudConfigurerTest {
         };
     }
     
-    protected GenericApplicationContext getTestAnnotationConfigApplicationContext(String packageName, ServiceInfo... serviceInfos) {
-        final CloudConnector stubCloudConnector = CloudTestUtil.getTestCloudConnector(serviceInfos);
-
-        return new AnnotationConfigApplicationContext(packageName) {
-            @Override
-            protected void prepareBeanFactory(ConfigurableListableBeanFactory beanFactory) {
-                CloudFactory cloudFactory = new CloudFactory();
-                cloudFactory.registerCloudConnector(stubCloudConnector);
-                getBeanFactory().registerSingleton(MOCK_CLOUD_BEAN_NAME, cloudFactory);
-                super.prepareBeanFactory(beanFactory);
-            }
-        };
-    }    
-    
     protected Pair<Cloud, DefaultListableBeanFactory> getCloudAndBeanFactory(String fileName, ServiceInfo... serviceInfos) {
         ApplicationContext context = getTestApplicationContext(fileName, serviceInfos);
-        CloudFactory cloudFactory = context.getBean(CloudFactory.class);
+        // Since we want tests to be run against Spring 2.5, we can't use getBean(Class<T>) that was introduced in Spring 3.0
+        CloudFactory cloudFactory = (CloudFactory) context.getBean(MOCK_CLOUD_BEAN_NAME);
         
         return Pair.of(cloudFactory.getCloud(), (DefaultListableBeanFactory)context.getAutowireCapableBeanFactory());
     }

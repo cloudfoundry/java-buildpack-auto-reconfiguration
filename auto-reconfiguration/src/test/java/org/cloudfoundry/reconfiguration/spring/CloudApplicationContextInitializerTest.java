@@ -10,38 +10,30 @@ import static org.mockito.Mockito.when;
 
 import java.util.Properties;
 
+import org.cloudfoundry.reconfiguration.AbstractCloudConfigurerTest;
 import org.junit.Before;
 import org.junit.Test;
-import org.springframework.cloud.Cloud;
+import org.springframework.cloud.test.CloudTestUtil.StubServiceInfo;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.support.GenericApplicationContext;
 import org.springframework.core.Ordered;
 import org.springframework.core.env.ConfigurableEnvironment;
-import org.springframework.core.env.StandardEnvironment;
 
-public class CloudApplicationContextInitializerTest {
+public class CloudApplicationContextInitializerTest extends AbstractCloudConfigurerTest {
 
 	private CloudApplicationContextInitializer initializer;
 	private ConfigurableApplicationContext applicationContext;
 	private ConfigurableEnvironment environment;
-	private Cloud cloud;
-	private Properties cloudProperties;
 
 	@Before
 	public void setup() {
 		initializer = new CloudApplicationContextInitializer();
-		applicationContext = new GenericApplicationContext();
-		environment = new StandardEnvironment();
-		applicationContext.setEnvironment(environment);
-		cloud = mock(Cloud.class);
-		cloudProperties = new Properties();
-		when(cloud.getCloudProperties()).thenReturn(cloudProperties);
-		initializer.setCloud(cloud);
 	}
 
 	@Test
 	public void notCloudFoundry() {
-	    initializer.setCloud(null);
+	    applicationContext = new GenericApplicationContext();
+	    environment = applicationContext.getEnvironment();
 		assertTrue(environment.acceptsProfiles("default"));
 
 		initializer.initialize(applicationContext);
@@ -52,9 +44,9 @@ public class CloudApplicationContextInitializerTest {
 
 	@Test
 	public void cloudProfile() {
-		assertTrue(environment.acceptsProfiles("default"));
-
+        applicationContext = (ConfigurableApplicationContext) getTestApplicationContext(null);
 		initializer.initialize(applicationContext);
+        environment = applicationContext.getEnvironment();
 
 		assertTrue(environment.acceptsProfiles("cloud"));
 		assertFalse(environment.acceptsProfiles("default"));
@@ -62,33 +54,23 @@ public class CloudApplicationContextInitializerTest {
 
 	@Test
 	public void propertySource() {
-		cloudProperties.setProperty("foo", "bar");
+        StubServiceInfo stubServiceInfo = new StubServiceInfo("my-stub", "cloudhost", 1234, "myuser", "mypass");
+        applicationContext = (ConfigurableApplicationContext) getTestApplicationContext(null, stubServiceInfo);
+        initializer.initialize(applicationContext);
+        environment = applicationContext.getEnvironment();
 
-		initializer.initialize(applicationContext);
+        assertEquals("my-stub", environment.getProperty("cloud.services.my-stub.id"));
+        assertEquals("cloudhost", environment.getProperty("cloud.services.my-stub.connection.host"));
+        assertEquals("1234", environment.getProperty("cloud.services.my-stub.connection.port"));
+        assertEquals("myuser", environment.getProperty("cloud.services.my-stub.connection.username"));
+        assertEquals("mypass", environment.getProperty("cloud.services.my-stub.connection.password"));
 
-		assertEquals("bar", environment.getProperty("foo"));
-		assertTrue(applicationContext.getEnvironment().getPropertySources().get("cloud") != null);
+        assertTrue(applicationContext.getEnvironment().getPropertySources().get("cloud") != null);
 	}
 
 	@Test
 	public void getOrder() {
 		Ordered ordered = initializer;
 		assertEquals(0, ordered.getOrder());
-	}
-
-	@Test
-	public void apiBreakage() {
-		environment = mock(ConfigurableEnvironment.class);
-		applicationContext.setEnvironment(environment);
-		try {
-			when(environment.getPropertySources()).thenThrow(new IllegalAccessError("API breakage"));
-			initializer.initialize(applicationContext);
-		}
-		catch (Throwable t) {
-			fail("All throwables should be caught");
-		}
-		finally {
-			verify(environment).getPropertySources();
-		}
 	}
 }

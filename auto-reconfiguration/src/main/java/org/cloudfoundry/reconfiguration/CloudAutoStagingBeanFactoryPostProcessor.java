@@ -14,6 +14,7 @@ import org.cloudfoundry.reconfiguration.data.document.MongoConfigurer;
 import org.cloudfoundry.reconfiguration.data.keyvalue.RedisConfigurer;
 import org.cloudfoundry.reconfiguration.data.relational.DataSourceConfigurer;
 import org.cloudfoundry.reconfiguration.messaging.RabbitConfigurer;
+import org.cloudfoundry.reconfiguration.util.CloudFactoryUtil;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.config.BeanFactoryPostProcessor;
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
@@ -52,18 +53,7 @@ public class CloudAutoStagingBeanFactoryPostProcessor implements BeanFactoryPost
 
 		DefaultListableBeanFactory defaultListableBeanFactory = (DefaultListableBeanFactory) beanFactory;
 
-		// defaultListableBeanFactory.getBean(CloudEnvironment.class) will do,
-		// but we go through a mechanism that will work for spring-2.5.x as well
-		Map<String, CloudFactory> cloudFactoryBeans = defaultListableBeanFactory.getBeansOfType(CloudFactory.class, true, false);
-		CloudFactory cloudFactory;
-		if (cloudFactoryBeans.size() > 1) {
-			logger.log(Level.INFO, "Multiple (" + cloudFactoryBeans.size() + ") CloudFactory beans found; zero or 1 expected");
-			return;
-		} else if (cloudFactoryBeans.size() == 1) {
-		    cloudFactory = cloudFactoryBeans.entrySet().iterator().next().getValue();
-		} else {
-		    cloudFactory = new CloudFactory();
-		}
+		CloudFactory cloudFactory = CloudFactoryUtil.getOrCreateCloudFactory(defaultListableBeanFactory, logger);
 		
 		Cloud cloud = cloudFactory.getCloud();
 		
