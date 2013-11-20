@@ -6,7 +6,7 @@
 	<artifactId>auto-reconfiguration</artifactId>
 	<packaging>jar</packaging>
 	<name>auto-reconfiguration</name>
-	<version>0.7.2</version>
+	<version>0.7.3.BUILD-SNAPSHOT</version>
 
 	<properties>
 		<java.version>1.6</java.version>
@@ -257,9 +257,9 @@
 	<build>
 		<extensions>
 			<extension>
-				<groupId>org.springframework.build.aws</groupId>
-				<artifactId>org.springframework.build.aws.maven</artifactId>
-				<version>3.0.0.RELEASE</version>
+				<groupId>org.springframework.build</groupId>
+				<artifactId>aws-maven</artifactId>
+				<version>4.4.0.RELEASE</version>
 			</extension>
 		</extensions>
 		<plugins>
