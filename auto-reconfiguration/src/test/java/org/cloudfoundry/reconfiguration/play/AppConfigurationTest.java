@@ -14,13 +14,18 @@ import java.util.List;
 import java.util.Properties;
 import java.util.Set;
 
-import org.cloudfoundry.runtime.env.CloudEnvironment;
-import org.cloudfoundry.runtime.env.RdbmsServiceInfo;
+import javax.sql.DataSource;
+
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
+import org.springframework.cloud.Cloud;
+import org.springframework.cloud.service.ServiceInfo;
+import org.springframework.cloud.service.common.MysqlServiceInfo;
+import org.springframework.cloud.service.common.RelationalServiceInfo;
+import org.springframework.cloud.util.UriInfo;
 
 /**
  * Unit test of @{link {@link AppConfiguration}
@@ -33,12 +38,12 @@ public class AppConfigurationTest {
 	private AppConfiguration appConfiguration;
 
 	@Mock
-	private CloudEnvironment cloudEnvironment;
+	private Cloud cloud;
 
 	@Before
 	public void setup() {
 		MockitoAnnotations.initMocks(this);
-		appConfiguration = new AppConfiguration(cloudEnvironment);
+		appConfiguration = new AppConfiguration(cloud);
 	}
 
 	@After
@@ -144,68 +149,67 @@ public class AppConfigurationTest {
 	@SuppressWarnings("unchecked")
 	@Test
 	public void getDatabaseBindingNone() {
-		when(cloudEnvironment.getServiceInfos(RdbmsServiceInfo.class)).thenReturn(Collections.EMPTY_LIST);
+		when(cloud.getServiceInfos(DataSource.class)).thenReturn(Collections.EMPTY_LIST);
 		assertNull(appConfiguration.getDatabaseBinding());
 	}
 
 	@Test
 	public void getDatabaseBinding() {
-		RdbmsServiceInfo serviceInfo = ServiceHelper.createServiceInfo("myservice", "localhost", 5678, "foo",
-				"bar", "testdb", "mysql-5.1");
-		when(cloudEnvironment.getServiceInfos(RdbmsServiceInfo.class)).thenReturn(
-				Collections.singletonList(serviceInfo));
+		ServiceInfo serviceInfo = new MysqlServiceInfo("myservice", 
+		        new UriInfo("mysql", "localhost", 5678, "foo", "bar", "testdb").toString());
+		when(cloud.getServiceInfos(DataSource.class)).thenReturn(	Collections.singletonList(serviceInfo));
 		assertEquals(serviceInfo, appConfiguration.getDatabaseBinding());
 	}
 
 	@Test
 	public void getDatabaseBindingMultiple() {
-		RdbmsServiceInfo serviceInfo = ServiceHelper.createServiceInfo("myservice", "localhost", 5678, "foo",
-				"bar", "testdb", "mysql-5.1");
-		RdbmsServiceInfo serviceInfo2 = ServiceHelper.createServiceInfo("myservice2", "localhost", 1234,
-				"joe", "pwd", "testdb2", "mysql-5.1");
-		List<RdbmsServiceInfo> services = new ArrayList<RdbmsServiceInfo>();
+        ServiceInfo serviceInfo = new MysqlServiceInfo("myservice", 
+                new UriInfo("mysql", "localhost", 5678, "foo", "bar", "testdb").toString());
+        ServiceInfo serviceInfo2 = new MysqlServiceInfo("myservice2", 
+                new UriInfo("mysql", "localhost", 1234, "joe", "pwd", "testdb2").toString());
+		List<ServiceInfo> services = new ArrayList<ServiceInfo>();
 		services.add(serviceInfo);
 		services.add(serviceInfo2);
-		when(cloudEnvironment.getServiceInfos(RdbmsServiceInfo.class)).thenReturn(services);
+		when(cloud.getServiceInfos(DataSource.class)).thenReturn(services);
 		assertNull(appConfiguration.getDatabaseBinding());
 	}
 
 	@Test
 	public void getDatabaseBindingMultipleOneNamedProduction() {
-		RdbmsServiceInfo serviceInfo = ServiceHelper.createServiceInfo("myservice", "localhost", 5678, "foo",
-				"bar", "testdb", "mysql-5.1");
-		RdbmsServiceInfo serviceInfo2 = ServiceHelper.createServiceInfo("production", "localhost", 1234,
-				"joe", "pwd", "testdb2", "mysql-5.1");
-		List<RdbmsServiceInfo> services = new ArrayList<RdbmsServiceInfo>();
+        ServiceInfo serviceInfo = new MysqlServiceInfo("myservice", 
+                new UriInfo("mysql", "localhost", 5678, "foo", "bar", "testdb").toString());
+        ServiceInfo serviceInfo2 = new MysqlServiceInfo("production", 
+                new UriInfo("mysql", "localhost", 1234, "joe", "pwd", "testdb2").toString());
+		List<ServiceInfo> services = new ArrayList<ServiceInfo>();
 		services.add(serviceInfo);
 		services.add(serviceInfo2);
-		when(cloudEnvironment.getServiceInfos(RdbmsServiceInfo.class)).thenReturn(services);
+		when(cloud.getServiceInfos(DataSource.class)).thenReturn(services);
 		assertEquals(serviceInfo2, appConfiguration.getDatabaseBinding());
 	}
 
 	@Test
 	public void getDatabaseBindingMultipleOneNamedProd() {
-		RdbmsServiceInfo serviceInfo = ServiceHelper.createServiceInfo("myservice", "localhost", 5678, "foo",
-				"bar", "testdb", "mysql-5.1");
-		RdbmsServiceInfo serviceInfo2 = ServiceHelper.createServiceInfo("myprod", "localhost", 1234, "joe",
-				"pwd", "testdb2", "mysql-5.1");
-		List<RdbmsServiceInfo> services = new ArrayList<RdbmsServiceInfo>();
+        ServiceInfo serviceInfo = new MysqlServiceInfo("myservice", 
+                new UriInfo("mysql", "localhost", 5678, "foo", "bar", "testdb").toString());
+        ServiceInfo serviceInfo2 = new MysqlServiceInfo("myprod", 
+                new UriInfo("mysql", "localhost", 1234, "joe", "pwd", "testdb2").toString());
+		List<ServiceInfo> services = new ArrayList<ServiceInfo>();
 		services.add(serviceInfo);
 		services.add(serviceInfo2);
-		when(cloudEnvironment.getServiceInfos(RdbmsServiceInfo.class)).thenReturn(services);
+		when(cloud.getServiceInfos(DataSource.class)).thenReturn(services);
 		assertEquals(serviceInfo2, appConfiguration.getDatabaseBinding());
 	}
 
 	@Test
 	public void getDatabaseBindingMultipleTwoNamedProduction() {
-		RdbmsServiceInfo serviceInfo = ServiceHelper.createServiceInfo("myprod", "localhost", 5678, "foo",
-				"bar", "testdb", "mysql-5.1");
-		RdbmsServiceInfo serviceInfo2 = ServiceHelper.createServiceInfo("production", "localhost", 1234,
-				"joe", "pwd", "testdb2", "mysql-5.1");
-		List<RdbmsServiceInfo> services = new ArrayList<RdbmsServiceInfo>();
+        ServiceInfo serviceInfo = new MysqlServiceInfo("myprod", 
+                new UriInfo("mysql", "localhost", 5678, "foo", "bar", "testdb").toString());
+        ServiceInfo serviceInfo2 = new MysqlServiceInfo("myprod", 
+                new UriInfo("mysql", "localhost", 1234, "joe", "pwd", "testdb2").toString());
+		List<ServiceInfo> services = new ArrayList<ServiceInfo>();
 		services.add(serviceInfo);
 		services.add(serviceInfo2);
-		when(cloudEnvironment.getServiceInfos(RdbmsServiceInfo.class)).thenReturn(services);
+		when(cloud.getServiceInfos(DataSource.class)).thenReturn(services);
 		assertNull(appConfiguration.getDatabaseBinding());
 	}
 

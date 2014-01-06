@@ -6,11 +6,11 @@
 	<artifactId>auto-reconfiguration</artifactId>
 	<packaging>jar</packaging>
 	<name>auto-reconfiguration</name>
-	<version>0.7.3.BUILD-SNAPSHOT</version>
+	<version>0.8.0.BUILD-SNAPSHOT</version>
 
 	<properties>
 		<java.version>1.6</java.version>
-		<cloudfoundry.runtime.version>0.8.6</cloudfoundry.runtime.version>
+		<spring-cloud.version>0.9.3.BUILD-SNAPSHOT</spring-cloud.version>
 		<spring.amqp.version>1.0.0.RELEASE</spring.amqp.version>
 		<spring-data-mongo.version>1.0.1.RELEASE</spring-data-mongo.version>
 		<spring.version>3.1.0.RELEASE</spring.version>
@@ -19,10 +19,16 @@
 	</properties>
 
 	<dependencies>
+		<!-- CloudFoundry -->
 		<dependency>
-			<groupId>org.cloudfoundry</groupId>
-			<artifactId>cloudfoundry-runtime</artifactId>
-			<version>${cloudfoundry.runtime.version}</version>
+			<groupId>org.springframework.cloud</groupId>
+			<artifactId>cloudfoundry-connector</artifactId>
+			<version>${spring-cloud.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework.cloud</groupId>
+			<artifactId>spring-service-connector</artifactId>
+			<version>${spring-cloud.version}</version>
 		</dependency>
 		<!-- Spring -->
 		<dependency>
@@ -186,6 +192,12 @@
 		<dependency>
 			<groupId>org.springframework</groupId>
 			<artifactId>spring-jdbc</artifactId>
+			<version>${spring.version}</version>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework</groupId>
+			<artifactId>spring-test</artifactId>
 			<version>${spring.version}</version>
 			<scope>test</scope>
 		</dependency>

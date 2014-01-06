@@ -13,8 +13,12 @@ import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import org.cloudfoundry.runtime.env.CloudEnvironment;
-import org.cloudfoundry.runtime.env.RdbmsServiceInfo;
+import javax.sql.DataSource;
+
+import org.springframework.cloud.Cloud;
+import org.springframework.cloud.CloudFactory;
+import org.springframework.cloud.service.ServiceInfo;
+import org.springframework.cloud.service.common.RelationalServiceInfo;
 
 /**
  * The Play app configuration, including any CF services bound to the app
@@ -24,14 +28,14 @@ import org.cloudfoundry.runtime.env.RdbmsServiceInfo;
  */
 public class AppConfiguration {
 
-	private CloudEnvironment cloudEnvironment;
+	private Cloud cloud;
 
-	public AppConfiguration(CloudEnvironment cloudEnvironment) {
-		this.cloudEnvironment = cloudEnvironment;
+	public AppConfiguration(Cloud cloud) {
+		this.cloud = cloud;
 	}
 	
 	public AppConfiguration() {
-		this.cloudEnvironment = new CloudEnvironment();
+		this.cloud = new CloudFactory().getCloud();
 	}
 	
 
@@ -122,19 +126,19 @@ public class AppConfiguration {
 	 *         single database service whose name ends with 'production' or
 	 *         'prod'. Null if no such service is found.
 	 */
-	public RdbmsServiceInfo getDatabaseBinding() {
-		List<RdbmsServiceInfo> dbservices = cloudEnvironment.getServiceInfos(RdbmsServiceInfo.class);
-		RdbmsServiceInfo serviceInfo = null;
+	public RelationalServiceInfo getDatabaseBinding() {
+		List<ServiceInfo> dbservices = cloud.getServiceInfos(DataSource.class);
+		RelationalServiceInfo serviceInfo = null;
 		if (dbservices.size() > 1) {
-			for (RdbmsServiceInfo dbservice : dbservices) {
-				if (dbservice.getServiceName().endsWith("production")
-						|| dbservice.getServiceName().endsWith("prod")) {
+			for (ServiceInfo dbservice : dbservices) {
+				if (dbservice.getId().endsWith("production")
+						|| dbservice.getId().endsWith("prod")) {
 					if (serviceInfo != null) {
 						System.out
 								.println("Multiple database services named '*.production' or '*.prod' found.");
 						return null;
 					}
-					serviceInfo = dbservice;
+					serviceInfo = (RelationalServiceInfo) dbservice;
 				}
 			}
 			if (serviceInfo == null) {
@@ -142,18 +146,13 @@ public class AppConfiguration {
 			}
 
 		} else if (dbservices.size() == 1) {
-			serviceInfo = dbservices.get(0);
+			serviceInfo = (RelationalServiceInfo) dbservices.get(0);
 		} else {
 			System.out.println("No database services found.");
 		}
 		return serviceInfo;
 	}
 	
-	public String getDatabaseLabel() {
-		RdbmsServiceInfo database = getDatabaseBinding();
-		return (database != null) ? database.getLabel() : null;
-	}
-
 	private Properties getPropertiesFromFile(String propFileName, boolean loadFromClasspath)
 			throws IOException {
 		Properties props = new Properties();

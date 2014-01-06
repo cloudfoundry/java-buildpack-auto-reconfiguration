@@ -1,14 +1,18 @@
 package org.cloudfoundry.reconfiguration.play;
 
 import java.util.List;
-import java.util.Properties;
 import java.util.Map.Entry;
+import java.util.Properties;
 import java.util.Set;
 
+import javax.sql.DataSource;
+
 import org.cloudfoundry.reconfiguration.CloudAutoStagingRuntimeException;
-import org.cloudfoundry.reconfiguration.Constants;
-import org.cloudfoundry.runtime.env.CloudEnvironment;
-import org.cloudfoundry.runtime.env.RdbmsServiceInfo;
+import org.springframework.cloud.Cloud;
+import org.springframework.cloud.service.ServiceInfo;
+import org.springframework.cloud.service.common.MysqlServiceInfo;
+import org.springframework.cloud.service.common.PostgresqlServiceInfo;
+import org.springframework.cloud.service.common.RelationalServiceInfo;
 
 /**
  * Sets system properties to be used by any Play app, even those with
@@ -21,14 +25,14 @@ import org.cloudfoundry.runtime.env.RdbmsServiceInfo;
  */
 public class PropertySetter {
 
-	private CloudEnvironment cloudEnvironment;
+	private Cloud cloud;
 
 	static final String MYSQL_DRIVER_CLASS = "com.mysql.jdbc.Driver";
 
 	static final String POSTGRES_DRIVER_CLASS = "org.postgresql.Driver";
 
-	public PropertySetter(CloudEnvironment cloudEnvironment) {
-		this.cloudEnvironment = cloudEnvironment;
+	public PropertySetter(Cloud cloud) {
+		this.cloud = cloud;
 	}
 
 	/**
@@ -37,33 +41,34 @@ public class PropertySetter {
 	 * db.default.url=${cloud.services.mysql.connection.url}
 	 */
 	public void setCloudProperties() {
-		Properties cloudProperties = cloudEnvironment.getCloudProperties();
+		Properties cloudProperties = cloud.getCloudProperties();
 		for (Entry<Object, Object> entry : cloudProperties.entrySet()) {
 			System.setProperty((String) entry.getKey(), (String) entry.getValue());
 		}
 		// Set driver and URL system properties
-		List<RdbmsServiceInfo> dbservices = cloudEnvironment.getServiceInfos(RdbmsServiceInfo.class);
-		for (RdbmsServiceInfo service : dbservices) {
-			System.setProperty("cloud.services." + service.getServiceName() + ".connection.url",
-					service.getUrl());
-			if (service.getLabel().startsWith(Constants.POSTGRES_LABEL_START)) {
-				System.setProperty("cloud.services." + service.getServiceName() + ".connection.driver",
+		List<ServiceInfo> dbservices = cloud.getServiceInfos(DataSource.class);
+		for (ServiceInfo serviceInfo : dbservices) {
+			RelationalServiceInfo dbServiceInfo = (RelationalServiceInfo) serviceInfo;
+			System.setProperty("cloud.services." + dbServiceInfo.getId() + ".connection.jdbcUrl",
+					dbServiceInfo.getJdbcUrl());
+			if (serviceInfo instanceof PostgresqlServiceInfo) {
+				System.setProperty("cloud.services." + dbServiceInfo.getId() + ".connection.driver",
 						POSTGRES_DRIVER_CLASS);
 				if (cloudProperties.containsKey("cloud.services.postgresql.connection.name")) {
 					System.setProperty("cloud.services.postgresql.connection.driver", POSTGRES_DRIVER_CLASS);
-					System.setProperty("cloud.services.postgresql.connection.url", service.getUrl());
+					System.setProperty("cloud.services.postgresql.connection.jdbcUrl", dbServiceInfo.getJdbcUrl());
 				}
-			} else if (service.getLabel().startsWith(Constants.MYSQL_LABEL_START)) {
+			} else if (serviceInfo instanceof MysqlServiceInfo) {
 				// Assume MYSQL
-				System.setProperty("cloud.services." + service.getServiceName() + ".connection.driver",
+				System.setProperty("cloud.services." + dbServiceInfo.getId() + ".connection.driver",
 						MYSQL_DRIVER_CLASS);
 				if (cloudProperties.containsKey("cloud.services.mysql.connection.name")) {
 					System.setProperty("cloud.services.mysql.connection.driver", MYSQL_DRIVER_CLASS);
-					System.setProperty("cloud.services.mysql.connection.url", service.getUrl());
+					System.setProperty("cloud.services.mysql.connection.jdbcUrl", dbServiceInfo.getJdbcUrl());
 				}
 			} else {
-				throw new CloudAutoStagingRuntimeException("Failed to auto-reconfigure application. Unrecognized database service with label "
-						+ service.getLabel() + " found.");
+				throw new CloudAutoStagingRuntimeException("Failed to auto-reconfigure application. Unrecognized database service "
+						+ dbServiceInfo.getClass().getName() + " found.");
 			}
 		}
 	}

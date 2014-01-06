@@ -14,14 +14,19 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Properties;
 
-import org.cloudfoundry.runtime.env.CloudEnvironment;
-import org.cloudfoundry.runtime.env.RdbmsServiceInfo;
+import javax.sql.DataSource;
+
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
+import org.springframework.cloud.Cloud;
+import org.springframework.cloud.service.ServiceInfo;
+import org.springframework.cloud.service.common.MysqlServiceInfo;
+import org.springframework.cloud.service.common.RelationalServiceInfo;
+import org.springframework.cloud.util.UriInfo;
 
 /**
  * Unit-tests for {@link CloudLiftServicesPropertiesGenerator}.
@@ -30,14 +35,14 @@ import org.mockito.MockitoAnnotations;
  *
  */
 public class CloudLiftServicesPropertiesGeneratorTest {
-    @Mock private RdbmsServiceInfo mockRdbmsServiceInfo1;
-    @Mock private RdbmsServiceInfo mockRdbmsServiceInfo2;
-    @Mock private CloudEnvironment mockEnvironment;
+    @Mock private RelationalServiceInfo mockRdbmsServiceInfo1;
+    @Mock private RelationalServiceInfo mockRdbmsServiceInfo2;
+    @Mock private Cloud mockCloud;
 
     private CloudLiftServicesPropertiesGenerator
         testLiftPropertiesGenerator;
     private String fileName = "/tmp/cloudLiftServicesProperties.props";
-    private String serviceJdbcUrl = "jdbc:mysql://10.20.20.40:1234/mysql-1";
+    private String serviceJdbcUrl = "jdbc:mysql://10.20.30.40:1234/mysql-1?user=testUser&password=testPassword";
     private String serviceUserName = "testUser";
     private String servicePassword = "testPassword";
 
@@ -86,7 +91,7 @@ public class CloudLiftServicesPropertiesGeneratorTest {
     public void cloudLiftServicesPropertiesGenerationFailsIfMultipleMysqlServicesPresent() {
         setUpMultipleRdbmsServicesMock();
 
-        testLiftPropertiesGenerator.generateDBServiceProperties(mockEnvironment);
+        testLiftPropertiesGenerator.generateDBServiceProperties(mockCloud);
     }
 
     @Test
@@ -95,7 +100,7 @@ public class CloudLiftServicesPropertiesGeneratorTest {
         setUpNoRdbmsServiceMock();
 
         Properties props = testLiftPropertiesGenerator.generateDBServiceProperties(
-            mockEnvironment);
+            mockCloud);
 
         Assert.assertTrue(props.isEmpty());
     }
@@ -106,7 +111,7 @@ public class CloudLiftServicesPropertiesGeneratorTest {
         setUpNoRdbmsServiceMock();
 
         testLiftPropertiesGenerator.generatePropertiesFile(
-                fileName, mockEnvironment);
+                fileName, mockCloud);
 
         Assert.assertFalse(new File(fileName).exists());
     }
@@ -117,7 +122,7 @@ public class CloudLiftServicesPropertiesGeneratorTest {
         setUpRdbmsServiceNotMysqlMock();
 
         testLiftPropertiesGenerator.generatePropertiesFile(
-                fileName, mockEnvironment);
+                fileName, mockCloud);
 
         Assert.assertFalse(new File(fileName).exists());
     }
@@ -128,7 +133,7 @@ public class CloudLiftServicesPropertiesGeneratorTest {
         setUpSingleMysqlServiceMock();
 
         Properties props = testLiftPropertiesGenerator.generateDBServiceProperties(
-            mockEnvironment);
+            mockCloud);
 
         Assert.assertEquals(
             CloudLiftServicesPropertiesGenerator.MYSQL_DRIVER_CLASS_NAME,
@@ -144,7 +149,7 @@ public class CloudLiftServicesPropertiesGeneratorTest {
         setUpSingleMysqlServiceMock();
 
         testLiftPropertiesGenerator.generatePropertiesFile(
-            fileName, mockEnvironment);
+            fileName, mockCloud);
         Properties properties = new Properties();
         properties.load(new FileInputStream(fileName));
 
@@ -157,48 +162,42 @@ public class CloudLiftServicesPropertiesGeneratorTest {
     }
 
     private void setUpNoRdbmsServiceMock() {
-        List<RdbmsServiceInfo> serviceInfos = new ArrayList<RdbmsServiceInfo>();
-        when(mockEnvironment.getServiceInfos(RdbmsServiceInfo.class)).
+        List<ServiceInfo> serviceInfos = new ArrayList<ServiceInfo>();
+        when(mockCloud.getServiceInfos(DataSource.class)).
             thenReturn(serviceInfos);
     }
 
     private void setUpSingleMysqlServiceMock() {
-        List<RdbmsServiceInfo> serviceInfos = new ArrayList<RdbmsServiceInfo>();
+        List<ServiceInfo> serviceInfos = new ArrayList<ServiceInfo>();
+        ServiceInfo mysqlServiceInfo = new MysqlServiceInfo("id", new UriInfo("mysql", "10.20.30.40", 1234, serviceUserName, servicePassword, "mysql-1").toString());
+        
+        serviceInfos.add(mysqlServiceInfo);
 
-        serviceInfos.add(mockRdbmsServiceInfo1);
-        when(mockRdbmsServiceInfo1.getLabel()).thenReturn("mysql-5.1");
-        when(mockRdbmsServiceInfo1.getUrl()).thenReturn(serviceJdbcUrl);
-        when(mockRdbmsServiceInfo1.getUserName()).thenReturn(serviceUserName);
-        when(mockRdbmsServiceInfo1.getPassword()).thenReturn(servicePassword);
-
-        when(mockEnvironment.getServiceInfos(RdbmsServiceInfo.class)).
+        when(mockCloud.getServiceInfos(DataSource.class)).
             thenReturn(serviceInfos);
     }
 
     private void setUpMultipleRdbmsServicesMock() {
-        List<RdbmsServiceInfo> serviceInfos = new ArrayList<RdbmsServiceInfo>();
+        List<ServiceInfo> serviceInfos = new ArrayList<ServiceInfo>();
 
         serviceInfos.add(mockRdbmsServiceInfo1);
-        when(mockRdbmsServiceInfo1.getLabel()).thenReturn("mysql-5.1");
-        when(mockRdbmsServiceInfo1.getUrl()).thenReturn(serviceJdbcUrl);
+        when(mockRdbmsServiceInfo1.getJdbcUrl()).thenReturn(serviceJdbcUrl);
         when(mockRdbmsServiceInfo1.getUserName()).thenReturn(serviceUserName);
         when(mockRdbmsServiceInfo1.getPassword()).thenReturn(servicePassword);
 
         serviceInfos.add(mockRdbmsServiceInfo2);
-        when(mockRdbmsServiceInfo2.getLabel()).thenReturn("mysql-5.1");
-        when(mockRdbmsServiceInfo2.getUrl()).thenReturn(serviceJdbcUrl);
+        when(mockRdbmsServiceInfo2.getJdbcUrl()).thenReturn(serviceJdbcUrl);
         when(mockRdbmsServiceInfo2.getUserName()).thenReturn(serviceUserName);
         when(mockRdbmsServiceInfo2.getPassword()).thenReturn(servicePassword);
 
-        when(mockEnvironment.getServiceInfos(RdbmsServiceInfo.class)).
+        when(mockCloud.getServiceInfos(DataSource.class)).
             thenReturn(serviceInfos);
     }
 
     private void setUpRdbmsServiceNotMysqlMock() {
-		List<RdbmsServiceInfo> serviceInfos = new ArrayList<RdbmsServiceInfo>();
+		List<ServiceInfo> serviceInfos = new ArrayList<ServiceInfo>();
 		serviceInfos.add(mockRdbmsServiceInfo1);
-        when(mockRdbmsServiceInfo1.getLabel()).thenReturn("postgresql-9.0");
-        when(mockEnvironment.getServiceInfos(RdbmsServiceInfo.class)).
+        when(mockCloud.getServiceInfos(DataSource.class)).
              thenReturn(serviceInfos);
     }
 }

@@ -1,11 +1,9 @@
 package org.cloudfoundry.reconfiguration.messaging;
 
 import org.cloudfoundry.reconfiguration.AbstractServiceConfigurer;
-import org.cloudfoundry.runtime.env.CloudEnvironment;
-import org.cloudfoundry.runtime.env.RabbitServiceInfo;
-import org.cloudfoundry.runtime.service.AbstractServiceCreator;
-import org.cloudfoundry.runtime.service.messaging.RabbitServiceCreator;
 import org.springframework.amqp.rabbit.connection.ConnectionFactory;
+import org.springframework.cloud.Cloud;
+import org.springframework.cloud.service.common.RabbitServiceInfo;
 
 /**
  * Implementation of {@link AbstractServiceConfigurer} that replaces a single
@@ -21,8 +19,8 @@ public class RabbitConfigurer extends AbstractServiceConfigurer<RabbitServiceInf
 
 	private static final String RABBIT_CONN_FACTORY_CLASS_NAME = "org.springframework.amqp.rabbit.connection.ConnectionFactory";
 
-	public RabbitConfigurer(CloudEnvironment cloudEnvironment) {
-		super(cloudEnvironment, RabbitServiceInfo.class);
+	public RabbitConfigurer(Cloud cloud) {
+		super(cloud, RabbitServiceInfo.class);
 	}
 
 	@Override
@@ -33,10 +31,5 @@ public class RabbitConfigurer extends AbstractServiceConfigurer<RabbitServiceInf
 	@Override
 	public String getServiceBeanName() {
 		return CF_RABBIT_CONN_FACTORY_NAME;
-	}
-
-	@Override
-	public AbstractServiceCreator<?, RabbitServiceInfo> getServiceCreator() {
-		return new RabbitServiceCreator();
 	}
 }

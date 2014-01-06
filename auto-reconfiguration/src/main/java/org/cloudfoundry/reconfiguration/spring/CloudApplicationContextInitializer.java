@@ -4,10 +4,13 @@ import java.util.Arrays;
 import java.util.LinkedHashSet;
 import java.util.Properties;
 import java.util.Set;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-import org.cloudfoundry.runtime.env.CloudEnvironment;
+import org.cloudfoundry.reconfiguration.util.CloudFactoryUtil;
+import org.springframework.cloud.Cloud;
+import org.springframework.cloud.CloudException;
+import org.springframework.cloud.CloudFactory;
 import org.springframework.context.ApplicationContextInitializer;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.core.Ordered;
@@ -42,32 +45,28 @@ import org.springframework.core.env.PropertySource;
  */
 public final class CloudApplicationContextInitializer implements ApplicationContextInitializer<ConfigurableApplicationContext>, Ordered {
 
-	// use JCL for logging.  Spring uses the JCL APIs, so we know they will be available
-	private static final Log logger = LogFactory.getLog(CloudApplicationContextInitializer.class);
+	private static final Logger logger = Logger.getLogger(CloudApplicationContextInitializer.class.getName());
 
 	private static final int DEFAULT_ORDER = 0;
 
 	private ConfigurableEnvironment springEnvironment;
-	private CloudEnvironment cloudFoundryEnvironment;
-
-	public CloudApplicationContextInitializer() {
-		cloudFoundryEnvironment = new CloudEnvironment();
-	}
+	private Cloud cloud;
 
 	@Override
 	public final void initialize(ConfigurableApplicationContext applicationContext) {
-		if (!cloudFoundryEnvironment.isCloudFoundry()) {
-			logger.info("Not running on Cloud Foundry, skipping initialization");
-			return;
-		}
-		try {
+        try {
+            CloudFactory cloudFactory = CloudFactoryUtil.getOrCreateCloudFactory(applicationContext.getBeanFactory(), logger);
+            cloud = cloudFactory.getCloud();
 			logger.info("Initializing Spring Environment for Cloud Foundry");
 			springEnvironment = applicationContext.getEnvironment();
 			addPropertySource(buildPropertySource());
 			addActiveProfile("cloud");
+        } catch (CloudException ex) {
+            logger.info("Not running on Cloud Foundry, skipping initialization");
+            return;
 		} catch (Throwable t) {
 			// be safe
-			logger.error("Unexpected exception on initialization: " + t.getMessage(), t);
+			logger.log(Level.SEVERE, "Unexpected exception on initialization: " + t.getMessage(), t);
 		}
 	}
 
@@ -77,13 +76,13 @@ public final class CloudApplicationContextInitializer implements ApplicationCont
 	}
 
 	private EnumerablePropertySource<?> buildPropertySource() {
-		Properties properties = cloudFoundryEnvironment.getCloudProperties();
+		Properties properties = cloud.getCloudProperties();
 		EnumerablePropertySource<?> source = new PropertiesPropertySource("cloud", properties);
 		return source;
 	}
 
 	private void addActiveProfile(String profile) {
-		logger.trace("Activating profile '" + profile + "'");
+		logger.log(Level.FINE, "Activating profile '" + profile + "'");
 		Set<String> profiles = new LinkedHashSet<String>();
 		profiles.addAll(Arrays.asList(springEnvironment.getActiveProfiles()));
 		profiles.add(profile);
@@ -93,18 +92,13 @@ public final class CloudApplicationContextInitializer implements ApplicationCont
 	}
 
 	private void addPropertySource(EnumerablePropertySource<?> source) {
-		if (logger.isTraceEnabled()) {
-			logger.trace("Adding property source '" + source.getName() + "'");
+		if (logger.isLoggable(Level.FINE)) {
+			logger.log(Level.FINE, "Adding property source '" + source.getName() + "'");
 			for (String name : source.getPropertyNames()) {
-				logger.trace(name + " = " + source.getProperty(name));
+			    logger.log(Level.FINE, name + " = " + source.getProperty(name));
 			}
-			logger.trace("End '" + source.getName() + "' properties");
+			logger.log(Level.FINE, "End '" + source.getName() + "' properties");
 		}
 		springEnvironment.getPropertySources().addLast(source);
 	}
-
-	void setCloudFoundryEnvironment(CloudEnvironment cloudFoundryEnvironment) {
-		this.cloudFoundryEnvironment = cloudFoundryEnvironment;
-	}
-
 }

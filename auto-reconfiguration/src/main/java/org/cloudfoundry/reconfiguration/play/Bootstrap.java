@@ -1,6 +1,7 @@
 package org.cloudfoundry.reconfiguration.play;
 
-import org.cloudfoundry.runtime.env.CloudEnvironment;
+import org.springframework.cloud.Cloud;
+import org.springframework.cloud.CloudFactory;
 
 import play.core.server.NettyServer;
 
@@ -14,8 +15,8 @@ import play.core.server.NettyServer;
 public class Bootstrap {
 
 	public static void main(String[] args) {
-		CloudEnvironment environment = new CloudEnvironment();
-		new Configurer(new AppConfiguration(environment), new PropertySetter(environment)).configure();
+		Cloud cloud = new CloudFactory().getCloud();
+		new Configurer(new AppConfiguration(cloud), new PropertySetter(cloud)).configure();
 		NettyServer.main(args);
 	}
 
