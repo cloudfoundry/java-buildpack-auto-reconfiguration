@@ -55,7 +55,7 @@ public final class CloudApplicationContextInitializer implements ApplicationCont
 	@Override
 	public final void initialize(ConfigurableApplicationContext applicationContext) {
         try {
-            CloudFactory cloudFactory = CloudFactoryUtil.getOrCreateCloudFactory(applicationContext.getBeanFactory(), logger);
+            CloudFactory cloudFactory = CloudFactoryUtil.getOrCreateCloudFactory(applicationContext, logger);
             cloud = cloudFactory.getCloud();
 			logger.info("Initializing Spring Environment for Cloud Foundry");
 			springEnvironment = applicationContext.getEnvironment();

@@ -6,8 +6,17 @@ import java.util.logging.Logger;
 
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
 import org.springframework.cloud.CloudFactory;
+import org.springframework.context.ConfigurableApplicationContext;
 
 public class CloudFactoryUtil {
+    public static CloudFactory getOrCreateCloudFactory(ConfigurableApplicationContext applicationContext, Logger logger) {
+        if (applicationContext.isActive()) {
+            return getOrCreateCloudFactory(applicationContext.getBeanFactory(), logger);
+        } else {
+            return new CloudFactory();
+        }
+    }
+    
     public static CloudFactory getOrCreateCloudFactory(ConfigurableListableBeanFactory defaultListableBeanFactory, Logger logger) {
         
         // defaultListableBeanFactory.getBean(CloudEnvironment.class) will do,
