@@ -43,7 +43,7 @@ public class PropertySetter {
 	public void setCloudProperties() {
 		Properties cloudProperties = cloud.getCloudProperties();
 		for (Entry<Object, Object> entry : cloudProperties.entrySet()) {
-			System.setProperty((String) entry.getKey(), (String) entry.getValue());
+			System.setProperty(entry.getKey().toString(), entry.getValue().toString());
 		}
 		// Set driver and URL system properties
 		List<ServiceInfo> dbservices = cloud.getServiceInfos(DataSource.class);
