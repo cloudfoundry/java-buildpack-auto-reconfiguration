@@ -6,7 +6,7 @@
 	<artifactId>play-jpa-plugin</artifactId>
 	<packaging>jar</packaging>
 	<name>play-jpa-plugin</name>
-	<version>0.8.2</version>
+	<version>0.8.3.BUILD-SNAPSHOT</version>
 	<dependencies>
 		<dependency>
 			<groupId>play</groupId>
@@ -17,7 +17,7 @@
 		<dependency>
 			<groupId>org.cloudfoundry</groupId>
 			<artifactId>auto-reconfiguration</artifactId>
-			<version>0.8.2</version>
+			<version>0.8.3.BUILD-SNAPSHOT</version>
 		</dependency>
 		<dependency>
 			<groupId>junit</groupId>

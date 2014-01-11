@@ -77,7 +77,7 @@ public class AppConfigurationTest {
 		Properties expected = new Properties();
 		expected.put("db.default.user", "sa");
 		expected.put("db.default.password", "foo");
-		expected.put("db.default.driver", "com.mysql.jdbc.Driver");
+		expected.put("db.default.driver", "org.mariadb.jdbc.Driver");
 		expected.put("db.default.url", "\"jdbc:mysql://localhost:3306/testdb\"");
 		expected.put("db.other.driver", "org.h2.Driver");
 		expected.put("db.other.url", "\"jdbc:h2:mem:play\"");
@@ -90,9 +90,9 @@ public class AppConfigurationTest {
 		Properties expected = new Properties();
 		expected.put("db.default.user", "sa");
 		expected.put("db.default.password", "foo");
-		expected.put("db.default.driver", "com.mysql.jdbc.Driver");
+		expected.put("db.default.driver", "org.mariadb.jdbc.Driver");
 		expected.put("db.default.url", "\"jdbc:mysql://localhost:3306/testdb\"");
-		expected.put("db.other.driver", "com.mysql.jdbc.Driver");
+		expected.put("db.other.driver", "org.mariadb.jdbc.Driver");
 		expected.put("db.other.url", "\"jdbc:h2:mem:play\"");
 		expected.put("foo", "bar");
 		expected.put("application.name", "Test");

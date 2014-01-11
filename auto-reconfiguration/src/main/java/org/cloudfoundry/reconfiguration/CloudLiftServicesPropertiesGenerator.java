@@ -34,7 +34,7 @@ public class CloudLiftServicesPropertiesGenerator implements
 
     static final String PROPERTIES_FILE_PATH =
         "webapps/ROOT/WEB-INF/classes/props/";
-    static final String MYSQL_DRIVER_CLASS_NAME = "com.mysql.jdbc.Driver";
+    static final String MYSQL_DRIVER_CLASS_NAME = "org.mariadb.jdbc.Driver";
     static final String PROPERTIES_FILE_SUFFIX = ".props";
 
     @Override

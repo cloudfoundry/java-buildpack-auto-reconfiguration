@@ -27,7 +27,7 @@ public class PropertySetter {
 
 	private Cloud cloud;
 
-	static final String MYSQL_DRIVER_CLASS = "com.mysql.jdbc.Driver";
+	static final String MYSQL_DRIVER_CLASS = "org.mariadb.jdbc.Driver";
 
 	static final String POSTGRES_DRIVER_CLASS = "org.postgresql.Driver";
 
