@@ -69,15 +69,15 @@ public class DataSourceConfigurer extends AbstractServiceConfigurer<RelationalSe
 	@Override
 	protected String[] getBeanNames(DefaultListableBeanFactory beanFactory) {
 		String[] dataSourceBeanNames = super.getBeanNames(beanFactory);
-		Class<?> txAwareDSClass = loadClass("org.springframework.jdbc.datasource.TransactionAwareDataSourceProxy");
-		if (txAwareDSClass == null) {
+		Class<?> delegatingDSClass = loadClass("org.springframework.jdbc.datasource.DelegatingDataSource");
+		if (delegatingDSClass == null) {
 			return dataSourceBeanNames;
 		}
-		// In Scala, could have been one line and not even need contains()!
-		String[] txAwareDSBeanNames = beanFactory.getBeanNamesForType(txAwareDSClass,true,false);
+
+		String[] delegatingDSBeanNames = beanFactory.getBeanNamesForType(delegatingDSClass,true,false);
 		List<String> realDSBeanNames = new ArrayList<String>();
 		for (String dataSourceBeanName : dataSourceBeanNames) {
-			if (!contains(txAwareDSBeanNames, dataSourceBeanName)) {
+			if (!contains(delegatingDSBeanNames, dataSourceBeanName)) {
 				// Skip singletons
 				try {
 					if (getBeanDefinition(beanFactory, dataSourceBeanName) != null) {

@@ -43,7 +43,7 @@ abstract public class AbstractServiceConfigurer<SI extends ServiceInfo> implemen
 			return false;
 		} else if (beanNames.length > 1) {
 			logger.log(Level.INFO, "More than 1 (" + beanNames.length + ") beans of type " + getBeanClass()
-					+ "found in application context. Skipping autoreconfiguration.");
+					+ " found in application context. Skipping autoreconfiguration.");
 			return false;
 		}
 		List<ServiceInfo> cloudServices = cloud.getServiceInfos(serviceConnectorType);
