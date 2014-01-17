@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="SonarQubeConfiguration">
+    <option name="moduleKeys">
+      <map>
+        <entry key="auto-reconfiguration" value="org.cloudfoundry:auto-reconfiguration" />
+        <entry key="java-buildpack-auto-reconfiguration" value="org.cloudfoundry:java-buildpack-auto-reconfiguration" />
+        <entry key="play-jpa-plugin" value="org.cloudfoundry:play-jpa-plugin" />
+      </map>
+    </option>
+    <option name="projectKey" value="org.cloudfoundry:java-buildpack-auto-reconfiguration" />
+    <option name="serverId" value="CloudFoundry" />
+  </component>
+</project>
+

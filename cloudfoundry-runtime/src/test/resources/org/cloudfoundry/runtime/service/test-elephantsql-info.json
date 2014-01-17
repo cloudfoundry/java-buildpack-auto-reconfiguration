@@ -1,8 +1,0 @@
-{
-	"name":"$serviceName",
-	"label":"elephantsql-dev-$version",
-	"plan":"turtle",
-	"credentials":{
-		"uri":"postgres://$user:$password@$hostname:$port/$name"
-	}
-}

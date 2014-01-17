@@ -1,7 +1,0 @@
-{
-        "name": "$serviceName",
-        "label": "user-provided",
-        "credentials": {
-            "userKey": "userValue"
-        }
-}

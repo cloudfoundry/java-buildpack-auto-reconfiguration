@@ -1,0 +1,5 @@
+# Application Context Initializers
+org.springframework.context.ApplicationContextInitializer=\
+org.cloudfoundry.reconfiguration.spring.CloudProfileApplicationContextInitializer,\
+org.cloudfoundry.reconfiguration.spring.CloudPropertySourceApplicationContextInitializer,\
+org.cloudfoundry.reconfiguration.spring.CloudAutoReconfigurationApplicationContextInitializer

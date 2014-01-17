@@ -1,0 +1,24 @@
+<project name="auto_reconfiguration" default="shade-relocate">
+
+    <target name="shade-relocate">
+        <tempfile property="temp" destDir="${java.io.tmpdir}" prefix="shade" deleteOnExit="true"/>
+        <property name="services" value="${temp}/META-INF/services"/>
+        <property name="cloud" value="${temp}/META-INF/cloud"/>
+
+        <mkdir dir="${temp}"/>
+        <unjar src="${artifact}" dest="${temp}"/>
+
+        <move todir="${services}">
+            <fileset dir="${services}">
+                <include name="org.springframework.cloud.*"/>
+            </fileset>
+            <mapper type="glob" from="*" to="${prefix}.*"/>
+            <filterchain>
+                <prefixlines prefix="${prefix}."/>
+            </filterchain>
+        </move>
+
+        <jar destfile="${artifact}" basedir="${temp}"/>
+    </target>
+
+</project>

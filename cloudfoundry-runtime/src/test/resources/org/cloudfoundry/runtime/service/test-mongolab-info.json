@@ -1,8 +1,0 @@
-{
-        "name": "$serviceName",
-        "label": "mongolab",
-        "plan": "free",
-        "credentials": {
-            "uri": "mongodb://$username:$password@$hostname:$port/$db"
-        }
-}
