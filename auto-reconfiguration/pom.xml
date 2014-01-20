@@ -6,7 +6,7 @@
 	<artifactId>auto-reconfiguration</artifactId>
 	<packaging>jar</packaging>
 	<name>auto-reconfiguration</name>
-	<version>0.8.4</version>
+	<version>0.8.5.BUILD-SNAPSHOT</version>
 
 	<properties>
 		<java.version>1.6</java.version>
@@ -328,7 +328,7 @@
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-shade-plugin</artifactId>
-				<version>1.4</version>
+				<version>2.2</version>
 				<executions>
 					<execution>
 						<phase>package</phase>
@@ -345,9 +345,9 @@
 							</artifactSet>
 							<filters>
 								<filter>
-									<artifact>org.cloudfoundry:cloudfoundry-runtime</artifact>
+									<artifact>org.springframework.cloud:*</artifact>
 									<excludes>
-										<exclude>META-INF/*</exclude>
+										<exclude>META-INF/*</exclude>									
 										<exclude>META-INF/maven*/**</exclude>
 										<exclude>**/*.xsd</exclude>
 										<exclude>**/*.gif</exclude>
@@ -356,8 +356,8 @@
 							</filters>
 							<relocations>
 								<relocation>
-									<pattern>org.cloudfoundry.runtime</pattern>
-									<shadedPattern>org.cloudfoundry.org.cloudfoundry.runtime</shadedPattern>
+									<pattern>org.springframework.cloud</pattern>
+									<shadedPattern>auto_reconfig.org.springframework.cloud</shadedPattern>
 								</relocation>
 							</relocations>
 						</configuration>
@@ -371,6 +371,19 @@
 				<artifactId>maven-antrun-plugin</artifactId>
 				<version>1.6</version>
 				<executions>
+					<execution>
+						<id>Shading-Service-Relocation</id>
+						<phase>package</phase>
+						<goals>
+							<goal>run</goal>
+						</goals>
+						<configuration>
+							<target>
+								<property name="version" value="${version}" />
+								<ant antfile="shade-relocate-build.xml" />
+							</target>
+						</configuration>
+					</execution>
 					<execution>
 						<id>Spring-2.5.6-Test</id>
 						<phase>test-compile</phase>
