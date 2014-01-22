@@ -7,10 +7,6 @@ import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.Persistence;
 
-import org.springframework.cloud.service.common.MysqlServiceInfo;
-import org.springframework.cloud.service.common.PostgresqlServiceInfo;
-import org.springframework.cloud.service.common.RelationalServiceInfo;
-
 import play.Application;
 import play.Configuration;
 
@@ -64,11 +60,11 @@ public class JPAPlugin extends play.db.jpa.JPAPlugin {
 
 	Map<String, String> getProperties() {
 		Map<String, String> properties = new HashMap<String, String>();
-		RelationalServiceInfo dbservice = appConfiguration.getDatabaseBinding();
-		if (dbservice != null) {
-			if (dbservice instanceof PostgresqlServiceInfo) {
+		String dbserviceType = appConfiguration.getDatabaseBindingType();
+		if (dbserviceType != null) {
+			if (dbserviceType.equals("postgresql")) {
 				properties.put("hibernate.dialect", POSTGRES_DIALECT);
-			} else if (dbservice instanceof MysqlServiceInfo) {
+			} else if (dbserviceType.equals("mysql")) {
 				properties.put("hibernate.dialect", MYSQL_DIALECT);
 			}
 		}

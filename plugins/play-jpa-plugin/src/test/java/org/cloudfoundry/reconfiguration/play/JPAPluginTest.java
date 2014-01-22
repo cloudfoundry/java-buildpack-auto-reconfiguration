@@ -12,8 +12,6 @@ import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
-import org.springframework.cloud.service.common.MysqlServiceInfo;
-import org.springframework.cloud.service.common.PostgresqlServiceInfo;
 
 import play.Application;
 import play.Configuration;
@@ -45,7 +43,7 @@ public class JPAPluginTest {
 
 	@Test
 	public void getPropertiesPostgresService() {
-		when(appConfiguration.getDatabaseBinding()).thenReturn(new PostgresqlServiceInfo("mydb", "postgres://user:password@hostname:1234/mydb"));
+		when(appConfiguration.getDatabaseBindingType()).thenReturn("postgresql");
 		Map<String, String> expectedProps = new HashMap<String, String>();
 		expectedProps.put("hibernate.dialect", JPAPlugin.POSTGRES_DIALECT);
 		assertEquals(expectedProps, plugin.getProperties());
@@ -53,7 +51,7 @@ public class JPAPluginTest {
 
 	@Test
 	public void getPropertiesMySQLService() {
-		when(appConfiguration.getDatabaseBinding()).thenReturn(new MysqlServiceInfo("mydb", "mysql://user:password@hostname:1234/mydb"));
+		when(appConfiguration.getDatabaseBindingType()).thenReturn("mysql");
 		Map<String, String> expectedProps = new HashMap<String, String>();
 		expectedProps.put("hibernate.dialect", JPAPlugin.MYSQL_DIALECT);
 		assertEquals(expectedProps, plugin.getProperties());

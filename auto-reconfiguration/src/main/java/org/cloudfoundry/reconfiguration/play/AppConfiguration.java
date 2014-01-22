@@ -18,6 +18,8 @@ import javax.sql.DataSource;
 import org.springframework.cloud.Cloud;
 import org.springframework.cloud.CloudFactory;
 import org.springframework.cloud.service.ServiceInfo;
+import org.springframework.cloud.service.common.MysqlServiceInfo;
+import org.springframework.cloud.service.common.PostgresqlServiceInfo;
 import org.springframework.cloud.service.common.RelationalServiceInfo;
 
 /**
@@ -134,8 +136,7 @@ public class AppConfiguration {
 				if (dbservice.getId().endsWith("production")
 						|| dbservice.getId().endsWith("prod")) {
 					if (serviceInfo != null) {
-						System.out
-								.println("Multiple database services named '*.production' or '*.prod' found.");
+						System.out.println("Multiple database services named '*.production' or '*.prod' found.");
 						return null;
 					}
 					serviceInfo = (RelationalServiceInfo) dbservice;
@@ -151,6 +152,17 @@ public class AppConfiguration {
 			System.out.println("No database services found.");
 		}
 		return serviceInfo;
+	}
+	
+	public String getDatabaseBindingType() {
+	    RelationalServiceInfo serviceInfo = getDatabaseBinding();
+	    if (serviceInfo instanceof MysqlServiceInfo) {
+	        return "mysql";
+	    } else if (serviceInfo instanceof PostgresqlServiceInfo) {
+	        return "postgresql";
+	    } else {
+	        return null;
+	    }
 	}
 	
 	private Properties getPropertiesFromFile(String propFileName, boolean loadFromClasspath)
