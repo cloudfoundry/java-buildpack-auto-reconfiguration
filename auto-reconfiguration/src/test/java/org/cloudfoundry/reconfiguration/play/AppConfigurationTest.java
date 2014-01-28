@@ -24,7 +24,6 @@ import org.mockito.MockitoAnnotations;
 import org.springframework.cloud.Cloud;
 import org.springframework.cloud.service.ServiceInfo;
 import org.springframework.cloud.service.common.MysqlServiceInfo;
-import org.springframework.cloud.service.common.RelationalServiceInfo;
 import org.springframework.cloud.util.UriInfo;
 
 /**

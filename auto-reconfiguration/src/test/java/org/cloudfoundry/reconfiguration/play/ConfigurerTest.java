@@ -19,7 +19,6 @@ import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
-import org.springframework.cloud.service.ServiceInfo;
 import org.springframework.cloud.service.common.MysqlServiceInfo;
 import org.springframework.cloud.service.common.PostgresqlServiceInfo;
 import org.springframework.cloud.service.common.RelationalServiceInfo;

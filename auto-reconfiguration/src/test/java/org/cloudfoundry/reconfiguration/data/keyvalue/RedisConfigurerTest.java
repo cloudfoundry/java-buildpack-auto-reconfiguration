@@ -8,7 +8,6 @@ import org.junit.Assert;
 import org.junit.Test;
 import org.springframework.beans.factory.support.DefaultListableBeanFactory;
 import org.springframework.cloud.Cloud;
-import org.springframework.cloud.CloudFactory;
 import org.springframework.cloud.service.common.RedisServiceInfo;
 import org.springframework.context.ApplicationContext;
 import org.springframework.data.redis.connection.RedisConnectionFactory;

@@ -11,7 +11,6 @@ import org.springframework.cloud.service.ServiceInfo;
 import org.springframework.cloud.test.CloudTestUtil;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
-import org.springframework.context.support.GenericApplicationContext;
 
 /**
  * Unit test of the {@link org.cloudfoundry.reconfiguration.spring.web.CloudAppAnnotationConfigAutoReconfig} class
