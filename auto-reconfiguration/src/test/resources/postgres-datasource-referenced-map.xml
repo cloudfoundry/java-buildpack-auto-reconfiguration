@@ -32,9 +32,6 @@
         <property name="targetDataSource" ref="dataSource"/>
     </bean>
 
-    <import resource="postgres-datasource-referenced-map-hibernate3.xml"/>
-    <import resource="postgres-datasource-referenced-map-hibernate4.xml"/>
-
     <util:map id="hibernateProperties">
         <entry key="hibernate.dialect" value="org.hibernate.dialect.H2Dialect"/>
         <entry key="hibernate.show_sql" value="true"/>
@@ -43,5 +40,19 @@
     </util:map>
 
     <context:component-scan base-package="org.cloudfoundry.reconfiguration.testsupport"/>
+
+    <beans profile="hibernate3">
+        <bean class="org.springframework.orm.hibernate3.LocalSessionFactoryBean" lazy-init="true">
+            <property name="dataSource" ref="dataSource"/>
+            <property name="hibernateProperties" ref="hibernateProperties"/>
+        </bean>
+    </beans>
+
+    <beans profile="default">
+        <bean class="org.springframework.orm.hibernate4.LocalSessionFactoryBean" lazy-init="true">
+            <property name="dataSource" ref="dataSource"/>
+            <property name="hibernateProperties" ref="hibernateProperties"/>
+        </bean>
+    </beans>
 
 </beans>

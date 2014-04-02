@@ -36,7 +36,7 @@
 
     <context:component-scan base-package="org.cloudfoundry.reconfiguration.testsupport"/>
 
-    <beans profile="default">
+    <beans profile="hibernate3">
         <bean class="org.springframework.orm.hibernate3.LocalSessionFactoryBean" lazy-init="true">
             <property name="dataSource" ref="dataSource"/>
             <property name="hibernateProperties">
@@ -50,7 +50,7 @@
         </bean>
     </beans>
 
-    <beans profile="hibernate4">
+    <beans profile="default">
         <bean class="org.springframework.orm.hibernate4.LocalSessionFactoryBean" lazy-init="true">
             <property name="dataSource" ref="dataSource"/>
             <property name="hibernateProperties">
