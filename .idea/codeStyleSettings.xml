@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ProjectCodeStyleSettingsManager">
+    <option name="PER_PROJECT_SETTINGS">
+      <value>
+        <option name="LINE_SEPARATOR" value="&#10;" />
+        <option name="CLASS_COUNT_TO_USE_IMPORT_ON_DEMAND" value="999" />
+        <option name="NAMES_COUNT_TO_USE_IMPORT_ON_DEMAND" value="999" />
+        <option name="PACKAGES_TO_USE_IMPORT_ON_DEMAND">
+          <value />
+        </option>
+        <option name="IMPORT_LAYOUT_TABLE">
+          <value>
+            <package name="" withSubpackages="true" static="false" />
+            <emptyLine />
+            <package name="javax" withSubpackages="true" static="false" />
+            <package name="java" withSubpackages="true" static="false" />
+            <emptyLine />
+            <package name="org.springframework.test.web.servlet.result.MockMvcResultHandlers" withSubpackages="false" static="true" />
+            <package name="org.mockito.Mockito.mock" withSubpackages="false" static="true" />
+            <package name="org.springframework.test.web.servlet.setup.MockMvcBuilders" withSubpackages="false" static="true" />
+            <package name="org.springframework.test.web.servlet.request.MockMvcRequestBuilders" withSubpackages="false" static="true" />
+            <package name="org.springframework.test.web.mock.servlet.result.MockMvcResultMatchers" withSubpackages="false" static="true" />
+            <package name="org.hamcrest.Matchers" withSubpackages="false" static="true" />
+            <package name="org.springframework.hateoas.mvc.ControllerLinkBuilder" withSubpackages="false" static="true" />
+            <package name="org.junit.Assert" withSubpackages="false" static="true" />
+            <package name="" withSubpackages="true" static="true" />
+          </value>
+        </option>
+        <option name="WRAP_WHEN_TYPING_REACHES_RIGHT_MARGIN" value="true" />
+        <option name="JD_ADD_BLANK_AFTER_PARM_COMMENTS" value="true" />
+        <option name="FORMATTER_TAGS_ENABLED" value="true" />
+        <option name="WRAP_COMMENTS" value="true" />
+        <XML>
+          <option name="XML_LEGACY_SETTINGS_IMPORTED" value="true" />
+        </XML>
+        <codeStyleSettings language="JAVA">
+          <option name="KEEP_BLANK_LINES_IN_DECLARATIONS" value="1" />
+          <option name="KEEP_BLANK_LINES_IN_CODE" value="1" />
+          <option name="KEEP_BLANK_LINES_BEFORE_RBRACE" value="1" />
+          <option name="BLANK_LINES_BEFORE_PACKAGE" value="1" />
+          <option name="BLANK_LINES_AROUND_FIELD" value="1" />
+          <option name="BLANK_LINES_AROUND_FIELD_IN_INTERFACE" value="1" />
+          <option name="BLANK_LINES_AFTER_CLASS_HEADER" value="1" />
+          <option name="BLANK_LINES_AFTER_ANONYMOUS_CLASS_HEADER" value="1" />
+        </codeStyleSettings>
+      </value>
+    </option>
+    <option name="USE_PER_PROJECT_SETTINGS" value="true" />
+  </component>
+</project>
+

@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ProjectModuleManager">
+    <modules>
+      <module fileurl="file://$PROJECT_DIR$/auto-reconfiguration/auto-reconfiguration.iml" filepath="$PROJECT_DIR$/auto-reconfiguration/auto-reconfiguration.iml" />
+      <module fileurl="file://$PROJECT_DIR$/java-buildpack-auto-reconfiguration.iml" filepath="$PROJECT_DIR$/java-buildpack-auto-reconfiguration.iml" />
+      <module fileurl="file://$PROJECT_DIR$/play-jpa-plugin/play-jpa-plugin.iml" filepath="$PROJECT_DIR$/play-jpa-plugin/play-jpa-plugin.iml" />
+    </modules>
+  </component>
+</project>
+

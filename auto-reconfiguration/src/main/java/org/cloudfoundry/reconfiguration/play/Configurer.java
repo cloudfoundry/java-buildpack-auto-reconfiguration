@@ -1,180 +1,94 @@
+/*
+ * Copyright 2011-2014 the original author or authors.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 package org.cloudfoundry.reconfiguration.play;
 
-import java.io.File;
-import java.io.FileFilter;
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.util.Properties;
-import java.util.Set;
-import java.util.regex.Pattern;
-
-import org.cloudfoundry.reconfiguration.CloudAutoStagingRuntimeException;
+import org.springframework.cloud.Cloud;
+import org.springframework.cloud.service.ServiceInfo;
 import org.springframework.cloud.service.common.MysqlServiceInfo;
 import org.springframework.cloud.service.common.PostgresqlServiceInfo;
 import org.springframework.cloud.service.common.RelationalServiceInfo;
 
-/**
- * Configures Play apps by setting service-related system properties for use by
- * any application and auto-reconfiguring database connections.
- * Auto-reconfiguration is done by setting system properties to override DB
- * configuration and point to a single database service bound to the
- * application.
- *
- * @author Jennifer Hickey
- *
- */
-public class Configurer {
+import javax.sql.DataSource;
+import java.util.List;
+import java.util.Set;
+import java.util.logging.Logger;
 
-	private PropertySetter propertySetter;
+final class Configurer {
 
-	private AppConfiguration appConfiguration;
+    private static final Logger LOGGER = Logger.getLogger(Configurer.class.getName());
 
-	public Configurer(AppConfiguration appConfiguration, PropertySetter propertySetter) {
-		this.appConfiguration = appConfiguration;
-		this.propertySetter = propertySetter;
-	}
+    private Configurer() {
+    }
 
-	public void configure() {
-		propertySetter.setCloudProperties();
-		Properties props;
-		try {
-			props = appConfiguration.getPlayConfiguration();
-		} catch (IOException e) {
-			System.err.println("Error reading Play configuration: " + e.getMessage()
-					+ ".  Skipping auto-reconfiguration.");
-			return;
-		}
-		Set<String> dbnames = appConfiguration.getPlayDatabaseNames();
-		if(dbnames.isEmpty()) {
-			System.out.println("No database found in Play configuration.  Skipping auto-reconfiguration.");
-			return;
-		}
-		propertySetter.setDatabaseProperties(dbnames);
-		if(dbnames.size() > 1) {
-			System.out.println("Found multiple databases in Play configuration.  Skipping auto-reconfiguration.");
-			return;
-		}
-		String dbName = dbnames.iterator().next();
-		if (autoconfigDisabled(props)) {
-			return;
-		}
-		RelationalServiceInfo dbServiceInfo = appConfiguration.getDatabaseBinding();
-		if (dbServiceInfo == null) {
-			System.out
-					.println("Found 0 or multiple database services bound to app.  Skipping auto-reconfiguration.");
-			return;
-		}
-		configureDatabase(dbName, props, dbServiceInfo);
-		configureJpa(props);
-	}
+    static void configure(ApplicationConfiguration applicationConfiguration,
+                          Cloud cloud, PropertySetter propertySetter) {
+        propertySetter.setCloudProperties();
 
-	boolean autoconfigDisabled(Properties appProps) {
-		return autoconfigDisabledByFile() || autoconfigDisabledByCFRuntime()
-				|| autoconfigDisabledByUseofSysProps(appProps);
-	}
+        Set<String> databaseNames = applicationConfiguration.getDatabaseNames();
+        propertySetter.setDatabaseProperties(databaseNames);
 
-	/**
-	 * Disable auto-reconfiguration if cf config file is found on classpath and
-	 * contains the entry autoconfig:false
-	 *
-	 * @return true if file is found and contains the entry autoconfig:false
-	 */
-	private boolean autoconfigDisabledByFile() {
-		try {
-			Properties cfProperties = appConfiguration.getCFConfiguration();
-			String autoconfig = cfProperties.getProperty("autoconfig");
-			if ("false".equals(autoconfig)) {
-				System.out.println("User disabled auto-reconfiguration");
-				return true;
-			}
-		} catch (FileNotFoundException e) {
-			// No file found
-		} catch (IOException e) {
-			System.err.println("Error reading cloudfoundry properties: " + e.getMessage()
-					+ ".  Auto-reconfiguration will be enabled.");
-		}
-		return false;
-	}
+        if (databaseNames.isEmpty()) {
+            LOGGER.info("No databases found. Skipping auto-reconfiguration.");
+        } else if (databaseNames.size() > 1) {
+            LOGGER.warning(String.format("Multiple (%d) databases found. Skipping auto-reconfiguration.",
+                    databaseNames.size()));
+        } else {
+            processDatabase(applicationConfiguration, cloud, databaseNames.iterator().next());
+        }
+    }
 
-	/**
-	 * Disable auto-reconfiguration if user is including cf-runtime jar. We
-	 * don't know of a use case for this yet, but could be a module developed,
-	 * etc in future
-	 *
-	 * @return true if cf-runtime jar is present
-	 */
-	private boolean autoconfigDisabledByCFRuntime() {
-		final Pattern pattern = Pattern.compile("cloudfoundry-runtime-.*.jar");
-		File dir = new File("lib");
-		File[] files = dir.listFiles(new FileFilter() {
-			public boolean accept(File file) {
-				return pattern.matcher(file.getName()).find();
-			}
-		});
-		if (files != null && files.length > 0) {
-			System.out.println("Found cloudfoundry-runtime lib.  Auto-reconfiguration disabled.");
-			return true;
-		}
-		return false;
-	}
+    private static void processDatabase(ApplicationConfiguration applicationConfiguration, Cloud cloud, String name) {
+        List<ServiceInfo> serviceInfos = cloud.getServiceInfos(DataSource.class);
 
-	/**
-	 * Disable auto-reconfiguration if user is using a cloud property in their
-	 * config file
-	 *
-	 * @param appProps
-	 *            Properties from the Play app config file
-	 * @return true if props are using cloud property placeholder
-	 */
-	private boolean autoconfigDisabledByUseofSysProps(Properties appProps) {
-		for (Object value : appProps.values()) {
-			if (((String) value).contains("${cloud.") || ((String) value).contains("${?cloud.")) {
-				System.out
-						.println("Found cloud properties in configuration.  Auto-reconfiguration disabled.");
-				return true;
-			}
-		}
-		return false;
-	}
+        if (serviceInfos.isEmpty()) {
+            LOGGER.info("No matching service found. Skipping auto-reconfiguration.");
+        } else if (serviceInfos.size() > 1) {
+            LOGGER.warning(String.format("More than one (%d) matching services found. Skipping auto-reconfiguration.",
+                    serviceInfos.size()));
+        } else {
+            configureDatabase(name, (RelationalServiceInfo) serviceInfos.get(0));
+            configureJpa(applicationConfiguration);
+        }
 
-	/**
-	 * Sets system properties that will override DB settings in Play app
-	 *
-	 * @param dbName
-	 *            The name of the database in Play app
-	 * @param props
-	 *            The user configuration
-	 * @param dbServiceInfo
-	 *            The relational DB service bound to app
-	 */
-	private void configureDatabase(String dbName, Properties props, RelationalServiceInfo dbServiceInfo) {
-		System.out.println("Auto-reconfiguring " + dbName);
-		System.setProperty("db." + dbName + ".url", dbServiceInfo.getJdbcUrl());
-		System.setProperty("db." + dbName + ".user", dbServiceInfo.getUserName());
-		System.setProperty("db." + dbName + ".password", dbServiceInfo.getPassword());
-		if (dbServiceInfo instanceof PostgresqlServiceInfo) {
-			System.setProperty("db." + dbName + ".driver", PropertySetter.POSTGRES_DRIVER_CLASS);
-		} else if (dbServiceInfo instanceof MysqlServiceInfo){
-			System.setProperty("db." + dbName + ".driver", PropertySetter.MYSQL_DRIVER_CLASS);
-		} else {
-			throw new CloudAutoStagingRuntimeException("Failed to auto-reconfigure application. Unrecognized database service "
-					+ dbServiceInfo.getClass().getName() + " found.");
-		}
-	}
+    }
 
-	/**
-	 * Activates our JPAPlugin and disables Play's JPAPlugin, so the proper
-	 * dialect will be applied
-	 *
-	 * @param props
-	 *            The user configuration
-	 */
-	private void configureJpa(Properties props) {
-		String jpaPluginStatus = props.getProperty("jpaplugin");
-		if (!"disabled".equals(jpaPluginStatus)) {
-			System.setProperty("cfjpaplugin", "enabled");
-			System.out.println("Enabling JPA auto-reconfiguration");
-		}
-		System.setProperty("jpaplugin", "disabled");
-	}
+    private static void configureDatabase(String name, RelationalServiceInfo serviceInfo) {
+        LOGGER.info(String.format("Auto-reconfiguring %s", name));
+
+        System.setProperty(String.format("db.%s.url", name), serviceInfo.getJdbcUrl());
+        System.setProperty(String.format("db.%s.user", name), serviceInfo.getUserName());
+        System.setProperty(String.format("db.%s.password", name), serviceInfo.getPassword());
+
+        if (serviceInfo instanceof MysqlServiceInfo) {
+            System.setProperty(String.format("db.%s.driver", name), PropertySetter.MYSQL_DRIVER_CLASS);
+        } else if (serviceInfo instanceof PostgresqlServiceInfo) {
+            System.setProperty(String.format("db.%s.driver", name), PropertySetter.POSTGRES_DRIVER_CLASS);
+        }
+    }
+
+    private static void configureJpa(ApplicationConfiguration applicationConfiguration) {
+        String status = applicationConfiguration.getConfiguration().getProperty("jpaplugin");
+
+        if (!"disabled".equals(status)) {
+            LOGGER.info("Auto-reconfiguring JPA Plugin");
+            System.setProperty("cfjpaplugin", "enabled");
+        }
+
+        System.setProperty("jpaplugin", "disabled");
+    }
+
 }

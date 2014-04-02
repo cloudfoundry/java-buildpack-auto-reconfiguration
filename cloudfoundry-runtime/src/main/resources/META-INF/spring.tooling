@@ -1,4 +1,0 @@
-# Tooling related information for the cloud namespace
-http\://schema.cloudfoundry.org/spring@name=cloud namespace
-http\://schema.cloudfoundry.org/spring@prefix=cloud
-http\://schema.cloudfoundry.org/spring@icon=org/cloudfoundry/runtime/service/config/xml/cloudfoundry-spring.gif
