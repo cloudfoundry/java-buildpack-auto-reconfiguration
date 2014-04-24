@@ -6,7 +6,7 @@
 	<artifactId>play-jpa-plugin</artifactId>
 	<packaging>jar</packaging>
 	<name>play-jpa-plugin</name>
-	<version>0.8.8-BUILD-SNAPSHOT</version>
+	<version>0.8.9-BUILD-SNAPSHOT</version>
 	<dependencies>
 		<dependency>
 			<groupId>play</groupId>

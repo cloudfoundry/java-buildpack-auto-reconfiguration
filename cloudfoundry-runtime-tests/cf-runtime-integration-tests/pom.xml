@@ -6,7 +6,7 @@
 	<artifactId>cf-runtime-integration-tests</artifactId>
 	<packaging>jar</packaging>
 	<name>cf-runtime-integration-tests</name>
-	<version>0.8.8-BUILD-SNAPSHOT</version>
+	<version>0.8.9-BUILD-SNAPSHOT</version>
 	<properties>
 		<java.version>1.6</java.version>
 		<junit.version>4.8.2</junit.version>
