@@ -6,7 +6,7 @@
 	<artifactId>vcap-java</artifactId>
 	<packaging>pom</packaging>
 	<name>vcap-java</name>
-	<version>0.8.8-BUILD-SNAPSHOT</version>
+	<version>0.8.8</version>
 
 	<profiles>
 		<profile>

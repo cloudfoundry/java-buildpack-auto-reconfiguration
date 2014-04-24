@@ -5,7 +5,7 @@
 	<groupId>org.cloudfoundry</groupId>
 	<artifactId>cloudfoundry-runtime-tests</artifactId>
 	<packaging>pom</packaging>
-	<version>0.8.8-BUILD-SNAPSHOT</version>
+	<version>0.8.8</version>
 	<name>cloudfoundry-runtime-tests-root</name>
 
 	<modules>
