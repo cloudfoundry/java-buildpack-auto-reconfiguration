@@ -2,7 +2,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>com.vmware.appcloud</groupId>
     <artifactId>TomcatStartupListener</artifactId>
-    <version>1.0</version>
+    <version>0.8.8-BUILD-SNAPSHOT</version>
     <packaging>jar</packaging>
     <dependencies>
         <dependency>
@@ -15,7 +15,7 @@
             <groupId>org.apache.tomcat</groupId>
             <artifactId>coyote</artifactId>
             <version>6.0.26</version>
-            <scope>provided</scope>            
+            <scope>provided</scope>
         </dependency>
     </dependencies>
     <build>

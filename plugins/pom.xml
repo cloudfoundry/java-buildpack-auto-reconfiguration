@@ -6,7 +6,7 @@
 	<artifactId>vcap-java-plugins</artifactId>
 	<packaging>pom</packaging>
 	<name>vcap-java-plugins</name>
-	<version>1.0.0-BUILD-SNAPSHOT</version>
+	<version>0.8.8-BUILD-SNAPSHOT</version>
 
 	<modules>
 		<module>tomcat_startup_listener</module>

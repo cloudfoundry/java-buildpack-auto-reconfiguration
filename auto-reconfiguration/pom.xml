@@ -6,7 +6,7 @@
 	<artifactId>auto-reconfiguration</artifactId>
 	<packaging>jar</packaging>
 	<name>auto-reconfiguration</name>
-	<version>0.8.7</version>
+	<version>0.8.8-BUILD-SNAPSHOT</version>
 
 	<properties>
 		<java.version>1.6</java.version>
@@ -119,7 +119,7 @@
 			<artifactId>mariadb-java-client</artifactId>
 			<version>1.1.3</version>
 			<scope>test</scope>
-		</dependency>		
+		</dependency>
 		<dependency>
 			<groupId>postgresql</groupId>
 			<artifactId>postgresql</artifactId>
@@ -347,7 +347,7 @@
 								<filter>
 									<artifact>org.springframework.cloud:*</artifact>
 									<excludes>
-										<exclude>META-INF/*</exclude>									
+										<exclude>META-INF/*</exclude>
 										<exclude>META-INF/maven*/**</exclude>
 										<exclude>**/*.xsd</exclude>
 										<exclude>**/*.gif</exclude>
