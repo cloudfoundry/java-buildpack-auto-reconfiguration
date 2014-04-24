@@ -10,7 +10,7 @@
 
 	<properties>
 		<java.version>1.6</java.version>
-		<spring-cloud.version>0.9.5</spring-cloud.version>
+		<spring-cloud.version>0.9.8</spring-cloud.version>
 		<spring.amqp.version>1.0.0.RELEASE</spring.amqp.version>
 		<spring-data-mongo.version>1.0.1.RELEASE</spring-data-mongo.version>
 		<spring.version>3.1.0.RELEASE</spring.version>

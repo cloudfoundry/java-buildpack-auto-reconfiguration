@@ -17,7 +17,7 @@
 		<dependency>
 			<groupId>org.cloudfoundry</groupId>
 			<artifactId>auto-reconfiguration</artifactId>
-			<version>0.8.7</version>
+			<version>${project.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>junit</groupId>
