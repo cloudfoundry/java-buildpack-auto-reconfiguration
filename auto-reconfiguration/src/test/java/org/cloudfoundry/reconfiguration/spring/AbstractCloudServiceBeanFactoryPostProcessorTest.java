@@ -21,7 +21,6 @@ import org.springframework.beans.factory.config.BeanFactoryPostProcessor;
 import org.springframework.cloud.Cloud;
 import org.springframework.cloud.CloudFactory;
 import org.springframework.cloud.service.ServiceInfo;
-import org.springframework.cloud.test.CloudTestUtil;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.GenericXmlApplicationContext;
 import org.springframework.core.Ordered;
