@@ -1,54 +1,52 @@
 package org.cloudfoundry.reconfiguration.spring;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
-
 import org.cloudfoundry.reconfiguration.AbstractCloudConfigurerTest;
+import org.cloudfoundry.reconfiguration.CloudTestUtil;
 import org.junit.Before;
 import org.junit.Test;
-import org.springframework.cloud.test.CloudTestUtil.StubServiceInfo;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.support.GenericApplicationContext;
 import org.springframework.core.Ordered;
 import org.springframework.core.env.ConfigurableEnvironment;
 
+import static org.junit.Assert.*;
+
 public class CloudApplicationContextInitializerTest extends AbstractCloudConfigurerTest {
 
-	private CloudApplicationContextInitializer initializer;
-	private ConfigurableApplicationContext applicationContext;
-	private ConfigurableEnvironment environment;
+    private CloudApplicationContextInitializer initializer;
+    private ConfigurableApplicationContext applicationContext;
+    private ConfigurableEnvironment environment;
 
-	@Before
-	public void setup() {
-		initializer = new CloudApplicationContextInitializer();
-	}
+    @Before
+    public void setup() {
+        initializer = new CloudApplicationContextInitializer();
+    }
 
-	@Test
-	public void notCloudFoundry() {
-	    applicationContext = new GenericApplicationContext();
-	    environment = applicationContext.getEnvironment();
-		assertTrue(environment.acceptsProfiles("default"));
+    @Test
+    public void notCloudFoundry() {
+        applicationContext = new GenericApplicationContext();
+        environment = applicationContext.getEnvironment();
+        assertTrue(environment.acceptsProfiles("default"));
 
-		initializer.initialize(applicationContext);
+        initializer.initialize(applicationContext);
 
-		assertTrue(environment.acceptsProfiles("default"));
-		assertFalse(environment.acceptsProfiles("cloud"));
-	}
+        assertTrue(environment.acceptsProfiles("default"));
+        assertFalse(environment.acceptsProfiles("cloud"));
+    }
 
-	@Test
-	public void cloudProfile() {
+    @Test
+    public void cloudProfile() {
         applicationContext = (ConfigurableApplicationContext) getTestApplicationContext(null);
-		initializer.initialize(applicationContext);
+        initializer.initialize(applicationContext);
         environment = applicationContext.getEnvironment();
 
-		assertTrue(environment.acceptsProfiles("cloud"));
-		assertFalse(environment.acceptsProfiles("default"));
-	}
+        assertTrue(environment.acceptsProfiles("cloud"));
+        assertFalse(environment.acceptsProfiles("default"));
+    }
 
-	@Test
-	public void propertySource() {
-        StubServiceInfo stubServiceInfo = new StubServiceInfo("my-stub", "cloudhost", 1234, "myuser", "mypass");
+    @Test
+    public void propertySource() {
+        CloudTestUtil.StubServiceInfo stubServiceInfo = new CloudTestUtil.StubServiceInfo("my-stub", "cloudhost", 1234, "myuser", "mypass");
         applicationContext = (ConfigurableApplicationContext) getTestApplicationContext(null, stubServiceInfo);
         initializer.initialize(applicationContext);
         environment = applicationContext.getEnvironment();
@@ -60,11 +58,11 @@ public class CloudApplicationContextInitializerTest extends AbstractCloudConfigu
         assertEquals("mypass", environment.getProperty("cloud.services.my-stub.connection.password"));
 
         assertTrue(applicationContext.getEnvironment().getPropertySources().get("cloud") != null);
-	}
+    }
 
-	@Test
-	public void getOrder() {
-		Ordered ordered = initializer;
-		assertEquals(0, ordered.getOrder());
-	}
+    @Test
+    public void getOrder() {
+        Ordered ordered = initializer;
+        assertEquals(0, ordered.getOrder());
+    }
 }
