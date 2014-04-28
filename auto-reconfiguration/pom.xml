@@ -6,7 +6,7 @@
 	<artifactId>auto-reconfiguration</artifactId>
 	<packaging>jar</packaging>
 	<name>auto-reconfiguration</name>
-	<version>0.8.9-BUILD-SNAPSHOT</version>
+	<version>0.9.0-BUILD-SNAPSHOT</version>
 
 	<properties>
 		<java.version>1.6</java.version>
