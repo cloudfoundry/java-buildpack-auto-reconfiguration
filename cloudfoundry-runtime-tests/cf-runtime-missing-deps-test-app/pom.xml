@@ -6,7 +6,7 @@
 	<artifactId>cf-runtime-missing-deps-test-app</artifactId>
 	<name>cf-runtime-missing-deps-test-app</name>
 	<packaging>war</packaging>
-	<version>0.8.9-BUILD-SNAPSHOT</version>
+	<version>0.8.9</version>
 	<properties>
 		<java.version>1.6</java.version>
 		<cloudfoundry.runtime.version>0.8.3.BUILD-SNAPSHOT</cloudfoundry.runtime.version>

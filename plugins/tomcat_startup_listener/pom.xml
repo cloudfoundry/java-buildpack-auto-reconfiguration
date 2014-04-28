@@ -2,7 +2,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>com.vmware.appcloud</groupId>
     <artifactId>TomcatStartupListener</artifactId>
-    <version>0.8.9-BUILD-SNAPSHOT</version>
+    <version>0.8.9</version>
     <packaging>jar</packaging>
     <dependencies>
         <dependency>
