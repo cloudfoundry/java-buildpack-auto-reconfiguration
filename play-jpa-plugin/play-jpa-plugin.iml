@@ -15,6 +15,9 @@
     <orderEntry type="library" scope="PROVIDED" name="Maven: org.springframework.cloud:cloudfoundry-connector:0.9.5" level="project" />
     <orderEntry type="library" scope="PROVIDED" name="Maven: org.springframework.cloud:core:0.9.5" level="project" />
     <orderEntry type="library" scope="PROVIDED" name="Maven: org.springframework.cloud:spring-service-connector:0.9.5" level="project" />
+    <orderEntry type="library" scope="PROVIDED" name="Maven: org.springframework.cloud:cloudfoundry-connector:0.9.10.RELEASE" level="project" />
+    <orderEntry type="library" scope="PROVIDED" name="Maven: org.springframework.cloud:core:0.9.10.RELEASE" level="project" />
+    <orderEntry type="library" scope="PROVIDED" name="Maven: org.springframework.cloud:spring-service-connector:0.9.10.RELEASE" level="project" />
     <orderEntry type="library" scope="PROVIDED" name="Maven: com.typesafe.play:play_2.10:2.2.2" level="project" />
     <orderEntry type="library" scope="PROVIDED" name="Maven: com.typesafe.play:sbt-link:2.2.2" level="project" />
     <orderEntry type="library" scope="TEST" name="Maven: org.javassist:javassist:3.18.1-GA" level="project" />

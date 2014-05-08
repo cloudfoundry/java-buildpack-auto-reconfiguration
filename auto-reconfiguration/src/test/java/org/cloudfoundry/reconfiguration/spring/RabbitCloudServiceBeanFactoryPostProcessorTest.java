@@ -20,7 +20,7 @@ import com.rabbitmq.client.ConnectionFactory;
 import org.springframework.amqp.rabbit.connection.CachingConnectionFactory;
 import org.springframework.beans.factory.config.BeanFactoryPostProcessor;
 import org.springframework.cloud.Cloud;
-import org.springframework.cloud.service.common.RabbitServiceInfo;
+import org.springframework.cloud.service.common.AmqpServiceInfo;
 import org.springframework.test.util.ReflectionTestUtils;
 
 import static org.junit.Assert.assertEquals;
@@ -28,7 +28,7 @@ import static org.junit.Assert.assertEquals;
 public final class RabbitCloudServiceBeanFactoryPostProcessorTest extends
         AbstractCloudServiceBeanFactoryPostProcessorTest<CachingConnectionFactory> {
 
-    private static final RabbitServiceInfo SERVICE_INFO = new RabbitServiceInfo("service-rabbit", "127.0.0.1", 4321,
+    private static final AmqpServiceInfo SERVICE_INFO = new AmqpServiceInfo("service-rabbit", "127.0.0.1", 4321,
             "service-username", "service-password", "service-virtual-host");
 
     public RabbitCloudServiceBeanFactoryPostProcessorTest() {
