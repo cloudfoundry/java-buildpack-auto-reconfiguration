@@ -109,12 +109,16 @@
         <dependency>
             <groupId>org.springframework.cloud</groupId>
             <artifactId>cloudfoundry-connector</artifactId>
-            <version>${spring-cloud.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.cloud</groupId>
+            <artifactId>core</artifactId>
+            <classifier>tests</classifier>
+            <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>org.springframework.cloud</groupId>
             <artifactId>spring-service-connector</artifactId>
-            <version>${spring-cloud.version}</version>
         </dependency>
         <dependency>
             <groupId>org.springframework.data</groupId>
