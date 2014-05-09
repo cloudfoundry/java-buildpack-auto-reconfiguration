@@ -21,7 +21,7 @@ import org.cloudfoundry.reconfiguration.spring.CloudProfileApplicationContextIni
 import org.cloudfoundry.reconfiguration.spring.CloudPropertySourceApplicationContextInitializer
 
 class JavaBuildpackAutoReconfigurationGrailsPlugin {
-    def version = '1.1.0.BUILD-SNAPSHOT'
+    def version = '1.1.0.RELEASE'
 
     def doWithSpring = {
         def applicationContext = springConfig.unrefreshedApplicationContext
