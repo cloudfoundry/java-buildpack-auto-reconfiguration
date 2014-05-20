@@ -108,17 +108,17 @@
         </dependency>
         <dependency>
             <groupId>org.springframework.cloud</groupId>
-            <artifactId>cloudfoundry-connector</artifactId>
+            <artifactId>spring-cloud-cloudfoundry-connector</artifactId>
         </dependency>
         <dependency>
             <groupId>org.springframework.cloud</groupId>
-            <artifactId>core</artifactId>
+            <artifactId>spring-cloud-core</artifactId>
             <classifier>tests</classifier>
             <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>org.springframework.cloud</groupId>
-            <artifactId>spring-service-connector</artifactId>
+            <artifactId>spring-cloud-spring-service-connector</artifactId>
         </dependency>
         <dependency>
             <groupId>org.springframework.data</groupId>
