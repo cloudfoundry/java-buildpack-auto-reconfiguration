@@ -41,7 +41,7 @@
         <play.version>2.2.2</play.version>
         <spring.version>4.0.3.RELEASE</spring.version>
         <spring-amqp.version>1.3.1.RELEASE</spring-amqp.version>
-        <spring-cloud.version>0.9.10.RELEASE</spring-cloud.version>
+        <spring-cloud.version>1.0.0.RC1</spring-cloud.version>
         <spring-data-mongo.version>1.4.1.RELEASE</spring-data-mongo.version>
         <spring-data-redis.version>1.2.1.RELEASE</spring-data-redis.version>
         <servlet-api.version>3.0.1</servlet-api.version>
@@ -210,12 +210,18 @@
             </dependency>
             <dependency>
                 <groupId>org.springframework.cloud</groupId>
-                <artifactId>cloudfoundry-connector</artifactId>
+                <artifactId>spring-cloud-cloudfoundry-connector</artifactId>
                 <version>${spring-cloud.version}</version>
             </dependency>
             <dependency>
                 <groupId>org.springframework.cloud</groupId>
-                <artifactId>spring-service-connector</artifactId>
+                <artifactId>spring-cloud-core</artifactId>
+                <version>${spring-cloud.version}</version>
+                <classifier>tests</classifier>
+            </dependency>
+            <dependency>
+                <groupId>org.springframework.cloud</groupId>
+                <artifactId>spring-cloud-spring-service-connector</artifactId>
                 <version>${spring-cloud.version}</version>
                 <exclusions>
                     <exclusion>
@@ -223,12 +229,6 @@
                         <artifactId>log4j</artifactId>
                     </exclusion>
                 </exclusions>
-            </dependency>
-            <dependency>
-                <groupId>org.springframework.cloud</groupId>
-                <artifactId>core</artifactId>
-                <version>${spring-cloud.version}</version>
-                <classifier>tests</classifier>
             </dependency>
             <dependency>
                 <groupId>org.springframework.data</groupId>
