@@ -22,7 +22,10 @@ import org.springframework.beans.factory.config.BeanFactoryPostProcessor;
 import org.springframework.cloud.Cloud;
 import org.springframework.cloud.CloudFactory;
 import org.springframework.context.support.AbstractApplicationContext;
+import org.springframework.core.io.FileSystemResource;
+import org.springframework.core.io.Resource;
 
+import java.io.IOException;
 import java.util.Arrays;
 import java.util.Collections;
 
@@ -53,19 +56,20 @@ public final class CloudAutoReconfigurationApplicationContextInitializerTest {
     }
 
     @Test
-    public void initializeNoCloud() {
+    public void initializeNoCloud() throws IOException {
         when(this.cloudUtils.isInCloud()).thenReturn(false);
-
         this.applicationContextInitializer.initialize(this.applicationContext);
 
         verifyZeroInteractions(this.applicationContext);
     }
 
     @Test
-    public void initializeAlreadyApplied() {
+    public void initializeAlreadyApplied() throws IOException {
         when(this.cloudUtils.isInCloud()).thenReturn(true);
         when(this.cloudUtils.getCloudFactory()).thenReturn(this.cloudFactory);
         when(this.cloudFactory.getCloud()).thenReturn(this.cloud);
+        when(this.applicationContext.getResources("classpath*:/META-INF/cloud/cloud-services")).thenReturn(new
+                Resource[0]);
         when(this.applicationContext.getBeanFactoryPostProcessors()).thenReturn(Arrays.<BeanFactoryPostProcessor>asList(
                 new DataSourceCloudServiceBeanFactoryPostProcessor(this.cloud),
                 new MongoCloudServiceBeanFactoryPostProcessor(this.cloud),
@@ -86,10 +90,12 @@ public final class CloudAutoReconfigurationApplicationContextInitializerTest {
     }
 
     @Test
-    public void initialize() {
+    public void initialize() throws IOException {
         when(this.cloudUtils.isInCloud()).thenReturn(true);
         when(this.cloudUtils.getCloudFactory()).thenReturn(this.cloudFactory);
         when(this.cloudFactory.getCloud()).thenReturn(this.cloud);
+        when(this.applicationContext.getResources("classpath*:/META-INF/cloud/cloud-services")).thenReturn(new
+                Resource[0]);
         when(this.applicationContext.getBeanFactoryPostProcessors()).thenReturn(Collections
                 .<BeanFactoryPostProcessor>emptyList());
 
@@ -105,4 +111,26 @@ public final class CloudAutoReconfigurationApplicationContextInitializerTest {
                 .class));
     }
 
+    @Test
+    public void initializeUsingCloudServices() throws IOException {
+        when(this.cloudUtils.isInCloud()).thenReturn(true);
+        when(this.applicationContext.getResources("classpath*:/META-INF/cloud/cloud-services")).thenReturn(
+                new Resource[]{new FileSystemResource("src/test/resources/cloud-services")});
+        when(this.applicationContext.getBeanNamesForType(UnusedCloudService.class, true,
+                false)).thenReturn(new String[0]);
+        when(this.applicationContext.getBeanNamesForType(UsedCloudService.class, true,
+                false)).thenReturn(new String[]{"used-cloud-service-bean-name"});
+
+        this.applicationContextInitializer.initialize(this.applicationContext);
+
+        verify(this.cloudUtils, times(0)).getCloudFactory();
+    }
+
+    public static final class UnusedCloudService {
+
+    }
+
+    public static final class UsedCloudService {
+
+    }
 }
