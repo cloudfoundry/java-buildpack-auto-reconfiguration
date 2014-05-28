@@ -1,0 +1,2 @@
+org.cloudfoundry.reconfiguration.spring.CloudAutoReconfigurationApplicationContextInitializerTest$UnusedCloudService
+org.cloudfoundry.reconfiguration.spring.CloudAutoReconfigurationApplicationContextInitializerTest$UsedCloudService
