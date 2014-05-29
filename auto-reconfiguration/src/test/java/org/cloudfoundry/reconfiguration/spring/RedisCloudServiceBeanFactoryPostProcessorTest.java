@@ -16,9 +16,10 @@
 
 package org.cloudfoundry.reconfiguration.spring;
 
+import org.cloudfoundry.reconfiguration.util.CloudUtils;
 import org.springframework.beans.factory.config.BeanFactoryPostProcessor;
-import org.springframework.cloud.Cloud;
 import org.springframework.cloud.service.common.RedisServiceInfo;
+import org.springframework.context.ApplicationContext;
 import org.springframework.data.redis.connection.jedis.JedisConnectionFactory;
 
 import static org.junit.Assert.assertEquals;
@@ -34,8 +35,8 @@ public final class RedisCloudServiceBeanFactoryPostProcessorTest extends
     }
 
     @Override
-    protected BeanFactoryPostProcessor getInstance(Cloud cloud) {
-        return new RedisCloudServiceBeanFactoryPostProcessor(cloud);
+    protected BeanFactoryPostProcessor getInstance(ApplicationContext applicationContext, CloudUtils cloudUtils) {
+        return new RedisCloudServiceBeanFactoryPostProcessor(applicationContext, cloudUtils);
     }
 
     @Override

@@ -16,12 +16,14 @@
 
 package org.cloudfoundry.reconfiguration.spring;
 
+import org.cloudfoundry.reconfiguration.util.CloudUtils;
 import org.hibernate.SessionFactory;
 import org.springframework.beans.factory.config.BeanFactoryPostProcessor;
-import org.springframework.cloud.Cloud;
 import org.springframework.cloud.service.common.MysqlServiceInfo;
+import org.springframework.context.ApplicationContext;
 
-public final class MySqlHibernateCloudServiceBeanFactoryPostProcessorTest extends AbstractHibernateBasedCloudServiceBeanFactoryPostProcessorTest {
+public final class MySqlHibernateCloudServiceBeanFactoryPostProcessorTest extends
+        AbstractHibernateBasedCloudServiceBeanFactoryPostProcessorTest {
 
     private static final MysqlServiceInfo SERVICE_INFO = new MysqlServiceInfo("service-mysql",
             "mysql://service-user:service-password@127.0.0.1:4321/service-database");
@@ -31,8 +33,8 @@ public final class MySqlHibernateCloudServiceBeanFactoryPostProcessorTest extend
     }
 
     @Override
-    protected BeanFactoryPostProcessor getInstance(Cloud cloud) {
-        return new DataSourceCloudServiceBeanFactoryPostProcessor(cloud);
+    protected BeanFactoryPostProcessor getInstance(ApplicationContext applicationContext, CloudUtils cloudUtils) {
+        return new DataSourceCloudServiceBeanFactoryPostProcessor(applicationContext, cloudUtils);
     }
 
     @Override

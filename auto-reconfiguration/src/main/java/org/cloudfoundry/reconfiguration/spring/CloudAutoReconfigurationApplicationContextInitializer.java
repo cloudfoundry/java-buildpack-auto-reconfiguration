@@ -17,22 +17,13 @@
 package org.cloudfoundry.reconfiguration.spring;
 
 import org.cloudfoundry.reconfiguration.util.CloudUtils;
-import org.cloudfoundry.reconfiguration.util.IoUtils;
 import org.cloudfoundry.reconfiguration.util.StandardCloudUtils;
 import org.springframework.beans.factory.config.BeanFactoryPostProcessor;
-import org.springframework.cloud.Cloud;
 import org.springframework.context.ApplicationContextInitializer;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.support.AbstractApplicationContext;
 import org.springframework.core.Ordered;
-import org.springframework.core.io.Resource;
-import org.springframework.util.ClassUtils;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.util.HashSet;
-import java.util.Set;
 import java.util.logging.Logger;
 
 /**
@@ -68,25 +59,22 @@ public final class CloudAutoReconfigurationApplicationContextInitializer impleme
     @Override
     public void initialize(ConfigurableApplicationContext applicationContext) {
         if (this.cloudUtils.isInCloud()) {
-            if (isUsingCloudServices(applicationContext)) {
-                this.logger.warning("Application using cloud services directly. Skipping cloud service " +
-                        "auto-reconfiguration.");
-            } else {
-                this.logger.info("Adding cloud service auto-reconfiguration to ApplicationContext");
-                addAutoReconfiguration(applicationContext);
-            }
+            this.logger.info("Adding cloud service auto-reconfiguration to ApplicationContext");
+            addAutoReconfiguration(applicationContext);
         } else {
-            this.logger.warning("Not running in a cloud. Skipping cloud service auto-reconfiguration.");
+            this.logger.warning("Not running in a cloud. Skipping cloud service initialization.");
         }
     }
 
     private void addAutoReconfiguration(ConfigurableApplicationContext applicationContext) {
-        Cloud cloud = this.cloudUtils.getCloudFactory().getCloud();
-
-        addBeanFactoryPostProcessor(applicationContext, new DataSourceCloudServiceBeanFactoryPostProcessor(cloud));
-        addBeanFactoryPostProcessor(applicationContext, new MongoCloudServiceBeanFactoryPostProcessor(cloud));
-        addBeanFactoryPostProcessor(applicationContext, new RabbitCloudServiceBeanFactoryPostProcessor(cloud));
-        addBeanFactoryPostProcessor(applicationContext, new RedisCloudServiceBeanFactoryPostProcessor(cloud));
+        addBeanFactoryPostProcessor(applicationContext,
+                new DataSourceCloudServiceBeanFactoryPostProcessor(applicationContext, this.cloudUtils));
+        addBeanFactoryPostProcessor(applicationContext,
+                new MongoCloudServiceBeanFactoryPostProcessor(applicationContext, this.cloudUtils));
+        addBeanFactoryPostProcessor(applicationContext,
+                new RabbitCloudServiceBeanFactoryPostProcessor(applicationContext, this.cloudUtils));
+        addBeanFactoryPostProcessor(applicationContext,
+                new RedisCloudServiceBeanFactoryPostProcessor(applicationContext, this.cloudUtils));
     }
 
     private void addBeanFactoryPostProcessor(ConfigurableApplicationContext applicationContext,
@@ -108,47 +96,6 @@ public final class CloudAutoReconfigurationApplicationContextInitializer impleme
             if (candidate.getClass().equals(beanFactoryPostProcessor.getClass())) {
                 return true;
             }
-        }
-
-        return false;
-    }
-
-    private boolean hasBeanOfType(ConfigurableApplicationContext applicationContext, String cloudServiceClassName) {
-        Class<?> cloudServiceClass = ClassUtils.resolveClassName(cloudServiceClassName, null);
-        return applicationContext.getBeanNamesForType(cloudServiceClass, true, false).length != 0;
-    }
-
-    private Set<String> getCloudServiceClasses(Resource resource) {
-        Set<String> cloudServiceClasses = new HashSet<String>();
-
-        BufferedReader in = null;
-        try {
-            in = new BufferedReader(new InputStreamReader(resource.getInputStream()));
-
-            String line;
-            while ((line = in.readLine()) != null) {
-                cloudServiceClasses.add(line.trim());
-            }
-        } catch (IOException e) {
-            this.logger.warning(String.format("Unable to read cloud service classes from %s", resource.getFilename()));
-        } finally {
-            IoUtils.closeQuietly(in);
-        }
-
-        return cloudServiceClasses;
-    }
-
-    private boolean isUsingCloudServices(ConfigurableApplicationContext applicationContext) {
-        try {
-            for (Resource resource : applicationContext.getResources("classpath*:/META-INF/cloud/cloud-services")) {
-                for (String cloudServiceClass : getCloudServiceClasses(resource)) {
-                    if (hasBeanOfType(applicationContext, cloudServiceClass)) {
-                        return true;
-                    }
-                }
-            }
-        } catch (IOException e) {
-            this.logger.warning("Unable to read cloud service classes");
         }
 
         return false;

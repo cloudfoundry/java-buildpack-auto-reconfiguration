@@ -16,7 +16,7 @@
 
 package org.cloudfoundry.reconfiguration.spring;
 
-import org.springframework.cloud.Cloud;
+import org.cloudfoundry.reconfiguration.util.CloudUtils;
 
 import java.util.Arrays;
 import java.util.List;
@@ -30,8 +30,8 @@ final class HibernateCloudServiceBeanFactoryPostProcessor extends
 
     private static final String PROPERTY_NAME = "hibernateProperties";
 
-    HibernateCloudServiceBeanFactoryPostProcessor(Cloud cloud) {
-        super(BEAN_CLASSES, cloud, PROPERTY_NAME);
+    HibernateCloudServiceBeanFactoryPostProcessor(CloudUtils cloudUtils) {
+        super(BEAN_CLASSES, cloudUtils, PROPERTY_NAME);
     }
 
 }

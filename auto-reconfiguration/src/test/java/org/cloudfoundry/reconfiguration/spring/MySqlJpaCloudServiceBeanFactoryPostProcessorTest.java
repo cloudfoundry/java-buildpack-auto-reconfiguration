@@ -16,9 +16,10 @@
 
 package org.cloudfoundry.reconfiguration.spring;
 
+import org.cloudfoundry.reconfiguration.util.CloudUtils;
 import org.springframework.beans.factory.config.BeanFactoryPostProcessor;
-import org.springframework.cloud.Cloud;
 import org.springframework.cloud.service.common.MysqlServiceInfo;
+import org.springframework.context.ApplicationContext;
 
 import javax.persistence.EntityManagerFactory;
 
@@ -33,8 +34,8 @@ public final class MySqlJpaCloudServiceBeanFactoryPostProcessorTest extends
     }
 
     @Override
-    protected BeanFactoryPostProcessor getInstance(Cloud cloud) {
-        return new DataSourceCloudServiceBeanFactoryPostProcessor(cloud);
+    protected BeanFactoryPostProcessor getInstance(ApplicationContext applicationContext, CloudUtils cloudUtils) {
+        return new DataSourceCloudServiceBeanFactoryPostProcessor(applicationContext, cloudUtils);
     }
 
     @Override

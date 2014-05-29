@@ -17,10 +17,11 @@
 package org.cloudfoundry.reconfiguration.spring;
 
 import com.rabbitmq.client.ConnectionFactory;
+import org.cloudfoundry.reconfiguration.util.CloudUtils;
 import org.springframework.amqp.rabbit.connection.CachingConnectionFactory;
 import org.springframework.beans.factory.config.BeanFactoryPostProcessor;
-import org.springframework.cloud.Cloud;
 import org.springframework.cloud.service.common.AmqpServiceInfo;
+import org.springframework.context.ApplicationContext;
 import org.springframework.test.util.ReflectionTestUtils;
 
 import static org.junit.Assert.assertEquals;
@@ -36,8 +37,8 @@ public final class RabbitCloudServiceBeanFactoryPostProcessorTest extends
     }
 
     @Override
-    protected BeanFactoryPostProcessor getInstance(Cloud cloud) {
-        return new RabbitCloudServiceBeanFactoryPostProcessor(cloud);
+    protected BeanFactoryPostProcessor getInstance(ApplicationContext applicationContext, CloudUtils cloudUtils) {
+        return new RabbitCloudServiceBeanFactoryPostProcessor(applicationContext, cloudUtils);
     }
 
     @Override

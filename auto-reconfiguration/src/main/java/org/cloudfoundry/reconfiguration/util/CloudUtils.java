@@ -17,6 +17,7 @@
 package org.cloudfoundry.reconfiguration.util;
 
 import org.springframework.cloud.CloudFactory;
+import org.springframework.context.ApplicationContext;
 
 /**
  * Utilities for dealing with {@link CloudFactory}s
@@ -37,7 +38,15 @@ public interface CloudUtils {
      *
      * @return {@code true} if the application is running in a cloud, {@code false} otherwise
      */
-
     Boolean isInCloud();
+
+    /**
+     * Whether the current application is using cloud services directly
+     *
+     * @param applicationContext the application context to examine
+     *
+     * @return {@code true} if the application is using cloud services directly, {@code false} otherwise
+     */
+    Boolean isUsingCloudServices(ApplicationContext applicationContext);
 
 }

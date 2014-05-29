@@ -12,9 +12,9 @@
     </content>
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />
-    <orderEntry type="library" scope="PROVIDED" name="Maven: org.springframework.cloud:spring-cloud-cloudfoundry-connector:1.0.0.RC2" level="project" />
-    <orderEntry type="library" scope="PROVIDED" name="Maven: org.springframework.cloud:spring-cloud-core:1.0.0.RC2" level="project" />
-    <orderEntry type="library" scope="PROVIDED" name="Maven: org.springframework.cloud:spring-cloud-spring-service-connector:1.0.0.RC2" level="project" />
+    <orderEntry type="library" scope="PROVIDED" name="Maven: org.springframework.cloud:spring-cloud-cloudfoundry-connector:1.0.0.RC3" level="project" />
+    <orderEntry type="library" scope="PROVIDED" name="Maven: org.springframework.cloud:spring-cloud-core:1.0.0.RC3" level="project" />
+    <orderEntry type="library" scope="PROVIDED" name="Maven: org.springframework.cloud:spring-cloud-spring-service-connector:1.0.0.RC3" level="project" />
     <orderEntry type="library" scope="PROVIDED" name="Maven: com.typesafe.play:play_2.10:2.2.2" level="project" />
     <orderEntry type="library" scope="PROVIDED" name="Maven: com.typesafe.play:sbt-link:2.2.2" level="project" />
     <orderEntry type="library" scope="TEST" name="Maven: org.javassist:javassist:3.18.1-GA" level="project" />

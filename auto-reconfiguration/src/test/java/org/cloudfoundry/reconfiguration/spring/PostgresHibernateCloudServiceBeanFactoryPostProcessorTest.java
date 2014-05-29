@@ -16,10 +16,11 @@
 
 package org.cloudfoundry.reconfiguration.spring;
 
+import org.cloudfoundry.reconfiguration.util.CloudUtils;
 import org.hibernate.SessionFactory;
 import org.springframework.beans.factory.config.BeanFactoryPostProcessor;
-import org.springframework.cloud.Cloud;
 import org.springframework.cloud.service.common.PostgresqlServiceInfo;
+import org.springframework.context.ApplicationContext;
 
 public final class PostgresHibernateCloudServiceBeanFactoryPostProcessorTest extends
         AbstractHibernateBasedCloudServiceBeanFactoryPostProcessorTest {
@@ -32,8 +33,8 @@ public final class PostgresHibernateCloudServiceBeanFactoryPostProcessorTest ext
     }
 
     @Override
-    protected BeanFactoryPostProcessor getInstance(Cloud cloud) {
-        return new DataSourceCloudServiceBeanFactoryPostProcessor(cloud);
+    protected BeanFactoryPostProcessor getInstance(ApplicationContext applicationContext, CloudUtils cloudUtils) {
+        return new DataSourceCloudServiceBeanFactoryPostProcessor(applicationContext, cloudUtils);
     }
 
     @Override

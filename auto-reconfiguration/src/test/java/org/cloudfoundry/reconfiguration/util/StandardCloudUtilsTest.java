@@ -20,6 +20,11 @@ import org.junit.Test;
 import org.springframework.cloud.Cloud;
 import org.springframework.cloud.CloudException;
 import org.springframework.cloud.CloudFactory;
+import org.springframework.context.ApplicationContext;
+import org.springframework.core.io.FileSystemResource;
+import org.springframework.core.io.Resource;
+
+import java.io.IOException;
 
 import static org.mockito.Mockito.mock;
 import static org.junit.Assert.assertFalse;
@@ -29,6 +34,8 @@ import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.when;
 
 public final class StandardCloudUtilsTest {
+
+    private final ApplicationContext applicationContext = mock(ApplicationContext.class);
 
     private final CloudFactory cloudFactory = mock(CloudFactory.class);
 
@@ -59,4 +66,25 @@ public final class StandardCloudUtilsTest {
 
         assertFalse(this.cloudUtils.isInCloud());
     }
+
+    @Test
+    public void isUsingCloudServices() throws IOException {
+        when(this.applicationContext.getResources("classpath*:/META-INF/cloud/cloud-services")).thenReturn(
+                new Resource[]{new FileSystemResource("src/test/resources/cloud-services")});
+        when(this.applicationContext.getBeanNamesForType(UnusedCloudService.class, true,
+                false)).thenReturn(new String[0]);
+        when(this.applicationContext.getBeanNamesForType(UsedCloudService.class, true,
+                false)).thenReturn(new String[]{"used-cloud-service-bean-name"});
+
+        assertTrue(this.cloudUtils.isUsingCloudServices(this.applicationContext));
+    }
+
+    public static final class UnusedCloudService {
+
+    }
+
+    public static final class UsedCloudService {
+
+    }
 }
+
