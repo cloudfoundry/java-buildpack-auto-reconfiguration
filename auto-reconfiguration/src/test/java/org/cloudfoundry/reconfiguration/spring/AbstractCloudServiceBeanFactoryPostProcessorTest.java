@@ -16,9 +16,9 @@
 
 package org.cloudfoundry.reconfiguration.spring;
 
+import org.cloudfoundry.reconfiguration.util.CloudUtils;
 import org.junit.Test;
 import org.springframework.beans.factory.config.BeanFactoryPostProcessor;
-import org.springframework.cloud.Cloud;
 import org.springframework.cloud.CloudFactory;
 import org.springframework.cloud.CloudTestUtil;
 import org.springframework.cloud.service.ServiceInfo;
@@ -28,7 +28,9 @@ import org.springframework.core.Ordered;
 
 import java.util.Map;
 
+import static org.mockito.Mockito.mock;
 import static org.junit.Assert.assertEquals;
+import static org.mockito.Mockito.when;
 
 public abstract class AbstractCloudServiceBeanFactoryPostProcessorTest<T> {
 
@@ -37,6 +39,10 @@ public abstract class AbstractCloudServiceBeanFactoryPostProcessorTest<T> {
     protected final String contextStem;
 
     protected final ServiceInfo serviceInfo;
+
+    private final ApplicationContext applicationContext = mock(ApplicationContext.class);
+
+    private final CloudUtils cloudUtils = mock(CloudUtils.class);
 
     protected AbstractCloudServiceBeanFactoryPostProcessorTest(Class<T> beanClass, String contextStem,
                                                                ServiceInfo serviceInfo) {
@@ -47,7 +53,7 @@ public abstract class AbstractCloudServiceBeanFactoryPostProcessorTest<T> {
 
     @Test
     public final void getOrder() {
-        assertEquals(Ordered.LOWEST_PRECEDENCE, ((Ordered) getInstance(null)).getOrder());
+        assertEquals(Ordered.LOWEST_PRECEDENCE, ((Ordered) getInstance(null, null)).getOrder());
     }
 
     @Test
@@ -56,9 +62,21 @@ public abstract class AbstractCloudServiceBeanFactoryPostProcessorTest<T> {
     }
 
     @Test
+    public final void noReconfigureUsingCloudServices() {
+        CloudUtils cloudUtils = getCloudUtils(this.serviceInfo);
+        when(cloudUtils.isUsingCloudServices(this.applicationContext)).thenReturn(true);
+        BeanFactoryPostProcessor beanFactoryPostProcessor = getInstance(this.applicationContext, cloudUtils);
+        String contextLocation = String.format("classpath:%s-single.xml", this.contextStem);
+
+        ApplicationContext applicationContext = getApplicationContext(contextLocation, beanFactoryPostProcessor);
+
+        assertLocalConfiguration(applicationContext.getBean(this.beanClass));
+    }
+
+    @Test
     public final void noReconfigureNoBeans() {
-        CloudFactory cloudFactory = getCloudFactory(this.serviceInfo);
-        BeanFactoryPostProcessor beanFactoryPostProcessor = getInstance(cloudFactory.getCloud());
+        CloudUtils cloudUtils = getCloudUtils(this.serviceInfo);
+        BeanFactoryPostProcessor beanFactoryPostProcessor = getInstance(this.applicationContext, cloudUtils);
         String contextLocation = String.format("classpath:%s-none.xml", this.contextStem);
 
         ApplicationContext applicationContext = getApplicationContext(contextLocation, beanFactoryPostProcessor);
@@ -69,8 +87,8 @@ public abstract class AbstractCloudServiceBeanFactoryPostProcessorTest<T> {
 
     @Test
     public final void noReconfigureMultipleBeans() {
-        CloudFactory cloudFactory = getCloudFactory(this.serviceInfo);
-        BeanFactoryPostProcessor beanFactoryPostProcessor = getInstance(cloudFactory.getCloud());
+        CloudUtils cloudUtils = getCloudUtils(this.serviceInfo);
+        BeanFactoryPostProcessor beanFactoryPostProcessor = getInstance(this.applicationContext, cloudUtils);
         String contextLocation = String.format("classpath:%s-multiple.xml", this.contextStem);
 
         ApplicationContext applicationContext = getApplicationContext(contextLocation, beanFactoryPostProcessor);
@@ -85,8 +103,8 @@ public abstract class AbstractCloudServiceBeanFactoryPostProcessorTest<T> {
 
     @Test
     public final void noReconfigureNoServices() {
-        CloudFactory cloudFactory = getCloudFactory();
-        BeanFactoryPostProcessor beanFactoryPostProcessor = getInstance(cloudFactory.getCloud());
+        CloudUtils cloudUtils = getCloudUtils();
+        BeanFactoryPostProcessor beanFactoryPostProcessor = getInstance(this.applicationContext, cloudUtils);
         String contextLocation = String.format("classpath:%s-single.xml", this.contextStem);
 
         ApplicationContext applicationContext = getApplicationContext(contextLocation, beanFactoryPostProcessor);
@@ -96,8 +114,8 @@ public abstract class AbstractCloudServiceBeanFactoryPostProcessorTest<T> {
 
     @Test
     public final void noReconfigureMultipleServices() {
-        CloudFactory cloudFactory = getCloudFactory(this.serviceInfo, this.serviceInfo);
-        BeanFactoryPostProcessor beanFactoryPostProcessor = getInstance(cloudFactory.getCloud());
+        CloudUtils cloudUtils = getCloudUtils(this.serviceInfo, this.serviceInfo);
+        BeanFactoryPostProcessor beanFactoryPostProcessor = getInstance(this.applicationContext, cloudUtils);
         String contextLocation = String.format("classpath:%s-single.xml", this.contextStem);
 
         ApplicationContext applicationContext = getApplicationContext(contextLocation, beanFactoryPostProcessor);
@@ -106,8 +124,8 @@ public abstract class AbstractCloudServiceBeanFactoryPostProcessorTest<T> {
     }
 
     protected final void assertReconfigured(String contextLocationFormat) {
-        CloudFactory cloudFactory = getCloudFactory(this.serviceInfo);
-        BeanFactoryPostProcessor beanFactoryPostProcessor = getInstance(cloudFactory.getCloud());
+        CloudUtils cloudUtils = getCloudUtils(this.serviceInfo);
+        BeanFactoryPostProcessor beanFactoryPostProcessor = getInstance(this.applicationContext, cloudUtils);
         String contextLocation = String.format(contextLocationFormat, this.contextStem);
 
         ApplicationContext applicationContext = getApplicationContext(contextLocation, beanFactoryPostProcessor);
@@ -125,13 +143,17 @@ public abstract class AbstractCloudServiceBeanFactoryPostProcessorTest<T> {
         return applicationContext;
     }
 
-    protected final CloudFactory getCloudFactory(ServiceInfo... serviceInfos) {
+    protected final CloudUtils getCloudUtils(ServiceInfo... serviceInfos) {
         CloudFactory cloudFactory = new CloudFactory();
         cloudFactory.registerCloudConnector(CloudTestUtil.getTestCloudConnector(serviceInfos));
-        return cloudFactory;
+
+        when(this.cloudUtils.getCloudFactory()).thenReturn(cloudFactory);
+
+        return this.cloudUtils;
     }
 
-    protected abstract BeanFactoryPostProcessor getInstance(Cloud cloud);
+    protected abstract BeanFactoryPostProcessor getInstance(ApplicationContext applicationContext,
+                                                            CloudUtils cloudUtils);
 
     protected abstract void assertLocalConfiguration(T instance);
 

@@ -18,9 +18,10 @@ package org.cloudfoundry.reconfiguration.spring;
 
 import com.mongodb.Mongo;
 import com.mongodb.ServerAddress;
+import org.cloudfoundry.reconfiguration.util.CloudUtils;
 import org.springframework.beans.factory.config.BeanFactoryPostProcessor;
-import org.springframework.cloud.Cloud;
 import org.springframework.cloud.service.common.MongoServiceInfo;
+import org.springframework.context.ApplicationContext;
 import org.springframework.data.authentication.UserCredentials;
 import org.springframework.data.mongodb.core.SimpleMongoDbFactory;
 import org.springframework.test.util.ReflectionTestUtils;
@@ -38,8 +39,8 @@ public final class MongoCloudServiceBeanFactoryPostProcessorTest extends
     }
 
     @Override
-    protected BeanFactoryPostProcessor getInstance(Cloud cloud) {
-        return new MongoCloudServiceBeanFactoryPostProcessor(cloud);
+    protected BeanFactoryPostProcessor getInstance(ApplicationContext applicationContext, CloudUtils cloudUtils) {
+        return new MongoCloudServiceBeanFactoryPostProcessor(applicationContext, cloudUtils);
     }
 
     @Override

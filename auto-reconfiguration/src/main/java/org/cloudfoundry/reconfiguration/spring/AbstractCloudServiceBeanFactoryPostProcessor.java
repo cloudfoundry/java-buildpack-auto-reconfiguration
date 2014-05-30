@@ -16,12 +16,14 @@
 
 package org.cloudfoundry.reconfiguration.spring;
 
+import org.cloudfoundry.reconfiguration.util.CloudUtils;
 import org.cloudfoundry.reconfiguration.util.Sets;
 import org.springframework.beans.factory.config.BeanFactoryPostProcessor;
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
 import org.springframework.beans.factory.support.DefaultListableBeanFactory;
 import org.springframework.cloud.Cloud;
 import org.springframework.cloud.service.ServiceInfo;
+import org.springframework.context.ApplicationContext;
 import org.springframework.core.Ordered;
 import org.springframework.util.ClassUtils;
 
@@ -34,10 +36,14 @@ abstract class AbstractCloudServiceBeanFactoryPostProcessor implements
 
     private final Logger logger = Logger.getLogger(this.getClass().getName());
 
-    private final Cloud cloud;
+    private final ApplicationContext applicationContext;
 
-    protected AbstractCloudServiceBeanFactoryPostProcessor(Cloud cloud) {
-        this.cloud = cloud;
+    private final CloudUtils cloudUtils;
+
+    protected AbstractCloudServiceBeanFactoryPostProcessor(ApplicationContext applicationContext,
+                                                           CloudUtils cloudUtils) {
+        this.applicationContext = applicationContext;
+        this.cloudUtils = cloudUtils;
     }
 
     @Override
@@ -49,7 +55,9 @@ abstract class AbstractCloudServiceBeanFactoryPostProcessor implements
     public final void postProcessBeanFactory(ConfigurableListableBeanFactory beanFactory) {
         String beanClass = getBeanClass();
 
-        if (ClassUtils.isPresent(beanClass, null)) {
+        if (this.cloudUtils.isUsingCloudServices(this.applicationContext)) {
+            this.logger.info(String.format("Skipping auto-reconfiguring beans of type %s", beanClass));
+        } else if (ClassUtils.isPresent(beanClass, null)) {
             this.logger.info(String.format("Auto-reconfiguring beans of type %s", beanClass));
 
             boolean reconfigured = processBeans((DefaultListableBeanFactory) beanFactory,
@@ -71,6 +79,10 @@ abstract class AbstractCloudServiceBeanFactoryPostProcessor implements
     protected void postReconfiguration(ConfigurableListableBeanFactory beanFactory) {
     }
 
+    private Cloud getCloud() {
+        return this.cloudUtils.getCloudFactory().getCloud();
+    }
+
     private boolean processBeans(DefaultListableBeanFactory beanFactory, Class<?> beanClass) {
         Set<String> beanNames = Sets.asSet(beanFactory.getBeanNamesForType(beanClass, true, false));
         filterBeanNames(beanFactory, beanNames);
@@ -89,7 +101,7 @@ abstract class AbstractCloudServiceBeanFactoryPostProcessor implements
     }
 
     private boolean processBean(DefaultListableBeanFactory beanFactory, Class<?> beanClass, String beanName) {
-        List<ServiceInfo> serviceInfos = this.cloud.getServiceInfos(beanClass);
+        List<ServiceInfo> serviceInfos = getCloud().getServiceInfos(beanClass);
 
         if (serviceInfos.isEmpty()) {
             this.logger.info("No matching service found. Skipping auto-reconfiguration.");
@@ -104,7 +116,7 @@ abstract class AbstractCloudServiceBeanFactoryPostProcessor implements
     }
 
     private boolean reconfigureBean(DefaultListableBeanFactory beanFactory, Class<?> beanClass, String beanName) {
-        Object serviceConnector = this.cloud.getSingletonServiceConnector(beanClass, null);
+        Object serviceConnector = getCloud().getSingletonServiceConnector(beanClass, null);
         beanFactory.registerSingleton(getServiceBeanName(), serviceConnector);
         beanFactory.removeBeanDefinition(beanName);
         beanFactory.registerAlias(getServiceBeanName(), beanName);

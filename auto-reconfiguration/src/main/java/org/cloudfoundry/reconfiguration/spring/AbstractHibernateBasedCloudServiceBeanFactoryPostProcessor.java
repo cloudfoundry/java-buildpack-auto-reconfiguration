@@ -16,6 +16,7 @@
 
 package org.cloudfoundry.reconfiguration.spring;
 
+import org.cloudfoundry.reconfiguration.util.CloudUtils;
 import org.cloudfoundry.reconfiguration.util.PropertyAugmenter;
 import org.cloudfoundry.reconfiguration.util.StandardPropertyAugmenter;
 import org.springframework.beans.factory.config.BeanFactoryPostProcessor;
@@ -52,35 +53,39 @@ abstract class AbstractHibernateBasedCloudServiceBeanFactoryPostProcessor implem
 
     private final List<String> beanClasses;
 
-    private final Cloud cloud;
+    private final CloudUtils cloudUtils;
 
     private final PropertyAugmenter propertyAugmenter;
 
     private final String propertyName;
 
-    protected AbstractHibernateBasedCloudServiceBeanFactoryPostProcessor(List<String> beanClasses, Cloud cloud,
-                                                                         String propertyName) {
-        this(beanClasses, cloud, new StandardPropertyAugmenter(), propertyName);
+    protected AbstractHibernateBasedCloudServiceBeanFactoryPostProcessor(List<String> beanClasses,
+                                                                         CloudUtils cloudUtils, String propertyName) {
+        this(beanClasses, cloudUtils, new StandardPropertyAugmenter(), propertyName);
     }
 
-    AbstractHibernateBasedCloudServiceBeanFactoryPostProcessor(List<String> beanClasses, Cloud cloud,
+    AbstractHibernateBasedCloudServiceBeanFactoryPostProcessor(List<String> beanClasses, CloudUtils cloudUtils,
                                                                PropertyAugmenter propertyAugmenter,
                                                                String propertyName) {
         this.beanClasses = beanClasses;
-        this.cloud = cloud;
+        this.cloudUtils = cloudUtils;
         this.propertyAugmenter = propertyAugmenter;
         this.propertyName = propertyName;
     }
 
     @Override
     public final void postProcessBeanFactory(ConfigurableListableBeanFactory beanFactory) {
-        for (ServiceInfo serviceInfo : this.cloud.getServiceInfos(DataSource.class)) {
+        for (ServiceInfo serviceInfo : getCloud().getServiceInfos(DataSource.class)) {
             if (serviceInfo instanceof MysqlServiceInfo) {
                 augment(beanFactory, MYSQL_PROPERTIES);
             } else if (serviceInfo instanceof PostgresqlServiceInfo) {
                 augment(beanFactory, POSTGRES_PROPERTIES);
             }
         }
+    }
+
+    private Cloud getCloud() {
+        return this.cloudUtils.getCloudFactory().getCloud();
     }
 
     protected void augment(ConfigurableListableBeanFactory beanFactory, ManagedProperties additionalProperties) {

@@ -16,7 +16,8 @@
 
 package org.cloudfoundry.reconfiguration.spring;
 
-import org.springframework.cloud.Cloud;
+import org.cloudfoundry.reconfiguration.util.CloudUtils;
+import org.springframework.context.ApplicationContext;
 
 final class RabbitCloudServiceBeanFactoryPostProcessor extends AbstractCloudServiceBeanFactoryPostProcessor {
 
@@ -24,8 +25,8 @@ final class RabbitCloudServiceBeanFactoryPostProcessor extends AbstractCloudServ
 
     private static final String SERVICE_BEAN_NAME = "__cloudRabbitConnectionFactory";
 
-    RabbitCloudServiceBeanFactoryPostProcessor(Cloud cloud) {
-        super(cloud);
+    RabbitCloudServiceBeanFactoryPostProcessor(ApplicationContext applicationContext, CloudUtils cloudUtils) {
+        super(applicationContext, cloudUtils);
     }
 
     @Override

@@ -16,7 +16,8 @@
 
 package org.cloudfoundry.reconfiguration.spring;
 
-import org.springframework.cloud.Cloud;
+import org.cloudfoundry.reconfiguration.util.CloudUtils;
+import org.springframework.context.ApplicationContext;
 
 final class MongoCloudServiceBeanFactoryPostProcessor extends AbstractCloudServiceBeanFactoryPostProcessor {
 
@@ -24,8 +25,8 @@ final class MongoCloudServiceBeanFactoryPostProcessor extends AbstractCloudServi
 
     private static final String SERVICE_BEAN_NAME = "__cloudMongoDbFactory";
 
-    MongoCloudServiceBeanFactoryPostProcessor(Cloud cloud) {
-        super(cloud);
+    MongoCloudServiceBeanFactoryPostProcessor(ApplicationContext applicationContext, CloudUtils cloudUtils) {
+        super(applicationContext, cloudUtils);
     }
 
     @Override

@@ -16,10 +16,11 @@
 
 package org.cloudfoundry.reconfiguration.spring;
 
+import org.cloudfoundry.reconfiguration.util.CloudUtils;
 import org.cloudfoundry.reconfiguration.util.Sets;
 import org.springframework.beans.factory.config.BeanFactoryPostProcessor;
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
-import org.springframework.cloud.Cloud;
+import org.springframework.context.ApplicationContext;
 import org.springframework.util.ClassUtils;
 
 import java.util.Arrays;
@@ -37,11 +38,11 @@ final class DataSourceCloudServiceBeanFactoryPostProcessor extends AbstractCloud
 
     private final List<BeanFactoryPostProcessor> ormBeanFactoryPostProcessors;
 
-    DataSourceCloudServiceBeanFactoryPostProcessor(Cloud cloud) {
-        super(cloud);
+    DataSourceCloudServiceBeanFactoryPostProcessor(ApplicationContext applicationContext, CloudUtils cloudUtils) {
+        super(applicationContext, cloudUtils);
         this.ormBeanFactoryPostProcessors = Arrays.<BeanFactoryPostProcessor>asList(
-                new HibernateCloudServiceBeanFactoryPostProcessor(cloud),
-                new JpaCloudServiceBeanFactoryPostProcessor(cloud));
+                new HibernateCloudServiceBeanFactoryPostProcessor(cloudUtils),
+                new JpaCloudServiceBeanFactoryPostProcessor(cloudUtils));
     }
 
     @Override

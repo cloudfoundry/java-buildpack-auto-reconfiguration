@@ -18,6 +18,14 @@
             </filterchain>
         </move>
 
+        <replaceregexp byline="true">
+            <fileset dir="${cloud}">
+                <include name="*"/>
+            </fileset>
+            <regexp pattern="(.+)"/>
+            <substitution expression="${prefix}.\1"/>
+        </replaceregexp>
+
         <jar destfile="${artifact}" basedir="${temp}"/>
     </target>
 
