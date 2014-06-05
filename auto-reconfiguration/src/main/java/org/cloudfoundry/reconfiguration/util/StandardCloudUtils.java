@@ -101,8 +101,12 @@ public final class StandardCloudUtils implements CloudUtils {
     }
 
     private Boolean hasBeanOfType(ApplicationContext applicationContext, String cloudServiceClassName) {
-        Class<?> cloudServiceClass = ClassUtils.resolveClassName(cloudServiceClassName, null);
-        return applicationContext.getBeanNamesForType(cloudServiceClass, true, false).length != 0;
+        if (ClassUtils.isPresent(cloudServiceClassName, null)) {
+            Class<?> cloudServiceClass = ClassUtils.resolveClassName(cloudServiceClassName, null);
+            return applicationContext.getBeanNamesForType(cloudServiceClass, true, false).length != 0;
+        }
+
+        return false;
     }
 
     private Set<String> getCloudServiceClasses(Resource resource) {

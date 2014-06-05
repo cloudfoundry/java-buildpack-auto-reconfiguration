@@ -31,6 +31,9 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotSame;
 import static org.junit.Assert.assertSame;
 import static org.junit.Assert.assertTrue;
+import static org.mockito.Matchers.any;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 public final class StandardCloudUtilsTest {
@@ -77,6 +80,16 @@ public final class StandardCloudUtilsTest {
                 false)).thenReturn(new String[]{"used-cloud-service-bean-name"});
 
         assertTrue(this.cloudUtils.isUsingCloudServices(this.applicationContext));
+    }
+
+    @Test
+    public void isUsingCloudServicesInvalidCloudService() throws IOException {
+        when(this.applicationContext.getResources("classpath*:/META-INF/cloud/cloud-services")).thenReturn(
+                new Resource[]{new FileSystemResource("src/test/resources/invalid-cloud-services")});
+
+        assertFalse(this.cloudUtils.isUsingCloudServices(this.applicationContext));
+
+        verify(this.applicationContext, times(0)).getBeanNamesForType(any(Class.class));
     }
 
     public static final class UnusedCloudService {
