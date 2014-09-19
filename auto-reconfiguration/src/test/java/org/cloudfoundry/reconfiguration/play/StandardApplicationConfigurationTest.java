@@ -58,10 +58,11 @@ public final class StandardApplicationConfigurationTest {
         assertExpectedKeys(this.applicationConfiguration.getConfiguration(), "alpha", "bravo", "delta");
     }
 
-    @Test(expected = IllegalArgumentException.class)
+    @Test
     public void getConfigurationNonExistentInclude() {
         System.setProperty("config.file", "src/test/resources/play-with-non-existent-include.conf");
-        this.applicationConfiguration.getConfiguration();
+        assertEquals(1, this.applicationConfiguration.getConfiguration().size());
+        assertExpectedKeys(this.applicationConfiguration.getConfiguration(), "justme");
     }
 
     @Test(expected = IllegalArgumentException.class)
