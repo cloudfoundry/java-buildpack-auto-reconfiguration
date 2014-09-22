@@ -126,7 +126,7 @@ final class StandardApplicationConfiguration implements ApplicationConfiguration
         if (hasResource(name)) {
             return loadConfiguration(getResource(name));
         } else {
-            throw new IllegalArgumentException(String.format("Unable to load configuration from '%s'", name));
+            return new Properties();
         }
     }
 
