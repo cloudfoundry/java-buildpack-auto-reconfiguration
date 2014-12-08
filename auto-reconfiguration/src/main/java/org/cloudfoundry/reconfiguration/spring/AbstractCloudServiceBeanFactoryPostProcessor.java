@@ -121,6 +121,9 @@ abstract class AbstractCloudServiceBeanFactoryPostProcessor implements
         beanFactory.removeBeanDefinition(beanName);
         beanFactory.registerAlias(getServiceBeanName(), beanName);
 
+        this.logger.info(String.format("Reconfigured bean %s into singleton service connector %s", beanName,
+                serviceConnector.toString()));
+
         return true;
     }
 
