@@ -26,6 +26,8 @@ import org.springframework.data.authentication.UserCredentials;
 import org.springframework.data.mongodb.core.SimpleMongoDbFactory;
 import org.springframework.test.util.ReflectionTestUtils;
 
+import java.util.List;
+
 import static org.junit.Assert.assertEquals;
 
 public final class MongoCloudServiceBeanFactoryPostProcessorTest extends
@@ -62,7 +64,9 @@ public final class MongoCloudServiceBeanFactoryPostProcessorTest extends
         assertEquals(password, userCredentials.getPassword());
 
         Mongo mongo = (Mongo) ReflectionTestUtils.getField(factory, "mongo");
-        ServerAddress serverAddress = mongo.getAddress();
+        List<ServerAddress> serverAddressList = mongo.getServerAddressList();
+        assertEquals(1, serverAddressList.size());
+        ServerAddress serverAddress = serverAddressList.get(0);
         assertEquals(host, serverAddress.getHost());
         assertEquals(port, serverAddress.getPort());
     }
