@@ -1,59 +1,60 @@
----
 language: java
 script: |
-    if [[ "$SONAR_BUILD" == 'true' && "$TRAVIS_SECURE_ENV_VARS" == 'true' ]] ; then
-      mvn sonar:sonar -Dsonar.host.url="$SONAR_HOST_URL" -Dsonar.login="$SONAR_LOGIN" -Dsonar.password="$SONAR_PASSWORD" -Dsonar.jdbc.url="jdbc:mysql://$SONAR_JDBC_URL?useUnicode=true&characterEncoding=utf8&rewriteBatchedStatements=true" -Dsonar.jdbc.username="$SONAR_JDBC_USERNAME" -Dsonar.jdbc.password="$SONAR_JDBC_PASSWORD"
-    else
-      mvn test
-    fi
+  if [[ "$SONAR_BUILD" == 'true' && "$TRAVIS_SECURE_ENV_VARS" == 'true' ]] ; then
+    mvn sonar:sonar -Dsonar.host.url="$SONAR_HOST_URL" -Dsonar.login="$SONAR_LOGIN" -Dsonar.password="$SONAR_PASSWORD" -Dsonar.jdbc.url="jdbc:mysql://$SONAR_JDBC_URL?useUnicode=true&characterEncoding=utf8&rewriteBatchedStatements=true" -Dsonar.jdbc.username="$SONAR_JDBC_USERNAME" -Dsonar.jdbc.password="$SONAR_JDBC_PASSWORD"
+  else
+    mvn test
+  fi
 jdk:
-  - openjdk6
-  - openjdk7
-  - oraclejdk8
+- openjdk6
+- openjdk7
+- oraclejdk8
 env:
   global:
-    - secure: B8qhSFPpfFcscEqnSzex2w8YOg5G2V1FSJYGqCws/EPTauvl745tnfn94FjNtUWuDW1ipecsnbpzxS4jwIuKAsKHVYLEUeFoAA4NMcRuqx4wdGRX5/7SwOQfFwpwsHMdsKV61DMyveJ8cPrhpU5rYqi5d4Acb4wI+GKgT7Uw/wQ= # SONAR_HOST_URL
-    - secure: kudK37niVbGvNs79aLX8NVCMqIBdM+G0VQyA3Hnd0QemOqieQtxEyObvc8C6DEbqeHseztnoUpFvOWwUnRFBEYGkow+f5R/ysy1YhbfR+v9rt3pLOXBSpTmgtu79hvEsrFkzgI9zZ4jWSXhMTUHU95rlz4O0F7Pt4Lng4liYaXU= # SONAR_LOGIN
-    - secure: Yh3ccsaiG+eEYb+4XVFCCtF1usOzNGFzlMbO8N0LyDg8RL0RZtjw3v3DaZgDlu+if1t7kdbfMWFgxdxSUcDCHPpEVW8QvZserus9sv+pmbZRI+S9GUEdfudRVcrNeHcscw55W/xCeQ6dUeiAjhUbPKFsyRwsZXZT8XTngmdqQBI= # SONAR_PASSWORD
-    - secure: lwg2bZ8Rjhgz0byDwTa9TL3HaLg5RS6m5dA/nvY4I+rC0LfO27flEq4W2bBkGkWg+d15uTNU2Ne6FyrTbf2PhIRiDe2PVSh7sPB/yBh2PU3xFcE1O433aW7o9dbiiAzJLD6QdEFJ2ey7CT7YdZz2zGNbOmUln5UIxmWFBWFglps= # SONAR_JDBC_URL
-    - secure: FBAl3HlDt/ls0dwPsdBYzDHAV5cfiUJmE7ociUCd2BTWSwo+v33PhaiuLt083BkNiHxL2rQeLdtDOr7hFc7MkuJdLkBvlgwJdpV6f7me9KBhVZTlgDS147CKIEdfsia++N15BhI1631DAzL1A8vOAzKOIqHp09sy+t0Q0E2Y9PQ= # SONAR_JDBC_USERNAME
-    - secure: hrZxoFi/nCdmd1g4I+o2ynCMAXA+B8WwIWA8teT5eVFMtS+/XGTWtvMHy4hvDS7KO7uTGe7tlbhYOGreYWh0oUWmsoegraTPeB22XBmsTrjjedeCbsTPm/6nqP0kF8AhVTPGZIM1hxiX672nHCRb4M65mcla8I1RYbrR+OytBh4= # SONAR_JDBC_PASSWORD
+  - secure: B8qhSFPpfFcscEqnSzex2w8YOg5G2V1FSJYGqCws/EPTauvl745tnfn94FjNtUWuDW1ipecsnbpzxS4jwIuKAsKHVYLEUeFoAA4NMcRuqx4wdGRX5/7SwOQfFwpwsHMdsKV61DMyveJ8cPrhpU5rYqi5d4Acb4wI+GKgT7Uw/wQ= # SONAR_HOST_URL
+  - secure: kudK37niVbGvNs79aLX8NVCMqIBdM+G0VQyA3Hnd0QemOqieQtxEyObvc8C6DEbqeHseztnoUpFvOWwUnRFBEYGkow+f5R/ysy1YhbfR+v9rt3pLOXBSpTmgtu79hvEsrFkzgI9zZ4jWSXhMTUHU95rlz4O0F7Pt4Lng4liYaXU= # SONAR_LOGIN
+  - secure: Yh3ccsaiG+eEYb+4XVFCCtF1usOzNGFzlMbO8N0LyDg8RL0RZtjw3v3DaZgDlu+if1t7kdbfMWFgxdxSUcDCHPpEVW8QvZserus9sv+pmbZRI+S9GUEdfudRVcrNeHcscw55W/xCeQ6dUeiAjhUbPKFsyRwsZXZT8XTngmdqQBI= # SONAR_PASSWORD
+  - secure: lwg2bZ8Rjhgz0byDwTa9TL3HaLg5RS6m5dA/nvY4I+rC0LfO27flEq4W2bBkGkWg+d15uTNU2Ne6FyrTbf2PhIRiDe2PVSh7sPB/yBh2PU3xFcE1O433aW7o9dbiiAzJLD6QdEFJ2ey7CT7YdZz2zGNbOmUln5UIxmWFBWFglps= # SONAR_JDBC_URL
+  - secure: FBAl3HlDt/ls0dwPsdBYzDHAV5cfiUJmE7ociUCd2BTWSwo+v33PhaiuLt083BkNiHxL2rQeLdtDOr7hFc7MkuJdLkBvlgwJdpV6f7me9KBhVZTlgDS147CKIEdfsia++N15BhI1631DAzL1A8vOAzKOIqHp09sy+t0Q0E2Y9PQ= # SONAR_JDBC_USERNAME
+  - secure: hrZxoFi/nCdmd1g4I+o2ynCMAXA+B8WwIWA8teT5eVFMtS+/XGTWtvMHy4hvDS7KO7uTGe7tlbhYOGreYWh0oUWmsoegraTPeB22XBmsTrjjedeCbsTPm/6nqP0kF8AhVTPGZIM1hxiX672nHCRb4M65mcla8I1RYbrR+OytBh4= # SONAR_JDBC_PASSWORD
   matrix:
-    - SONAR_BUILD=true
-    - HIBERNATE_VERSION=3.4.0.GA SPRING_PROFILES_ACTIVE=hibernate3 SPRING_VERSION=3.2.8.RELEASE # maximum supported Spring
-    - HIBERNATE_VERSION=3.5.6-Final SPRING_PROFILES_ACTIVE=hibernate3 SPRING_VERSION=3.2.8.RELEASE # maximum supported Spring
-    - HIBERNATE_VERSION=3.6.10.Final SPRING_PROFILES_ACTIVE=hibernate3
-    - HIBERNATE_VERSION=4.0.1.Final
-    - HIBERNATE_VERSION=4.1.12.Final
-    - HIBERNATE_VERSION=4.2.12.Final
-    - HIBERNATE_VERSION=4.3.5.Final
-    - JEDIS_VERSION=2.1.0 SPRING_DATA_REDIS_VERSION=1.1.1.RELEASE # maximum supported Spring Data Redis
-    - JEDIS_VERSION=2.2.1 SPRING_DATA_REDIS_VERSION=1.1.1.RELEASE # maximum supported Spring Data Redis
-    - JEDIS_VERSION=2.3.1
-    - JEDIS_VERSION=2.4.2
-    - POSTGRESQL_VERSION=9.2-1004-jdbc4
-    - POSTGRESQL_VERSION=9.3-1101-jdbc4
-    - SPRING_AMQP_VERSION=1.1.4.RELEASE
-    - SPRING_AMQP_VERSION=1.2.2.RELEASE
-    - SPRING_AMQP_VERSION=1.3.8.RELEASE
-    - SPRING_AMQP_VERSION=1.4.2.RELEASE
-    - SPRING_DATA_MONGO_VERSION=1.2.4.RELEASE
-    - SPRING_DATA_MONGO_VERSION=1.3.5.RELEASE
-    - SPRING_DATA_MONGO_VERSION=1.4.2.RELEASE
-    - SPRING_DATA_REDIS_VERSION=1.0.6.RELEASE JEDIS_VERSION=2.2.1 # maximum supported Jedis
-    - SPRING_DATA_REDIS_VERSION=1.1.1.RELEASE JEDIS_VERSION=2.2.1 # maximum supported Jedis
-    - SPRING_DATA_REDIS_VERSION=1.2.1.RELEASE
-    - SPRING_VERSION=3.1.4.RELEASE
-    - SPRING_VERSION=3.2.8.RELEASE
-    - SPRING_VERSION=4.0.3.RELEASE
+  - SONAR_BUILD=true
+  - HIBERNATE_VERSION=3.4.0.GA SPRING_PROFILES_ACTIVE=hibernate3 SPRING_VERSION=3.2.8.RELEASE # maximum supported Spring
+  - HIBERNATE_VERSION=3.5.6-Final SPRING_PROFILES_ACTIVE=hibernate3 SPRING_VERSION=3.2.8.RELEASE # maximum supported Spring
+  - HIBERNATE_VERSION=3.6.10.Final SPRING_PROFILES_ACTIVE=hibernate3
+  - HIBERNATE_VERSION=4.0.1.Final
+  - HIBERNATE_VERSION=4.1.12.Final
+  - HIBERNATE_VERSION=4.2.12.Final
+  - HIBERNATE_VERSION=4.3.5.Final
+  - JEDIS_VERSION=2.1.0 SPRING_DATA_REDIS_VERSION=1.1.1.RELEASE # maximum supported Spring Data Redis
+  - JEDIS_VERSION=2.2.1 SPRING_DATA_REDIS_VERSION=1.1.1.RELEASE # maximum supported Spring Data Redis
+  - JEDIS_VERSION=2.3.1
+  - JEDIS_VERSION=2.4.2
+  - POSTGRESQL_VERSION=9.2-1004-jdbc4
+  - POSTGRESQL_VERSION=9.3-1101-jdbc4
+  - SPRING_AMQP_VERSION=1.1.4.RELEASE
+  - SPRING_AMQP_VERSION=1.2.2.RELEASE
+  - SPRING_AMQP_VERSION=1.3.8.RELEASE
+  - SPRING_AMQP_VERSION=1.4.2.RELEASE
+  - SPRING_DATA_MONGO_VERSION=1.2.4.RELEASE
+  - SPRING_DATA_MONGO_VERSION=1.3.5.RELEASE
+  - SPRING_DATA_MONGO_VERSION=1.4.2.RELEASE
+  - SPRING_DATA_REDIS_VERSION=1.0.6.RELEASE JEDIS_VERSION=2.2.1 # maximum supported Jedis
+  - SPRING_DATA_REDIS_VERSION=1.1.1.RELEASE JEDIS_VERSION=2.2.1 # maximum supported Jedis
+  - SPRING_DATA_REDIS_VERSION=1.2.1.RELEASE
+  - SPRING_VERSION=3.1.4.RELEASE
+  - SPRING_VERSION=3.2.8.RELEASE
+  - SPRING_VERSION=4.0.3.RELEASE
 matrix:
   exclude:
-    - jdk: openjdk6
-      env: SONAR_BUILD=true
-    - jdk: oraclejdk8
-      env: SONAR_BUILD=true
+  - jdk: openjdk6
+    env: SONAR_BUILD=true
+  - jdk: oraclejdk8
+    env: SONAR_BUILD=true
 notifications:
+  slack:
+    secure: SdCDAPB0lhgi5sSwahF4389CMwHCxoQFa8jVKGjLKweKVxR92ziFD0yx5Si8LrIE2zSdAtCsUu42Bjkym5JIkdRFEQWC8O+P/dhZn1bsFbIwKGlfn1/Noc7HRrjErLApCWvNmNfdrFLxMAoTQh9LcVEc2/ZaUs1ppfgjKjD/bmM=
   webhooks:
     urls:
-      - http://build-monitor.cfapps.io/projects/JBAR/webhook
+    - http://build-monitor.cfapps.io/projects/JBAR/webhook
     on_start: true
