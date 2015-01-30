@@ -21,10 +21,6 @@ import org.cloudfoundry.reconfiguration.util.StandardCloudUtils;
 import org.springframework.context.ApplicationContextInitializer;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.core.Ordered;
-import org.springframework.core.env.ConfigurableEnvironment;
-import org.springframework.core.env.Environment;
-
-import java.util.logging.Logger;
 
 /**
  * An {@link ApplicationContextInitializer} implementation that adds the {@code cloud} profile to the collection of of
@@ -34,13 +30,9 @@ import java.util.logging.Logger;
 public final class CloudProfileApplicationContextInitializer implements
         ApplicationContextInitializer<ConfigurableApplicationContext>, Ordered {
 
-    private static final String CLOUD_PROFILE = "cloud";
-
     private static final int ORDER = 100;
 
-    private final Logger logger = Logger.getLogger(this.getClass().getName());
-
-    private final CloudUtils cloudUtils;
+	private final CloudProfileApplicationListener listener;
 
     /**
      * Creates a new instance
@@ -50,7 +42,7 @@ public final class CloudProfileApplicationContextInitializer implements
     }
 
     CloudProfileApplicationContextInitializer(CloudUtils cloudUtils) {
-        this.cloudUtils = cloudUtils;
+        this.listener = new CloudProfileApplicationListener(cloudUtils);
     }
 
     @Override
@@ -60,31 +52,7 @@ public final class CloudProfileApplicationContextInitializer implements
 
     @Override
     public void initialize(ConfigurableApplicationContext applicationContext) {
-        if (this.cloudUtils.isInCloud()) {
-            addCloudProfile(applicationContext);
-        } else {
-            this.logger.warning("Not running in a cloud. Skipping 'cloud' profile activation.");
-        }
+        listener.addCloudProfile(applicationContext.getEnvironment());
     }
 
-    private void addCloudProfile(ConfigurableApplicationContext applicationContext) {
-        ConfigurableEnvironment environment = applicationContext.getEnvironment();
-
-        if (hasCloudProfile(environment)) {
-            this.logger.fine("'cloud' already in list of active profiles");
-        } else {
-            this.logger.info("Adding 'cloud' to list of active profiles");
-            environment.addActiveProfile(CLOUD_PROFILE);
-        }
-    }
-
-    private boolean hasCloudProfile(Environment environment) {
-        for (String activeProfile : environment.getActiveProfiles()) {
-            if (CLOUD_PROFILE.equalsIgnoreCase(activeProfile)) {
-                return true;
-            }
-        }
-
-        return false;
-    }
 }
