@@ -25,7 +25,7 @@
     <bean class="org.springframework.data.mongodb.core.SimpleMongoDbFactory">
         <constructor-arg>
             <bean class="com.mongodb.MongoURI">
-                <constructor-arg value="mongodb://local-username:local-password@localhost:1234/local-database"/>
+                <constructor-arg value="mongodb://local-username:local-password@127.0.0.1:27017/local-database"/>
             </bean>
         </constructor-arg>
     </bean>

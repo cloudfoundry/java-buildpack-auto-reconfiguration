@@ -24,14 +24,16 @@ import org.springframework.core.env.Environment;
 import java.util.logging.Logger;
 
 /**
- * @author Dave Syer
+ * A String Boot {@link ApplicationListener} that applies the {@code cloud} profile
  */
-public class CloudProfileApplicationListener implements ApplicationListener<ApplicationEnvironmentPreparedEvent>,
+public final class CloudProfileApplicationListener implements ApplicationListener<ApplicationEnvironmentPreparedEvent>,
         Ordered {
 
     private static final String CLOUD_PROFILE = "cloud";
 
-    private static final int ORDER = Ordered.HIGHEST_PRECEDENCE + 3;
+    private static final int OFFSET = 3;
+
+    private static final int ORDER = Ordered.HIGHEST_PRECEDENCE + OFFSET;
 
     private final Logger logger = Logger.getLogger(this.getClass().getName());
 

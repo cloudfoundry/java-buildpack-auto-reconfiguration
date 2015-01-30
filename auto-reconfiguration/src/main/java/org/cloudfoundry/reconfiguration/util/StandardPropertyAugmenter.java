@@ -31,6 +31,7 @@ import org.springframework.core.io.support.PropertiesLoaderUtils;
 
 import java.io.IOException;
 import java.io.StringReader;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
@@ -151,16 +152,23 @@ public final class StandardPropertyAugmenter implements PropertyAugmenter {
     }
 
     private Properties loadPropertiesForLocations(Object locations) {
-        if (locations instanceof List) {
-            Properties props = new Properties();
-            for (Object location : (List) locations) {
-                props.putAll(loadPropertiesForLocation(location));
-            }
-            return props;
+        List normalizedLocations;
+
+        if (locations instanceof Object[]) {
+            normalizedLocations = Arrays.asList((Object[]) locations);
+        } else if (locations instanceof List) {
+            normalizedLocations = (List) locations;
+        } else {
+            throw new IllegalArgumentException(String.format("Unable to process 'locations' value of type %s",
+                    locations.getClass().getName()));
         }
 
-        throw new IllegalArgumentException(String.format("Unable to process 'locations' value of type %s",
-                locations.getClass().getName()));
+        Properties props = new Properties();
+        for (Object location : normalizedLocations) {
+            props.putAll(loadPropertiesForLocation(location));
+        }
+
+        return props;
     }
 
     private Properties convert(Map<String, String> map) {

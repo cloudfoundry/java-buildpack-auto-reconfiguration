@@ -33,7 +33,7 @@ import static org.junit.Assert.assertEquals;
 public final class MongoCloudServiceBeanFactoryPostProcessorTest extends
         AbstractCloudServiceBeanFactoryPostProcessorTest<SimpleMongoDbFactory> {
 
-    private static final MongoServiceInfo SERVICE_INFO = new MongoServiceInfo("service-mongo", "127.0.0.1", 4321,
+    private static final MongoServiceInfo SERVICE_INFO = new MongoServiceInfo("service-mongo", "127.0.0.1", 27017,
             "service-username", "service-password", "service-database");
 
     public MongoCloudServiceBeanFactoryPostProcessorTest() {
@@ -47,12 +47,12 @@ public final class MongoCloudServiceBeanFactoryPostProcessorTest extends
 
     @Override
     protected void assertLocalConfiguration(SimpleMongoDbFactory factory) {
-        assertConfiguration(factory, "local-database", "local-username", "local-password", "localhost", 1234);
+        assertConfiguration(factory, "local-database", "local-username", "local-password", "127.0.0.1", 27017);
     }
 
     @Override
     protected void assertServiceConfiguration(SimpleMongoDbFactory factory) {
-        assertConfiguration(factory, "service-database", "service-username", "service-password", "127.0.0.1", 4321);
+        assertConfiguration(factory, "service-database", "service-username", "service-password", "127.0.0.1", 27017);
     }
 
     private void assertConfiguration(SimpleMongoDbFactory factory, String database, String username, String password,
