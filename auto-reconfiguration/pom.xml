@@ -67,7 +67,7 @@
             <scope>test</scope>
         </dependency>
         <dependency>
-            <groupId>org.jumpmind.symmetric.jdbc</groupId>
+            <groupId>org.mariadb.jdbc</groupId>
             <artifactId>mariadb-java-client</artifactId>
             <scope>test</scope>
         </dependency>
@@ -88,7 +88,7 @@
         </dependency>
         <dependency>
             <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot</artifactId> 
+            <artifactId>spring-boot</artifactId>
             <scope>provided</scope>
         </dependency>
         <dependency>
