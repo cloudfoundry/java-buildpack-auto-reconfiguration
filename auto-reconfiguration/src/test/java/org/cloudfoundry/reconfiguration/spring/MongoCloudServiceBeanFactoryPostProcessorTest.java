@@ -17,17 +17,18 @@
 package org.cloudfoundry.reconfiguration.spring;
 
 import com.mongodb.Mongo;
+import com.mongodb.MongoCredential;
 import com.mongodb.ServerAddress;
 import org.cloudfoundry.reconfiguration.util.CloudUtils;
 import org.springframework.beans.factory.config.BeanFactoryPostProcessor;
 import org.springframework.cloud.service.common.MongoServiceInfo;
 import org.springframework.context.ApplicationContext;
-import org.springframework.data.authentication.UserCredentials;
 import org.springframework.data.mongodb.core.SimpleMongoDbFactory;
 import org.springframework.test.util.ReflectionTestUtils;
 
 import java.util.List;
 
+import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
 
 public final class MongoCloudServiceBeanFactoryPostProcessorTest extends
@@ -59,11 +60,16 @@ public final class MongoCloudServiceBeanFactoryPostProcessorTest extends
                                      String host, int port) {
         assertEquals(database, ReflectionTestUtils.getField(factory, "databaseName"));
 
-        UserCredentials userCredentials = (UserCredentials) ReflectionTestUtils.getField(factory, "credentials");
-        assertEquals(username, userCredentials.getUsername());
-        assertEquals(password, userCredentials.getPassword());
-
         Mongo mongo = (Mongo) ReflectionTestUtils.getField(factory, "mongo");
+
+        Object mongoAuthority = ReflectionTestUtils.invokeGetterMethod(mongo, "authority");
+        Object mongoCredentialsStore = ReflectionTestUtils.invokeGetterMethod(mongoAuthority, "credentialsStore");
+        List<MongoCredential> mongoCredentials = ReflectionTestUtils.invokeMethod(mongoCredentialsStore, "asList");
+        assertEquals(1, mongoCredentials.size());
+        MongoCredential mongoCredential = mongoCredentials.get(0);
+        assertEquals(username, mongoCredential.getUserName());
+        assertArrayEquals(password.toCharArray(), mongoCredential.getPassword());
+
         List<ServerAddress> serverAddressList = mongo.getServerAddressList();
         assertEquals(1, serverAddressList.size());
         ServerAddress serverAddress = serverAddressList.get(0);
