@@ -23,6 +23,7 @@ import org.springframework.cloud.service.common.PostgresqlServiceInfo;
 import org.springframework.cloud.service.common.RelationalServiceInfo;
 
 import javax.sql.DataSource;
+import java.net.URI;
 import java.util.List;
 import java.util.Set;
 import java.util.Map;
@@ -77,7 +78,7 @@ final class Configurer {
         String password = serviceInfo.getPassword();
 
         if ((username == null || password == null) && serviceInfo instanceof MysqlServiceInfo) {
-            Map<String, String> queryMap = processQueryString(serviceInfo.getQuery());
+            Map<String, String> queryMap = getQueryParameters(serviceInfo);
             if (username == null) {
                 username = queryMap.get("user");
             }
@@ -87,13 +88,25 @@ final class Configurer {
         }
 
         System.setProperty(String.format("db.%s.user", name), username);
-        System.setProperty(String.format("db.%s.password", name), password);
+        if (password != null) {
+            System.setProperty(String.format("db.%s.password", name), password);
+        }
 
         if (serviceInfo instanceof MysqlServiceInfo) {
             System.setProperty(String.format("db.%s.driver", name), PropertySetter.MYSQL_DRIVER_CLASS);
         } else if (serviceInfo instanceof PostgresqlServiceInfo) {
             System.setProperty(String.format("db.%s.driver", name), PropertySetter.POSTGRES_DRIVER_CLASS);
         }
+    }
+
+    private static Map<String, String> getQueryParameters(RelationalServiceInfo serviceInfo) {
+        URI uri = URI.create(serviceInfo.getUri());
+        if (uri.getQuery() != null) {
+            return processQueryString(uri.getQuery());
+        }
+
+        URI schemeSpecificUri = URI.create(uri.getSchemeSpecificPart());
+        return processQueryString(schemeSpecificUri.getQuery());
     }
 
     private static Map<String, String> processQueryString(String queryString) {
