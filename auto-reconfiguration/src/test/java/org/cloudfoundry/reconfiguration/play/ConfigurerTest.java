@@ -101,7 +101,26 @@ public final class ConfigurerTest {
         assertEquals(PropertySetter.MYSQL_DRIVER_CLASS, System.getProperty("db.default.driver"));
         assertEquals("disabled", System.getProperty("jpaplugin"));
         assertEquals("enabled", System.getProperty("cfjpaplugin"));
+    }
 
+    @Test
+    public void configurePlayDBSingleMySQLServiceAltUrl() {
+        MysqlServiceInfo serviceInfo = new MysqlServiceInfo("service-mysql",
+                "mysql://127.0.0.1:4321/service-database?user=service-user&password=service-password");
+        when(this.cloud.getServiceInfos(DataSource.class)).thenReturn(Arrays.<ServiceInfo>asList(serviceInfo));
+        when(this.applicationConfiguration.getConfiguration()).thenReturn(this.configuration);
+        when(this.applicationConfiguration.getDatabaseNames()).thenReturn(Sets.asSet("default"));
+
+        Configurer.configure(this.applicationConfiguration, this.cloud, this.propertySetter);
+
+        verify(this.propertySetter).setCloudProperties();
+        verify(this.propertySetter).setDatabaseProperties(Sets.asSet("default"));
+        assertEquals(serviceInfo.getJdbcUrl(), System.getProperty("db.default.url"));
+        assertEquals("service-user", System.getProperty("db.default.user"));
+        assertEquals("service-password", System.getProperty("db.default.password"));
+        assertEquals(PropertySetter.MYSQL_DRIVER_CLASS, System.getProperty("db.default.driver"));
+        assertEquals("disabled", System.getProperty("jpaplugin"));
+        assertEquals("enabled", System.getProperty("cfjpaplugin"));
     }
 
     @Test

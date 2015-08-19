@@ -25,6 +25,8 @@ import org.springframework.cloud.service.common.RelationalServiceInfo;
 import javax.sql.DataSource;
 import java.util.List;
 import java.util.Set;
+import java.util.Map;
+import java.util.HashMap;
 import java.util.logging.Logger;
 
 final class Configurer {
@@ -70,14 +72,42 @@ final class Configurer {
         LOGGER.info(String.format("Auto-reconfiguring %s", name));
 
         System.setProperty(String.format("db.%s.url", name), serviceInfo.getJdbcUrl());
-        System.setProperty(String.format("db.%s.user", name), serviceInfo.getUserName());
-        System.setProperty(String.format("db.%s.password", name), serviceInfo.getPassword());
+
+        String username = serviceInfo.getUserName();
+        String password = serviceInfo.getPassword();
+
+        if ((username == null || password == null) && serviceInfo instanceof MysqlServiceInfo) {
+            Map<String, String> queryMap = processQueryString(serviceInfo.getQuery());
+            if (username == null) {
+                username = queryMap.get("user");
+            }
+            if (password == null) {
+                password = queryMap.get("password");
+            }
+        }
+
+        System.setProperty(String.format("db.%s.user", name), username);
+        System.setProperty(String.format("db.%s.password", name), password);
 
         if (serviceInfo instanceof MysqlServiceInfo) {
             System.setProperty(String.format("db.%s.driver", name), PropertySetter.MYSQL_DRIVER_CLASS);
         } else if (serviceInfo instanceof PostgresqlServiceInfo) {
             System.setProperty(String.format("db.%s.driver", name), PropertySetter.POSTGRES_DRIVER_CLASS);
         }
+    }
+
+    private static Map<String, String> processQueryString(String queryString) {
+        String[] fields = queryString.split("&");
+        String[] keyValue;
+        Map<String, String> queryMap = new HashMap<>();
+
+        for (String field : fields) {
+            keyValue = field.split("=");
+            if (2 == keyValue.length) {
+                queryMap.put(keyValue[0], keyValue[1]);
+            }
+        }
+        return queryMap;
     }
 
     private static void configureJpa(ApplicationConfiguration applicationConfiguration) {
