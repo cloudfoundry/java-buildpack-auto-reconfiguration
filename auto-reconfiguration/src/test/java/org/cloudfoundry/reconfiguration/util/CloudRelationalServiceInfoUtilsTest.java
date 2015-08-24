@@ -88,7 +88,7 @@ public final class CloudRelationalServiceInfoUtilsTest {
     private static final class GenericRelationalServiceInfo extends RelationalServiceInfo {
 
         public GenericRelationalServiceInfo(String id, String uriString) {
-            super(id, uriString, DataSource.class.getCanonicalName());
+            super(id, uriString, DataSource.class.getCanonicalName(), "generic");
         }
     }
 

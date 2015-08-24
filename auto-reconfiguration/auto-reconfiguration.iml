@@ -109,10 +109,10 @@
     <orderEntry type="library" scope="PROVIDED" name="Maven: org.springframework.retry:spring-retry:1.1.2.RELEASE" level="project" />
     <orderEntry type="library" scope="PROVIDED" name="Maven: org.springframework.amqp:spring-amqp:1.4.5.RELEASE" level="project" />
     <orderEntry type="library" scope="PROVIDED" name="Maven: org.springframework:spring-messaging:4.1.6.RELEASE" level="project" />
-    <orderEntry type="library" name="Maven: org.springframework.cloud:spring-cloud-cloudfoundry-connector:1.2.0.RELEASE" level="project" />
-    <orderEntry type="library" name="Maven: org.springframework.cloud:spring-cloud-core:1.2.0.RELEASE" level="project" />
-    <orderEntry type="library" scope="TEST" name="Maven: org.springframework.cloud:spring-cloud-core:tests:1.2.0.RELEASE" level="project" />
-    <orderEntry type="library" name="Maven: org.springframework.cloud:spring-cloud-spring-service-connector:1.2.0.RELEASE" level="project" />
+    <orderEntry type="library" name="Maven: org.springframework.cloud:spring-cloud-cloudfoundry-connector:1.2.1.BUILD-SNAPSHOT" level="project" />
+    <orderEntry type="library" name="Maven: org.springframework.cloud:spring-cloud-core:1.2.1.BUILD-SNAPSHOT" level="project" />
+    <orderEntry type="library" scope="TEST" name="Maven: org.springframework.cloud:spring-cloud-core:tests:1.2.1.BUILD-SNAPSHOT" level="project" />
+    <orderEntry type="library" name="Maven: org.springframework.cloud:spring-cloud-spring-service-connector:1.2.1.BUILD-SNAPSHOT" level="project" />
     <orderEntry type="library" scope="PROVIDED" name="Maven: org.springframework.data:spring-data-mongodb:1.7.1.RELEASE" level="project" />
     <orderEntry type="library" scope="PROVIDED" name="Maven: org.springframework.data:spring-data-commons:1.10.1.RELEASE" level="project" />
     <orderEntry type="library" scope="PROVIDED" name="Maven: org.mongodb:mongo-java-driver:2.13.0" level="project" />

@@ -42,7 +42,7 @@
         <spring.version>4.1.7.RELEASE</spring.version>
         <spring-amqp.version>1.4.5.RELEASE</spring-amqp.version>
         <spring-boot.version>1.2.5.RELEASE</spring-boot.version>
-        <spring-cloud.version>1.2.0.RELEASE</spring-cloud.version>
+        <spring-cloud.version>1.2.1.BUILD-SNAPSHOT</spring-cloud.version>
         <spring-data-mongo.version>1.7.1.RELEASE</spring-data-mongo.version>
         <spring-data-redis.version>1.5.1.RELEASE</spring-data-redis.version>
         <servlet-api.version>3.1.0</servlet-api.version>
@@ -421,6 +421,10 @@
     </profiles>
 
     <repositories>
+        <repository>
+            <id>spring-snapshot</id>
+            <url>http://repo.spring.io/libs-snapshot-local</url>
+        </repository>
         <repository>
             <id>spring-milestones</id>
             <url>http://repo.spring.io/milestone</url>

@@ -23,11 +23,8 @@ import org.springframework.cloud.service.common.PostgresqlServiceInfo;
 import org.springframework.cloud.service.common.RelationalServiceInfo;
 
 import javax.sql.DataSource;
-import java.net.URI;
 import java.util.List;
 import java.util.Set;
-import java.util.Map;
-import java.util.HashMap;
 import java.util.logging.Logger;
 
 final class Configurer {
@@ -73,24 +70,8 @@ final class Configurer {
         LOGGER.info(String.format("Auto-reconfiguring %s", name));
 
         System.setProperty(String.format("db.%s.url", name), serviceInfo.getJdbcUrl());
-
-        String username = serviceInfo.getUserName();
-        String password = serviceInfo.getPassword();
-
-        if ((username == null || password == null) && serviceInfo instanceof MysqlServiceInfo) {
-            Map<String, String> queryMap = getQueryParameters(serviceInfo);
-            if (username == null) {
-                username = queryMap.get("user");
-            }
-            if (password == null) {
-                password = queryMap.get("password");
-            }
-        }
-
-        System.setProperty(String.format("db.%s.user", name), username);
-        if (password != null) {
-            System.setProperty(String.format("db.%s.password", name), password);
-        }
+        System.setProperty(String.format("db.%s.user", name), serviceInfo.getUserName());
+        System.setProperty(String.format("db.%s.password", name), serviceInfo.getPassword());
 
         if (serviceInfo instanceof MysqlServiceInfo) {
             System.setProperty(String.format("db.%s.driver", name), PropertySetter.MYSQL_DRIVER_CLASS);
@@ -99,29 +80,7 @@ final class Configurer {
         }
     }
 
-    private static Map<String, String> getQueryParameters(RelationalServiceInfo serviceInfo) {
-        URI uri = URI.create(serviceInfo.getUri());
-        if (uri.getQuery() != null) {
-            return processQueryString(uri.getQuery());
-        }
 
-        URI schemeSpecificUri = URI.create(uri.getSchemeSpecificPart());
-        return processQueryString(schemeSpecificUri.getQuery());
-    }
-
-    private static Map<String, String> processQueryString(String queryString) {
-        String[] fields = queryString.split("&");
-        String[] keyValue;
-        Map<String, String> queryMap = new HashMap<>();
-
-        for (String field : fields) {
-            keyValue = field.split("=");
-            if (2 == keyValue.length) {
-                queryMap.put(keyValue[0], keyValue[1]);
-            }
-        }
-        return queryMap;
-    }
 
     private static void configureJpa(ApplicationConfiguration applicationConfiguration) {
         String status = applicationConfiguration.getConfiguration().getProperty("jpaplugin");
