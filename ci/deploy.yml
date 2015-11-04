@@ -1,0 +1,9 @@
+---
+platform: linux
+image: docker:///java#7-jdk
+
+inputs:
+- name: java-buildpack-auto-reconfiguration
+
+run:
+  path: java-buildpack-auto-reconfiguration/ci/deploy.sh

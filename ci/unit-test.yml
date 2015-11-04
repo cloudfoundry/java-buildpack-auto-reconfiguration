@@ -1,0 +1,8 @@
+---
+platform: linux
+
+inputs:
+- name: java-buildpack-auto-reconfiguration
+
+run:
+  path: java-buildpack-auto-reconfiguration/ci/unit-test.sh

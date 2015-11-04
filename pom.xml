@@ -314,19 +314,29 @@
                 </executions>
             </plugin>
             <plugin>
-                <groupId>org.codehaus.mojo</groupId>
-                <artifactId>sonar-maven-plugin</artifactId>
-                <version>2.2</version>
+                <groupId>org.jfrog.buildinfo</groupId>
+                <artifactId>artifactory-maven-plugin</artifactId>
+                <version>2.4.0</version>
+                <inherited>false</inherited>
+                <executions>
+                    <execution>
+                        <id>build-info</id>
+                        <goals>
+                            <goal>publish</goal>
+                        </goals>
+                        <configuration>
+                            <publisher>
+                                <contextUrl>https://repo.spring.io</contextUrl>
+                                <username>{{ARTIFACTORY_USERNAME}}</username>
+                                <password>{{ARTIFACTORY_PASSWORD}}</password>
+                                <repoKey>{{ARTIFACTORY_REPO_KEY|"libs-release-local"}}</repoKey>
+                                <snapshotRepoKey>{{ARTIFACTORY_SNAPSHOT_REPO_KEY|"libs-snapshot-local"}}</snapshotRepoKey>
+                            </publisher>
+                        </configuration>
+                    </execution>
+                </executions>
             </plugin>
         </plugins>
-
-        <extensions>
-            <extension>
-                <groupId>org.springframework.build</groupId>
-                <artifactId>aws-maven</artifactId>
-                <version>5.0.0.RELEASE</version>
-            </extension>
-        </extensions>
     </build>
 
     <profiles>
@@ -435,15 +445,15 @@
         </repository>
     </repositories>
 
-    <distributionManagement>
-        <repository>
-            <id>cloudfoundry-release</id>
-            <url>s3://maven.gopivotal.com/release</url>
-        </repository>
-        <snapshotRepository>
-            <id>cloudfoundry-snapshot</id>
-            <url>s3://maven.gopivotal.com/snapshot</url>
-        </snapshotRepository>
-    </distributionManagement>
+    <pluginRepositories>
+        <pluginRepository>
+            <id>bintray-plugins</id>
+            <name>Bintray Plugins</name>
+            <url>http://jcenter.bintray.com</url>
+            <snapshots>
+                <enabled>false</enabled>
+            </snapshots>
+        </pluginRepository>
+    </pluginRepositories>
 
 </project>

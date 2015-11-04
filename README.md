@@ -1,6 +1,4 @@
 # Java Buildpack Auto-Reconfiguration
-[![Build Status](https://travis-ci.org/cloudfoundry/java-buildpack-auto-reconfiguration.svg?branch=master)](https://travis-ci.org/cloudfoundry/java-buildpack-auto-reconfiguration)
-
 This repository contains the auto-reconfiguration functionality for Spring and Play Framework auto-reconfiguration.  It also contains a replacement Play Framework JPA Plugin that can be properly auto-reconfigured.
 
 ## What is Auto-Reconfiguration?
