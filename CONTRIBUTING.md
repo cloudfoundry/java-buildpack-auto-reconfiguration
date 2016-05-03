@@ -14,9 +14,9 @@ Is there already an issue that addresses your concern?  Do a bit of searching in
 
 ## Discuss non-trivial contribution ideas with committers
 
-If you're considering anything more than correcting a typo or fixing a minor bug, please discuss it on the [vcap-dev][] mailing list before submitting a pull request. We're happy to provide guidance, but please spend an hour or two researching the subject on your own including searching the mailing list for prior discussions.
+If you're considering anything more than correcting a typo or fixing a minor bug, please discuss it on the [cf-dev][] mailing list before submitting a pull request. We're happy to provide guidance, but please spend an hour or two researching the subject on your own including searching the mailing list for prior discussions.
 
-[vcap-dev]: https://groups.google.com/a/cloudfoundry.org/forum/#!forum/vcap-dev
+[cf-dev]: https://lists.cloudfoundry.org/archives/list/cf-dev@lists.cloudfoundry.org/
 
 ## Sign the Contributor License Agreement
 Please open an issue in the [GitHub issue tracker][] to receive instructions on how to fill out the Contributor License Agreement.
@@ -58,16 +58,16 @@ Please carefully follow the whitespace and formatting conventions already presen
 require ...;
 ```
 ## Update Apache license header to modified files as necessary
-Always check the date range in the license header. For example, if you've modified a file in 2014 whose header still reads
+Always check the date range in the license header. For example, if you've modified a file in 2016 whose header still reads
 
 ```ruby
  # Copyright 2013 the original author or authors.
 ```
 
-then be sure to update it to 2014 appropriately
+then be sure to update it to 2016 appropriately
 
 ```ruby
- # Copyright 2013-2014 the original author or authors.
+ # Copyright 2013-2016 the original author or authors.
 ```
 
 ## Submit RSpec test cases for all behavior changes
