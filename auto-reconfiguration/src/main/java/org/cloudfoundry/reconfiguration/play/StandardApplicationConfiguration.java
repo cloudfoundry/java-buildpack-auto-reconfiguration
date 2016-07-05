@@ -35,7 +35,10 @@ import java.util.regex.Pattern;
 
 final class StandardApplicationConfiguration implements ApplicationConfiguration {
 
-    private static final Pattern DATABASE_PATTERN = Pattern.compile("db.(.*).driver");
+    private static final Pattern DATABASE_PATTERN = Pattern.compile("db\\.(.*)\\.driver");
+
+    //Matching the driver pattern for play-slick, which is different than the above pattern for regular database stuff
+    private static final Pattern SLICK_DATABASE_PATTERN = Pattern.compile("slick\\.dbs\\.(.*)\\.db\\.driver");
 
     private static final Pattern INCLUDE_PATTERN = Pattern.compile("include \"(.*)\"");
 
@@ -61,8 +64,15 @@ final class StandardApplicationConfiguration implements ApplicationConfiguration
         for (Object key : getConfiguration().keySet()) {
             Matcher matcher = DATABASE_PATTERN.matcher((String) key);
 
+            //also check for slick patterns
+            Matcher slickMatcher = SLICK_DATABASE_PATTERN.matcher((String) key);
+
             if (matcher.find()) {
                 names.add(matcher.group(1));
+            }
+
+            if (slickMatcher.find()) {
+                names.add(slickMatcher.group(1));
             }
         }
 
