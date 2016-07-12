@@ -1,9 +1,18 @@
 ---
 platform: linux
-image: docker:///java#7-jdk
+
+image_resource:
+  type: docker-image
+  source:
+    repository: java
+    tag: 8-jdk-alpine
 
 inputs:
 - name: java-buildpack-auto-reconfiguration
 
 run:
   path: java-buildpack-auto-reconfiguration/ci/deploy.sh
+
+params:
+  ARTIFACTORY_USERNAME:
+  ARTIFACTORY_PASSWORD:

@@ -1,7 +1,6 @@
-#!/usr/bin/env bash
+#!/usr/bin/env sh
 
 set -e
 
-pushd java-buildpack-auto-reconfiguration
-  ./mvnw -Dmaven.test.skip=true deploy
-popd
+cd java-buildpack-auto-reconfiguration
+./mvnw -q -Dmaven.test.skip=true deploy

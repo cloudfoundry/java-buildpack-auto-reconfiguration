@@ -1,9 +1,9 @@
-#!/usr/bin/env bash
+#!/usr/bin/env sh
 
 set -e
 
-service mongodb start
+mkdir -p /data/db
+mongod &
 
-pushd java-buildpack-auto-reconfiguration
-  ./mvnw test
-popd
+cd java-buildpack-auto-reconfiguration
+./mvnw -q test
