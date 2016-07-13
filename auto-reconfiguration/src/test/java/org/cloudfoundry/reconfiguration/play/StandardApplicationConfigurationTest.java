@@ -89,6 +89,18 @@ public final class StandardApplicationConfigurationTest {
         assertDatabaseNames(this.applicationConfiguration.getDatabaseNames());
     }
 
+    @Test
+    public void getDatabaseNamesSlick() {
+        System.setProperty("config.file", "src/test/resources/play-database-slick.conf");
+        assertDatabaseNames(this.applicationConfiguration.getDatabaseNames(), "default");
+    }
+
+    @Test
+    public void getDatabaseNamesSlickMultiple() {
+        System.setProperty("config.file", "src/test/resources/play-database-slick-multiple.conf");
+        assertDatabaseNames(this.applicationConfiguration.getDatabaseNames(), "default", "another");
+    }
+
     private void assertExpectedKeys(Properties properties, String... keys) {
         assertEquals(keys.length, properties.size());
 
