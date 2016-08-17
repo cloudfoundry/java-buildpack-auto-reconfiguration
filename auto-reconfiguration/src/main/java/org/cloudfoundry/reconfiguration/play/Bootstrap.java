@@ -19,7 +19,7 @@ package org.cloudfoundry.reconfiguration.play;
 import org.cloudfoundry.reconfiguration.util.CloudUtils;
 import org.cloudfoundry.reconfiguration.util.StandardCloudUtils;
 import org.springframework.cloud.Cloud;
-import play.core.server.NettyServer;
+import play.core.server.ProdServerStart;
 
 /**
  * Wrapper that takes care of environment initialization and auto-reconfiguration before starting the main Play
@@ -43,7 +43,8 @@ public final class Bootstrap {
             Configurer.configure(new StandardApplicationConfiguration(), cloud, new StandardPropertySetter(cloud));
         }
 
-        NettyServer.main(args);
+        //In play 2.5.x, you have to start it with ProdServerStart
+        ProdServerStart.main(args);
     }
 
 }

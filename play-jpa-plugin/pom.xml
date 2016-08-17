@@ -33,12 +33,12 @@
     <dependencies>
         <dependency>
             <groupId>com.typesafe.play</groupId>
-            <artifactId>play_2.10</artifactId>
+            <artifactId>play-server_2.11</artifactId>
             <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>com.typesafe.play</groupId>
-            <artifactId>play-java-jpa_2.10</artifactId>
+            <artifactId>play-java-jpa_2.11</artifactId>
             <scope>provided</scope>
         </dependency>
         <dependency>

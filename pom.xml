@@ -38,7 +38,7 @@
         <mariadb.version>1.2.0</mariadb.version>
         <mockito.version>1.10.19</mockito.version>
         <postgresql.version>9.4-1201-jdbc4</postgresql.version>
-        <play.version>2.3.7</play.version>
+        <play.version>2.5.4</play.version>
         <spring.version>4.1.7.RELEASE</spring.version>
         <spring-amqp.version>1.4.5.RELEASE</spring-amqp.version>
         <spring-boot.version>1.2.5.RELEASE</spring-boot.version>
@@ -56,18 +56,23 @@
     <dependencyManagement>
         <dependencies>
             <dependency>
+                <groupId>xml-apis</groupId>
+                <artifactId>xml-apis</artifactId>
+                <version>1.4.01</version>
+            </dependency>
+            <dependency>
                 <groupId>cglib</groupId>
                 <artifactId>cglib-nodep</artifactId>
                 <version>${cglib.version}</version>
             </dependency>
             <dependency>
                 <groupId>com.typesafe.play</groupId>
-                <artifactId>play_2.10</artifactId>
+                <artifactId>play-server_2.11</artifactId>
                 <version>${play.version}</version>
             </dependency>
             <dependency>
                 <groupId>com.typesafe.play</groupId>
-                <artifactId>play-java-jpa_2.10</artifactId>
+                <artifactId>play-java-jpa_2.11</artifactId>
                 <version>${play.version}</version>
             </dependency>
             <dependency>
