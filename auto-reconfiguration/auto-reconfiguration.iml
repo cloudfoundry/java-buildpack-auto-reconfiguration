@@ -39,50 +39,38 @@
     <orderEntry type="library" scope="PROVIDED" name="Maven: org.mongodb:mongo-java-driver:2.12.5" level="project" />
     <orderEntry type="library" scope="PROVIDED" name="Maven: org.springframework.data:spring-data-redis:1.4.2.RELEASE" level="project" />
     <orderEntry type="library" scope="PROVIDED" name="Maven: org.springframework:spring-context-support:4.1.4.RELEASE" level="project" />
-    <orderEntry type="library" scope="TEST" name="Maven: xml-apis:xml-apis:1.4.01" level="project" />
     <orderEntry type="library" scope="TEST" name="Maven: cglib:cglib-nodep:3.1" level="project" />
-    <orderEntry type="library" scope="PROVIDED" name="Maven: com.typesafe.play:play-server_2.11:2.5.4" level="project" />
-    <orderEntry type="library" scope="PROVIDED" name="Maven: org.scala-lang:scala-library:2.11.7" level="project" />
-    <orderEntry type="library" scope="PROVIDED" name="Maven: com.typesafe.play:play_2.11:2.5.4" level="project" />
-    <orderEntry type="library" scope="PROVIDED" name="Maven: com.typesafe.play:build-link:2.5.4" level="project" />
-    <orderEntry type="library" scope="PROVIDED" name="Maven: com.typesafe.play:play-exceptions:2.5.4" level="project" />
-    <orderEntry type="library" scope="PROVIDED" name="Maven: com.typesafe.play:play-json_2.11:2.5.4" level="project" />
-    <orderEntry type="library" scope="PROVIDED" name="Maven: com.typesafe.play:play-functional_2.11:2.5.4" level="project" />
-    <orderEntry type="library" scope="PROVIDED" name="Maven: com.typesafe.play:play-datacommons_2.11:2.5.4" level="project" />
-    <orderEntry type="library" scope="PROVIDED" name="Maven: com.typesafe.play:play-netty-utils:2.5.4" level="project" />
-    <orderEntry type="library" scope="PROVIDED" name="Maven: com.typesafe.play:play-streams_2.11:2.5.4" level="project" />
-    <orderEntry type="library" scope="PROVIDED" name="Maven: org.reactivestreams:reactive-streams:1.0.0" level="project" />
-    <orderEntry type="library" scope="PROVIDED" name="Maven: com.typesafe.akka:akka-stream_2.11:2.4.4" level="project" />
-    <orderEntry type="library" scope="PROVIDED" name="Maven: com.typesafe:ssl-config-akka_2.11:0.2.1" level="project" />
-    <orderEntry type="library" scope="PROVIDED" name="Maven: com.typesafe:ssl-config-core_2.11:0.2.1" level="project" />
-    <orderEntry type="library" scope="PROVIDED" name="Maven: com.typesafe.play:twirl-api_2.11:1.1.1" level="project" />
-    <orderEntry type="library" scope="PROVIDED" name="Maven: org.scala-lang.modules:scala-xml_2.11:1.0.1" level="project" />
-    <orderEntry type="library" scope="PROVIDED" name="Maven: org.slf4j:jul-to-slf4j:1.7.19" level="project" />
-    <orderEntry type="library" scope="PROVIDED" name="Maven: com.typesafe.akka:akka-actor_2.11:2.4.4" level="project" />
-    <orderEntry type="library" scope="PROVIDED" name="Maven: com.typesafe.akka:akka-slf4j_2.11:2.4.4" level="project" />
-    <orderEntry type="library" scope="PROVIDED" name="Maven: com.fasterxml.jackson.core:jackson-core:2.7.1" level="project" />
-    <orderEntry type="library" scope="PROVIDED" name="Maven: com.fasterxml.jackson.core:jackson-annotations:2.7.1" level="project" />
-    <orderEntry type="library" scope="PROVIDED" name="Maven: com.fasterxml.jackson.core:jackson-databind:2.7.1" level="project" />
-    <orderEntry type="library" scope="PROVIDED" name="Maven: com.fasterxml.jackson.datatype:jackson-datatype-jdk8:2.7.1" level="project" />
-    <orderEntry type="library" scope="PROVIDED" name="Maven: com.fasterxml.jackson.datatype:jackson-datatype-jsr310:2.7.1" level="project" />
-    <orderEntry type="library" scope="PROVIDED" name="Maven: org.scala-stm:scala-stm_2.11:0.7" level="project" />
-    <orderEntry type="library" scope="PROVIDED" name="Maven: commons-codec:commons-codec:1.10" level="project" />
-    <orderEntry type="library" scope="PROVIDED" name="Maven: joda-time:joda-time:2.9.2" level="project" />
-    <orderEntry type="library" scope="PROVIDED" name="Maven: org.joda:joda-convert:1.8.1" level="project" />
-    <orderEntry type="library" scope="PROVIDED" name="Maven: org.apache.commons:commons-lang3:3.4" level="project" />
+    <orderEntry type="library" scope="PROVIDED" name="Maven: com.typesafe.play:play_2.10:2.3.7" level="project" />
+    <orderEntry type="library" scope="PROVIDED" name="Maven: org.scala-lang:scala-library:2.10.4" level="project" />
+    <orderEntry type="library" scope="PROVIDED" name="Maven: com.typesafe.play:build-link:2.3.7" level="project" />
+    <orderEntry type="library" scope="PROVIDED" name="Maven: com.typesafe.play:play-exceptions:2.3.7" level="project" />
+    <orderEntry type="library" scope="PROVIDED" name="Maven: com.typesafe.play:play-iteratees_2.10:2.3.7" level="project" />
+    <orderEntry type="library" scope="PROVIDED" name="Maven: com.typesafe:config:1.2.1" level="project" />
+    <orderEntry type="library" scope="PROVIDED" name="Maven: com.typesafe.play:play-json_2.10:2.3.7" level="project" />
+    <orderEntry type="library" scope="PROVIDED" name="Maven: com.typesafe.play:play-functional_2.10:2.3.7" level="project" />
+    <orderEntry type="library" scope="PROVIDED" name="Maven: com.typesafe.play:play-datacommons_2.10:2.3.7" level="project" />
+    <orderEntry type="library" scope="PROVIDED" name="Maven: com.typesafe.play:twirl-api_2.10:1.0.2" level="project" />
+    <orderEntry type="library" scope="PROVIDED" name="Maven: io.netty:netty:3.9.3.Final" level="project" />
+    <orderEntry type="library" scope="PROVIDED" name="Maven: com.typesafe.netty:netty-http-pipelining:1.1.2" level="project" />
+    <orderEntry type="library" scope="PROVIDED" name="Maven: org.slf4j:slf4j-api:1.7.6" level="project" />
+    <orderEntry type="library" scope="PROVIDED" name="Maven: org.slf4j:jul-to-slf4j:1.7.6" level="project" />
+    <orderEntry type="library" scope="PROVIDED" name="Maven: org.slf4j:jcl-over-slf4j:1.7.6" level="project" />
+    <orderEntry type="library" scope="PROVIDED" name="Maven: ch.qos.logback:logback-core:1.1.1" level="project" />
+    <orderEntry type="library" scope="PROVIDED" name="Maven: ch.qos.logback:logback-classic:1.1.1" level="project" />
+    <orderEntry type="library" scope="PROVIDED" name="Maven: com.typesafe.akka:akka-actor_2.10:2.3.4" level="project" />
+    <orderEntry type="library" scope="PROVIDED" name="Maven: com.typesafe.akka:akka-slf4j_2.10:2.3.4" level="project" />
+    <orderEntry type="library" scope="PROVIDED" name="Maven: org.scala-stm:scala-stm_2.10:0.7" level="project" />
+    <orderEntry type="library" scope="PROVIDED" name="Maven: commons-codec:commons-codec:1.9" level="project" />
+    <orderEntry type="library" scope="PROVIDED" name="Maven: joda-time:joda-time:2.3" level="project" />
+    <orderEntry type="library" scope="PROVIDED" name="Maven: org.joda:joda-convert:1.6" level="project" />
+    <orderEntry type="library" scope="PROVIDED" name="Maven: org.apache.commons:commons-lang3:3.1" level="project" />
+    <orderEntry type="library" scope="PROVIDED" name="Maven: com.fasterxml.jackson.core:jackson-core:2.3.2" level="project" />
+    <orderEntry type="library" scope="PROVIDED" name="Maven: com.fasterxml.jackson.core:jackson-annotations:2.3.2" level="project" />
+    <orderEntry type="library" scope="PROVIDED" name="Maven: com.fasterxml.jackson.core:jackson-databind:2.3.2" level="project" />
     <orderEntry type="library" scope="PROVIDED" name="Maven: xerces:xercesImpl:2.11.0" level="project" />
+    <orderEntry type="library" scope="PROVIDED" name="Maven: xml-apis:xml-apis:1.4.01" level="project" />
     <orderEntry type="library" scope="PROVIDED" name="Maven: javax.transaction:jta:1.1" level="project" />
-    <orderEntry type="library" scope="PROVIDED" name="Maven: com.google.inject:guice:4.0" level="project" />
-    <orderEntry type="library" scope="PROVIDED" name="Maven: javax.inject:javax.inject:1" level="project" />
-    <orderEntry type="library" scope="PROVIDED" name="Maven: com.google.guava:guava:16.0.1" level="project" />
-    <orderEntry type="library" scope="PROVIDED" name="Maven: com.google.inject.extensions:guice-assistedinject:4.0" level="project" />
-    <orderEntry type="library" scope="PROVIDED" name="Maven: org.scala-lang:scala-reflect:2.11.7" level="project" />
-    <orderEntry type="library" scope="PROVIDED" name="Maven: org.scala-lang.modules:scala-java8-compat_2.11:0.7.0" level="project" />
-    <orderEntry type="library" scope="PROVIDED" name="Maven: org.scala-lang.modules:scala-parser-combinators_2.11:1.0.4" level="project" />
-    <orderEntry type="library" scope="PROVIDED" name="Maven: com.typesafe.play:play-iteratees_2.11:2.5.4" level="project" />
-    <orderEntry type="library" scope="PROVIDED" name="Maven: com.typesafe:config:1.3.0" level="project" />
-    <orderEntry type="library" scope="PROVIDED" name="Maven: ch.qos.logback:logback-classic:1.1.7" level="project" />
-    <orderEntry type="library" scope="PROVIDED" name="Maven: ch.qos.logback:logback-core:1.1.7" level="project" />
+    <orderEntry type="library" scope="PROVIDED" name="Maven: org.scala-lang:scala-reflect:2.10.4" level="project" />
     <orderEntry type="library" scope="TEST" name="Maven: commons-pool:commons-pool:1.6" level="project" />
     <orderEntry type="library" scope="PROVIDED" name="Maven: javax.servlet:javax.servlet-api:3.1.0" level="project" />
     <orderEntry type="library" scope="TEST" name="Maven: junit:junit:4.12" level="project" />
@@ -98,7 +86,7 @@
     <orderEntry type="library" scope="TEST" name="Maven: org.hibernate.common:hibernate-commons-annotations:4.0.5.Final" level="project" />
     <orderEntry type="library" scope="TEST" name="Maven: org.hibernate.javax.persistence:hibernate-jpa-2.1-api:1.0.0.Final" level="project" />
     <orderEntry type="library" scope="TEST" name="Maven: org.jboss.spec.javax.transaction:jboss-transaction-api_1.2_spec:1.0.0.Final" level="project" />
-    <orderEntry type="library" scope="TEST" name="Maven: org.javassist:javassist:3.18.1-GA" level="project" />
+    <orderEntry type="library" scope="PROVIDED" name="Maven: org.javassist:javassist:3.18.1-GA" level="project" />
     <orderEntry type="library" scope="TEST" name="Maven: org.mariadb.jdbc:mariadb-java-client:1.2.0" level="project" />
     <orderEntry type="library" scope="TEST" name="Maven: net.java.dev.jna:jna:3.3.0" level="project" />
     <orderEntry type="library" scope="TEST" name="Maven: net.java.dev.jna:jna:platform:3.3.0" level="project" />
@@ -128,8 +116,6 @@
     <orderEntry type="library" scope="PROVIDED" name="Maven: org.springframework.data:spring-data-mongodb:1.7.1.RELEASE" level="project" />
     <orderEntry type="library" scope="PROVIDED" name="Maven: org.springframework.data:spring-data-commons:1.10.1.RELEASE" level="project" />
     <orderEntry type="library" scope="PROVIDED" name="Maven: org.mongodb:mongo-java-driver:2.13.0" level="project" />
-    <orderEntry type="library" scope="PROVIDED" name="Maven: org.slf4j:slf4j-api:1.7.10" level="project" />
-    <orderEntry type="library" scope="PROVIDED" name="Maven: org.slf4j:jcl-over-slf4j:1.7.10" level="project" />
     <orderEntry type="library" scope="PROVIDED" name="Maven: org.springframework.data:spring-data-redis:1.5.1.RELEASE" level="project" />
     <orderEntry type="library" scope="PROVIDED" name="Maven: org.springframework:spring-context-support:4.1.7.RELEASE" level="project" />
     <orderEntry type="library" scope="TEST" name="Maven: redis.clients:jedis:2.6.2" level="project" />
