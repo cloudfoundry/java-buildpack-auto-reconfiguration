@@ -1,7 +1,7 @@
-FROM java:8-jdk-alpine
+FROM java:8-jdk
 
-RUN echo "http://dl-cdn.alpinelinux.org/alpine/edge/testing" >> /etc/apk/repositories
-
-RUN apk add --update \
+RUN apt-get update && apt-get install -y \
     mongodb \
- && rm -rf /var/cache/apk/*
+ && apt-get clean \
+ && rm -rf /var/lib/apt/lists/*
+
