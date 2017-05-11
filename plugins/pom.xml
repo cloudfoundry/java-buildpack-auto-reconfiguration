@@ -1,0 +1,13 @@
+<project>
+    <modelVersion>4.0.0</modelVersion>
+    <groupId>org.cloudfoundry.plugins</groupId>
+    <artifactId>org.cloudfoundry.plugins</artifactId>
+    <name>Cloud Foundry Plugins</name>
+    <version>1.0</version>
+    <packaging>pom</packaging>
+
+    <modules>
+        <module>org.cloudfoundry.plugins.common</module>
+        <module>org.cloudfoundry.plugins.tomcat</module>
+    </modules>
+</project>
