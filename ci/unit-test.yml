@@ -9,5 +9,8 @@ image_resource:
 inputs:
 - name: java-buildpack-auto-reconfiguration
 
+caches:
+- path: m2
+
 run:
   path: java-buildpack-auto-reconfiguration/ci/unit-test.sh
