@@ -5,5 +5,7 @@ set -e -u
 mkdir -p /data/db
 mongod &
 
+ln -fs $PWD/maven $HOME/.m2
+
 cd java-buildpack-auto-reconfiguration
-./mvnw -q -Dmaven.repo.local=../m2/repository -Dmaven.user.home=../m2 test
+./mvnw -q test

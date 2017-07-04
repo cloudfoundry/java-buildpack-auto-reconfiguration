@@ -10,7 +10,7 @@ inputs:
 - name: java-buildpack-auto-reconfiguration
 
 caches:
-- path: m2
+- path: maven
 
 run:
   path: java-buildpack-auto-reconfiguration/ci/unit-test.sh
