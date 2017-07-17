@@ -2,7 +2,7 @@
 
 set -e -u
 
-ln -fs $PWD/maven $HOME/.m2
+[[ -d $PWD/maven && ! -d $HOME/.m2 ]] && ln -s $PWD/maven $HOME/.m2
 
 cd java-buildpack-auto-reconfiguration
 ./mvnw -q -Dmaven.test.skip=true deploy
