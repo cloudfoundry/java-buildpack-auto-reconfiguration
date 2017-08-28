@@ -22,9 +22,9 @@ The types that are rewritten are as follows:
 
 More information about Java application development on Cloud Foundry can be found here:
 
-* [Cloud Foundry Services for Spring](https://docs.cloudfoundry.org/buildpacks/java/gsg-spring.html)
-* [Cloud Foundry Services for Grails](https://docs.cloudfoundry.org/buildpacks/java/grails-service-bindings.html)
-* [Cloud Foundry Services for Play](https://docs.cloudfoundry.org/buildpacks/java/play-service-bindings.html)
+* [Cloud Foundry Services for Spring](https://docs.cloudfoundry.org/buildpacks/java/configuring-service-connections/spring-service-bindings.html)
+* [Cloud Foundry Services for Grails](https://docs.cloudfoundry.org/buildpacks/java/configuring-service-connections/grails-service-bindings.html)
+* [Cloud Foundry Services for Play](https://docs.cloudfoundry.org/buildpacks/java/configuring-service-connections/play-service-bindings.html)
 
 ## Contributing
 [Pull requests][] are welcome; see the [contributor guidelines][] for details.
@@ -35,4 +35,3 @@ This buildpack is released under version 2.0 of the [Apache License][].
 [Apache License]: http://www.apache.org/licenses/LICENSE-2.0
 [contributor guidelines]: CONTRIBUTING.md
 [Pull requests]: http://help.github.com/send-pull-requests
-[`spring-cloud`]: https://github.com/spring-projects/spring-cloud
