@@ -4,7 +4,8 @@ platform: linux
 image_resource:
   type: docker-image
   source:
-    repository: cfje/java-buildpack-auto-reconfiguration
+    repository: openjdk
+    tag: 8-jdk-alpine
 
 inputs:
 - name: java-buildpack-auto-reconfiguration

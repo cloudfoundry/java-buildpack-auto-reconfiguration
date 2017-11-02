@@ -1,5 +1,23 @@
 # Java Buildpack Auto-Reconfiguration
-This repository contains the auto-reconfiguration functionality for Spring and Play Framework auto-reconfiguration.  It also contains a replacement Play Framework JPA Plugin that can be properly auto-reconfigured.
+This repository contains the auto-reconfiguration functionality for Spring auto-reconfiguration.
+
+| Job | Status
+| --- | ------
+| `unit-test-2.x-Athens-RELEASE`       | [![unit-test-master](https://java-experience.ci.springapps.io/api/v1/teams/java-experience/pipelines/java-buildpack-auto-reconfiguration/jobs/unit-test-2.x-Athens-RELEASE/badge)](https://java-experience.ci.springapps.io/teams/java-experience/pipelines/java-buildpack-auto-reconfiguration/jobs/unit-test-2.x-Athens-RELEASE)
+| `unit-test-2.x-Athens-SR1`           | [![unit-test-master](https://java-experience.ci.springapps.io/api/v1/teams/java-experience/pipelines/java-buildpack-auto-reconfiguration/jobs/unit-test-2.x-Athens-SR1/badge)](https://java-experience.ci.springapps.io/teams/java-experience/pipelines/java-buildpack-auto-reconfiguration/jobs/unit-test-2.x-Athens-SR1)
+| `unit-test-2.x-Athens-SR2`           | [![unit-test-master](https://java-experience.ci.springapps.io/api/v1/teams/java-experience/pipelines/java-buildpack-auto-reconfiguration/jobs/unit-test-2.x-Athens-SR2/badge)](https://java-experience.ci.springapps.io/teams/java-experience/pipelines/java-buildpack-auto-reconfiguration/jobs/unit-test-2.x-Athens-SR2)
+| `unit-test-2.x-Athens-SR3`           | [![unit-test-master](https://java-experience.ci.springapps.io/api/v1/teams/java-experience/pipelines/java-buildpack-auto-reconfiguration/jobs/unit-test-2.x-Athens-SR3/badge)](https://java-experience.ci.springapps.io/teams/java-experience/pipelines/java-buildpack-auto-reconfiguration/jobs/unit-test-2.x-Athens-SR3)
+| `unit-test-2.x-Athens-SR4`           | [![unit-test-master](https://java-experience.ci.springapps.io/api/v1/teams/java-experience/pipelines/java-buildpack-auto-reconfiguration/jobs/unit-test-2.x-Athens-SR4/badge)](https://java-experience.ci.springapps.io/teams/java-experience/pipelines/java-buildpack-auto-reconfiguration/jobs/unit-test-2.x-Athens-SR4)
+| `unit-test-2.x-Athens-SR5`           | [![unit-test-master](https://java-experience.ci.springapps.io/api/v1/teams/java-experience/pipelines/java-buildpack-auto-reconfiguration/jobs/unit-test-2.x-Athens-SR5/badge)](https://java-experience.ci.springapps.io/teams/java-experience/pipelines/java-buildpack-auto-reconfiguration/jobs/unit-test-2.x-Athens-SR5)
+| `unit-test-2.x-Athens-SR6`           | [![unit-test-master](https://java-experience.ci.springapps.io/api/v1/teams/java-experience/pipelines/java-buildpack-auto-reconfiguration/jobs/unit-test-2.x-Athens-SR6/badge)](https://java-experience.ci.springapps.io/teams/java-experience/pipelines/java-buildpack-auto-reconfiguration/jobs/unit-test-2.x-Athens-SR6)
+| `unit-test-2.x-Brussels-RELEASE`     | [![unit-test-master](https://java-experience.ci.springapps.io/api/v1/teams/java-experience/pipelines/java-buildpack-auto-reconfiguration/jobs/unit-test-2.x-Brussels-RELEASE/badge)](https://java-experience.ci.springapps.io/teams/java-experience/pipelines/java-buildpack-auto-reconfiguration/jobs/unit-test-2.x-Brussels-RELEASE)
+| `unit-test-2.x-Brussels-SR1`         | [![unit-test-master](https://java-experience.ci.springapps.io/api/v1/teams/java-experience/pipelines/java-buildpack-auto-reconfiguration/jobs/unit-test-2.x-Brussels-SR1/badge)](https://java-experience.ci.springapps.io/teams/java-experience/pipelines/java-buildpack-auto-reconfiguration/jobs/unit-test-2.x-Brussels-SR1)
+| `unit-test-2.x-Brussels-SR1`         | [![unit-test-master](https://java-experience.ci.springapps.io/api/v1/teams/java-experience/pipelines/java-buildpack-auto-reconfiguration/jobs/unit-test-2.x-Brussels-SR2/badge)](https://java-experience.ci.springapps.io/teams/java-experience/pipelines/java-buildpack-auto-reconfiguration/jobs/unit-test-2.x-Brussels-SR2)
+| `unit-test-2.x-Brussels-SR1`         | [![unit-test-master](https://java-experience.ci.springapps.io/api/v1/teams/java-experience/pipelines/java-buildpack-auto-reconfiguration/jobs/unit-test-2.x-Brussels-SR3/badge)](https://java-experience.ci.springapps.io/teams/java-experience/pipelines/java-buildpack-auto-reconfiguration/jobs/unit-test-2.x-Brussels-SR3)
+| `unit-test-2.x-Brussels-SR1`         | [![unit-test-master](https://java-experience.ci.springapps.io/api/v1/teams/java-experience/pipelines/java-buildpack-auto-reconfiguration/jobs/unit-test-2.x-Brussels-SR4/badge)](https://java-experience.ci.springapps.io/teams/java-experience/pipelines/java-buildpack-auto-reconfiguration/jobs/unit-test-2.x-Brussels-SR4)
+| `unit-test-2.x-Brussels-SR1`         | [![unit-test-master](https://java-experience.ci.springapps.io/api/v1/teams/java-experience/pipelines/java-buildpack-auto-reconfiguration/jobs/unit-test-2.x-Brussels-SR5/badge)](https://java-experience.ci.springapps.io/teams/java-experience/pipelines/java-buildpack-auto-reconfiguration/jobs/unit-test-2.x-Brussels-SR5)
+| `unit-test-2.x-Cairo-BUILD-SNAPSHOT` | [![unit-test-master](https://java-experience.ci.springapps.io/api/v1/teams/java-experience/pipelines/java-buildpack-auto-reconfiguration/jobs/unit-test-2.x-Cairo-BUILD-SNAPSHOT/badge)](https://java-experience.ci.springapps.io/teams/java-experience/pipelines/java-buildpack-auto-reconfiguration/jobs/unit-test-2.x-Cairo-BUILD-SNAPSHOT)
+| `deploy-2.x`                         | [![deploy-master](https://java-experience.ci.springapps.io/api/v1/teams/java-experience/pipelines/java-buildpack-auto-reconfiguration/jobs/deploy-2.x/badge)](https://java-experience.ci.springapps.io/teams/java-experience/pipelines/java-buildpack-auto-reconfiguration/jobs/deploy-2.x)
 
 ## What is Auto-Reconfiguration?
 Auto-reconfiguration consists of three parts.
@@ -12,19 +30,85 @@ The types that are rewritten are as follows:
 
 | Bean Type | Service Type
 | --------- | ------------
+| `com.datastax.driver.core.Cluster` | Cassandra Service
 | `javax.sql.DataSource` | Relational Data Services (e.g. ClearDB, ElephantSQL)
 | `org.springframework.amqp.rabbit.connection.ConnectionFactory` | RabbitMQ Service (e.g. CloudAMQP)
 | `org.springframework.data.mongodb.MongoDbFactory` | Mongo Service (e.g. MongoLab)
 | `org.springframework.data.redis.connection.RedisConnectionFactory` | Redis Service (e.g. Redis Cloud)
-| `org.springframework.orm.hibernate3.AbstractSessionFactoryBean` | Relational Data Services (e.g. ClearDB, ElephantSQL)
-| `org.springframework.orm.hibernate4.LocalSessionFactoryBean` | Relational Data Services (e.g. ClearDB, ElephantSQL)
-| `org.springframework.orm.jpa.AbstractEntityManagerFactoryBean` | Relational Data Services (e.g. ClearDB, ElephantSQL)
+| `org.springframework.mail.javamail.JavaMailSender` | SMTP Service
 
-More information about Java application development on Cloud Foundry can be found here:
+## Dependencies
+Most projects will receive this project via Java Buildpack injection.  If you need to download it for diagnsotic purposes, the dependency can be defined like this:
 
-* [Cloud Foundry Services for Spring](https://docs.cloudfoundry.org/buildpacks/java/configuring-service-connections/spring-service-bindings.html)
-* [Cloud Foundry Services for Grails](https://docs.cloudfoundry.org/buildpacks/java/configuring-service-connections/grails-service-bindings.html)
-* [Cloud Foundry Services for Play](https://docs.cloudfoundry.org/buildpacks/java/configuring-service-connections/play-service-bindings.html)
+```xml
+<dependencies>
+    <dependency>
+        <groupId>org.cloudfoundry</groupId>
+        <artifactId>java-buildpack-auto-reconfiguration</artifactId>
+        <version>2.0.0.RELEASE</version>
+    </dependency>
+    ...
+</dependencies>
+```
+
+Release artifacts can be found in the Spring release repository:
+
+```xml
+<repositories>
+    <repository>
+        <id>spring-releases</id>
+        <name>Spring Releases</name>
+        <url>http://repo.spring.io/release</url>
+        <snapshots>
+            <enabled>false</enabled>
+        </snapshots>
+    </repository>
+    ...
+</repositories>
+```
+
+Snapshot artifacts can be found in the Spring snapshot repository:
+
+```xml
+<repositories>
+    <repository>
+        <id>spring-snapshots</id>
+        <name>Spring Snapshots</name>
+        <url>http://repo.spring.io/snapshot</url>
+        <snapshots>
+            <enabled>true</enabled>
+        </snapshots>
+    </repository>
+    ...
+</repositories>
+```
+
+For Gradle, the dependencies would be defined like this:
+
+```groovy
+dependencies {
+    compile 'org.cloudfoundry:java-buildpack-auto-reconfiguration:2.0.0.RELEASE'
+    ...
+}
+```
+
+Snapshot artifacts can be found in the Spring release repository:
+
+```groovy
+repositories {
+    maven { url 'http://repo.spring.io/release' }
+    ...
+}
+```
+
+Snapshot artifacts can be found in the Spring snapshot repository:
+
+```groovy
+repositories {
+    maven { url 'http://repo.spring.io/snapshot' }
+    ...
+}
+```
 
 ## Contributing
 [Pull requests][] are welcome; see the [contributor guidelines][] for details.

@@ -6,6 +6,7 @@
       <w>mergable</w>
       <w>replacer</w>
       <w>servicehost</w>
+      <w>smtp</w>
     </words>
   </dictionary>
 </component>
