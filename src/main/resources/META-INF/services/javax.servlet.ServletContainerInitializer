@@ -14,4 +14,4 @@
 # limitations under the License.
 #
 
-org.cloudfoundry.reconfiguration.CloudServiceReconfigurationApplicationContextInitializer
+org.cloudfoundry.reconfiguration.CloudAutoReconfigurationServletContainerInitializer
