@@ -45,22 +45,7 @@ public final class CloudServiceReconfigurationApplicationContextInitializerTest 
         assertThat(applicationContext.getBeanFactoryPostProcessors())
             .flatExtracting(input -> Collections.<Class<?>>singleton(input.getClass()))
             .contains(
-                ColumnCloudServiceBeanFactoryPostProcessor.class,
-                DocumentCloudServiceBeanFactoryPostProcessor.class,
-                KeyValueCloudServiceBeanFactoryPostProcessor.class,
-                MessagingCloudServiceBeanFactoryPostProcessor.class,
-                RelationalCloudServiceBeanFactoryPostProcessor.class,
-                SmtpCloudServiceBeanFactoryPostProcessor.class);
+                CloudServiceReconfigurationBeanFactoryPostProcessor.class);
     }
 
-    @Test
-    public void usingCloudServices() {
-        StaticApplicationContext applicationContext = new StaticApplicationContext();
-        CloudHolder cloudHolder = new MockCloudHolder(true);
-        applicationContext.getBeanFactory().registerSingleton("test-cloud", MockCloudHolder.create());
-
-        new CloudServiceReconfigurationApplicationContextInitializer(cloudHolder).initialize(applicationContext);
-
-        assertThat(applicationContext.getBeanFactoryPostProcessors()).isEmpty();
-    }
 }

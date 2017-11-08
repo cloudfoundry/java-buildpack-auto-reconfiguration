@@ -43,21 +43,12 @@ public final class CloudServiceReconfigurationApplicationContextInitializer impl
 
     @Override
     public void initialize(ConfigurableApplicationContext applicationContext) {
-        new ApplicationContextCloudServicesHolder(applicationContext)
-            .withCloudServices(
-                () -> this.logger.warning("Skipping reconfiguration because cloud services already configured"),
-                () -> this.cloudHolder.withCloud(
-                    () -> this.logger.warning("Skipping reconfiguration because not in a cloud"),
-                    cloud -> {
-                        applicationContext.addBeanFactoryPostProcessor(new ColumnCloudServiceBeanFactoryPostProcessor(cloud));
-                        applicationContext.addBeanFactoryPostProcessor(new DocumentCloudServiceBeanFactoryPostProcessor(cloud));
-                        applicationContext.addBeanFactoryPostProcessor(new KeyValueCloudServiceBeanFactoryPostProcessor(cloud));
-                        applicationContext.addBeanFactoryPostProcessor(new MessagingCloudServiceBeanFactoryPostProcessor(cloud));
-                        applicationContext.addBeanFactoryPostProcessor(new RelationalCloudServiceBeanFactoryPostProcessor(cloud));
-                        applicationContext.addBeanFactoryPostProcessor(new SmtpCloudServiceBeanFactoryPostProcessor(cloud));
-
-                        this.logger.info("Reconfiguration enabled");
-                    }));
+        this.cloudHolder.withCloud(
+            () -> this.logger.warning("Skipping reconfiguration because not in a cloud"),
+            cloud -> {
+                applicationContext.addBeanFactoryPostProcessor(new CloudServiceReconfigurationBeanFactoryPostProcessor(applicationContext, cloud));
+                this.logger.info("Reconfiguration enabled");
+            });
     }
 
 }
