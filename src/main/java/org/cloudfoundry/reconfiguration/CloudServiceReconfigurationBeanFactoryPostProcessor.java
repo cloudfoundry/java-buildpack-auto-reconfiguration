@@ -50,7 +50,7 @@ final class CloudServiceReconfigurationBeanFactoryPostProcessor implements BeanF
     public void postProcessBeanFactory(ConfigurableListableBeanFactory beanFactory) throws BeansException {
         new ApplicationContextCloudServicesHolder(this.applicationContext)
             .withCloudServices(
-                () -> this.logger.warning("Skipping reconfiguration because cloud services already configured"),
+                () -> this.logger.info("Skipping reconfiguration because cloud services already configured"),
                 () -> {
                     replaceBeanOfType("com.datastax.driver.core.Cluster", (DefaultListableBeanFactory) beanFactory, this.cloud);
                     replaceBeanOfType("org.springframework.data.mongodb.MongoDbFactory", (DefaultListableBeanFactory) beanFactory, this.cloud);
