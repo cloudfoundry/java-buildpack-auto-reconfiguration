@@ -39,7 +39,7 @@ The types that are rewritten are as follows:
 | `org.springframework.mail.javamail.JavaMailSender` | SMTP Service
 
 ## Dependencies
-Most projects will receive this project via Java Buildpack injection.  If you need to download it for diagnsotic purposes, the dependency can be defined like this:
+Most projects will receive this project via Java Buildpack injection.  If you need to download it for diagnostic purposes, the dependency can be defined like this:
 
 ```xml
 <dependencies>
