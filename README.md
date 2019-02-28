@@ -59,7 +59,7 @@ Release artifacts can be found in the Spring release repository:
     <repository>
         <id>spring-releases</id>
         <name>Spring Releases</name>
-        <url>http://repo.spring.io/release</url>
+        <url>https://repo.spring.io/release</url>
         <snapshots>
             <enabled>false</enabled>
         </snapshots>
@@ -75,7 +75,7 @@ Snapshot artifacts can be found in the Spring snapshot repository:
     <repository>
         <id>spring-snapshots</id>
         <name>Spring Snapshots</name>
-        <url>http://repo.spring.io/snapshot</url>
+        <url>https://repo.spring.io/snapshot</url>
         <snapshots>
             <enabled>true</enabled>
         </snapshots>
