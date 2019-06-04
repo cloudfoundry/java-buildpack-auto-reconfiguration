@@ -230,6 +230,10 @@
                                     <pattern>org.springframework.cloud</pattern>
                                     <shadedPattern>org.cloudfoundry.reconfiguration.org.springframework.cloud</shadedPattern>
                                 </relocation>
+                                <relocation>
+                                    <pattern>com.fasterxml.jackson</pattern>
+                                    <shadedPattern>org.cloudfoundry.reconfiguration.com.fasterxml.jackson</shadedPattern>
+                                </relocation>
                             </relocations>
                             <shadeSourcesContent>true</shadeSourcesContent>
                         </configuration>
