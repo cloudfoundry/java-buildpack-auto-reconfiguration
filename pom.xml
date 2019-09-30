@@ -22,32 +22,32 @@
 
     <modelVersion>4.0.0</modelVersion>
 
-    <parent>
-        <groupId>io.spring.platform</groupId>
-        <artifactId>platform-bom</artifactId>
-        <version>Brussels-SR17</version>
-    </parent>
-
     <groupId>org.cloudfoundry</groupId>
     <artifactId>java-buildpack-auto-reconfiguration</artifactId>
     <version>2.10.0.BUILD-SNAPSHOT</version>
     <packaging>jar</packaging>
 
     <properties>
-        <guava.version>19.0</guava.version>
+        <dependencies.version>2.1.8.RELEASE</dependencies.version>
         <java.version>1.8</java.version>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
         <spring-cloud-connectors.version>2.0.6.RELEASE</spring-cloud-connectors.version>
     </properties>
 
+    <dependencyManagement>
+        <dependencies>
+            <dependency>
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-dependencies</artifactId>
+                <version>${dependencies.version}</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
+        </dependencies>
+    </dependencyManagement>
+
     <dependencies>
-        <dependency>
-            <groupId>com.google.guava</groupId>
-            <artifactId>guava</artifactId>
-            <version>${guava.version}</version>
-            <scope>test</scope>
-        </dependency>
         <dependency>
             <groupId>javax.mail</groupId>
             <artifactId>javax.mail-api</artifactId>
@@ -305,14 +305,14 @@
 
     <profiles>
         <profile>
-            <id>platform</id>
+            <id>dependencies</id>
             <activation>
                 <property>
-                    <name>env.PLATFORM_VERSION</name>
+                    <name>env.DEPENDENCIES_VERSION</name>
                 </property>
             </activation>
             <properties>
-                <platform.version>${env.PLATFORM_VERSION}</platform.version>
+                <dependencies.version>${env.DEPENDENCIES_VERSION}</dependencies.version>
             </properties>
         </profile>
     </profiles>
