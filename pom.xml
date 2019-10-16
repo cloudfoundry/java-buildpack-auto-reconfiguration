@@ -28,7 +28,7 @@
     <packaging>jar</packaging>
 
     <properties>
-        <dependencies.version>2.1.8.RELEASE</dependencies.version>
+        <dependencies.version>2.1.9.RELEASE</dependencies.version>
         <java.version>1.8</java.version>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
@@ -48,6 +48,17 @@
     </dependencyManagement>
 
     <dependencies>
+        <!-- Remove with Boot 2.2, no new shaded classes should arrive -->
+        <dependency>
+            <groupId>com.fasterxml.jackson.core</groupId>
+            <artifactId>jackson-databind</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>io.projectreactor</groupId>
+            <artifactId>reactor-core</artifactId>
+            <scope>test</scope>
+        </dependency>
         <dependency>
             <groupId>javax.mail</groupId>
             <artifactId>javax.mail-api</artifactId>
@@ -229,10 +240,6 @@
                                 <relocation>
                                     <pattern>org.springframework.cloud</pattern>
                                     <shadedPattern>org.cloudfoundry.reconfiguration.org.springframework.cloud</shadedPattern>
-                                </relocation>
-                                <relocation>
-                                    <pattern>com.fasterxml.jackson</pattern>
-                                    <shadedPattern>org.cloudfoundry.reconfiguration.com.fasterxml.jackson</shadedPattern>
                                 </relocation>
                             </relocations>
                             <shadeSourcesContent>true</shadeSourcesContent>
