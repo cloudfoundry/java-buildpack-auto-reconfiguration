@@ -24,7 +24,7 @@
 
     <groupId>org.cloudfoundry</groupId>
     <artifactId>java-buildpack-auto-reconfiguration</artifactId>
-    <version>2.11.0.BUILD-SNAPSHOT</version>
+    <version>2.11.0.RELEASE</version>
     <packaging>jar</packaging>
 
     <properties>
