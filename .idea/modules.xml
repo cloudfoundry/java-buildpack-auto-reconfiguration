@@ -2,7 +2,9 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/java-buildpack-auto-reconfiguration.iml" filepath="$PROJECT_DIR$/java-buildpack-auto-reconfiguration.iml" />
+      <module fileurl="file://$PROJECT_DIR$/java-buildpack-auto-reconfiguration-connector/java-buildpack-auto-reconfiguration-connector.iml" filepath="$PROJECT_DIR$/java-buildpack-auto-reconfiguration-connector/java-buildpack-auto-reconfiguration-connector.iml" />
+      <module fileurl="file://$PROJECT_DIR$/java-buildpack-auto-reconfiguration-java-cfenv/java-buildpack-auto-reconfiguration-java-cfenv.iml" filepath="$PROJECT_DIR$/java-buildpack-auto-reconfiguration-java-cfenv/java-buildpack-auto-reconfiguration-java-cfenv.iml" />
+      <module fileurl="file://$PROJECT_DIR$/java-buildpack-auto-reconfiguration-parent.iml" filepath="$PROJECT_DIR$/java-buildpack-auto-reconfiguration-parent.iml" />
     </modules>
   </component>
 </project>

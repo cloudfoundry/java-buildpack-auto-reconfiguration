@@ -1,0 +1,14 @@
+org.springframework.context.ApplicationContextInitializer=\
+org.cloudfoundry.reconfiguration.cfenv.CloudPropertySourceApplicationContextInitializer
+org.springframework.boot.env.EnvironmentPostProcessor=\
+io.pivotal.cfenv.spring.boot.CfDataSourceEnvironmentPostProcessor,\
+io.pivotal.cfenv.spring.boot.CfEnvironmentPostProcessor
+org.springframework.context.ApplicationListener=\
+org.cloudfoundry.reconfiguration.cfenv.CloudProfileApplicationListener,\
+io.pivotal.cfenv.spring.boot.CfDataSourceEnvironmentPostProcessor,\
+io.pivotal.cfenv.spring.boot.CfEnvironmentPostProcessor
+io.pivotal.cfenv.spring.boot.CfEnvProcessor=\
+io.pivotal.cfenv.spring.boot.RedisCfEnvProcessor,\
+io.pivotal.cfenv.spring.boot.MongoCfEnvProcessor,\
+io.pivotal.cfenv.spring.boot.AmqpCfEnvProcessor,\
+io.pivotal.cfenv.spring.boot.CassandraCfEnvProcessor

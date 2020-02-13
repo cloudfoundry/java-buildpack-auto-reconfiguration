@@ -16,14 +16,20 @@
         <sourceOutputDir name="target/generated-sources/annotations" />
         <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
         <outputRelativeToContentRoot value="true" />
-        <module name="java-buildpack-auto-reconfiguration" />
+        <module name="java-buildpack-auto-reconfiguration-java-cfenv" />
+        <module name="java-buildpack-auto-reconfiguration-connector" />
       </profile>
     </annotationProcessing>
     <bytecodeTargetLevel>
-      <module name="java-buildpack-auto-reconfiguration" target="1.8" />
+      <module name="java-buildpack-auto-reconfiguration-connector" target="1.8" />
+      <module name="java-buildpack-auto-reconfiguration-java-cfenv" target="1.8" />
+      <module name="java-buildpack-auto-reconfiguration-parent" target="1.8" />
     </bytecodeTargetLevel>
   </component>
   <component name="JavacSettings">
     <option name="ADDITIONAL_OPTIONS_STRING" value="-Werror -Xlint:all -Xlint:-options -Xlint:-processing -Xlint:-serial" />
+    <option name="ADDITIONAL_OPTIONS_OVERRIDE">
+      <module name="java-buildpack-auto-reconfiguration-parent" options="" />
+    </option>
   </component>
 </project>
