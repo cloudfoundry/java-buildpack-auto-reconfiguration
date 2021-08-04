@@ -32,7 +32,7 @@
         <java.version>1.8</java.version>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
-        <spring-cloud-connectors.version>2.0.6.RELEASE</spring-cloud-connectors.version>
+        <spring-cloud-connectors.version>2.0.7.RELEASE</spring-cloud-connectors.version>
     </properties>
 
     <dependencyManagement>
@@ -260,8 +260,7 @@
                         </goals>
                         <configuration>
                             <target>
-                                <property name="artifact"
-                                          value="target/${project.build.finalName}.${project.packaging}"/>
+                                <property name="artifact" value="target/${project.build.finalName}.${project.packaging}"/>
                                 <property name="prefix" value="org.cloudfoundry.reconfiguration"/>
                                 <ant antfile="shade-service-relocation.xml"/>
                             </target>
