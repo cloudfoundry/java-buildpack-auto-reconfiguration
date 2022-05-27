@@ -1,13 +1,7 @@
 # Java Buildpack Auto-Reconfiguration
 This repository contains the auto-reconfiguration functionality for Spring auto-reconfiguration.
 
-| Job | Status
-| --- | ------
-| `unit-test-1.4` | [![unit-test-master](https://java-experience.ci.springapps.io/api/v1/teams/java-experience/pipelines/auto-reconfiguration/jobs/unit-test-1.4/badge)](https://java-experience.ci.springapps.io/teams/java-experience/pipelines/auto-reconfiguration/jobs/unit-test-1.4)
-| `unit-test-1.5` | [![unit-test-master](https://java-experience.ci.springapps.io/api/v1/teams/java-experience/pipelines/auto-reconfiguration/jobs/unit-test-1.5/badge)](https://java-experience.ci.springapps.io/teams/java-experience/pipelines/auto-reconfiguration/jobs/unit-test-1.5)
-| `unit-test-2.0` | [![unit-test-master](https://java-experience.ci.springapps.io/api/v1/teams/java-experience/pipelines/auto-reconfiguration/jobs/unit-test-2.0/badge)](https://java-experience.ci.springapps.io/teams/java-experience/pipelines/auto-reconfiguration/jobs/unit-test-2.0)
-| `unit-test-2.1` | [![unit-test-master](https://java-experience.ci.springapps.io/api/v1/teams/java-experience/pipelines/auto-reconfiguration/jobs/unit-test-2.1/badge)](https://java-experience.ci.springapps.io/teams/java-experience/pipelines/auto-reconfiguration/jobs/unit-test-2.1)
-| `deploy`        | [![deploy-master](https://java-experience.ci.springapps.io/api/v1/teams/java-experience/pipelines/auto-reconfiguration/jobs/deploy/badge)](https://java-experience.ci.springapps.io/teams/java-experience/pipelines/auto-reconfiguration/jobs/deploy)
+**NOTE: This project has been deprecated and is in maintenance mode. We will continue to release security-related updates but will not address enhancement requests. It will be archived after *Dec 2022*. Refer to [this issue](https://github.com/cloudfoundry/java-buildpack/issues/951) to log comments.**
 
 ## What is Auto-Reconfiguration?
 Auto-reconfiguration consists of three parts.
